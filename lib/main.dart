@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:naolympics_app/tic_tac_toe.dart';
+import 'package:naolympics_app/screens/connect_four_page.dart';
+import 'package:naolympics_app/screens/home_page.dart';
+import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +13,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Tic Tac Toe'),
-        ),
-        body: const Center(
-          child: TicTacToePage(),
-        ),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
+      home: const HomePage(),
+      routes: {
+        "TicTacToe": (context) => const TicTacToePage(),
+        "ConnectFour": (connect) => const ConnectFourPage()
+      },
     );
   }
 }
