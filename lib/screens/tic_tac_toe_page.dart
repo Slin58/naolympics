@@ -94,7 +94,7 @@ class TicTacToeState extends State<TicTacToePage> {
   }
 
   Icon? setIcon(int row, int col) {
-    const double iconSize = 60;
+    const double iconSize = 120;
 
     if (_board[row][col] == 'O') {
       return getCircleIcon(iconSize);
@@ -205,10 +205,10 @@ class TicTacToeState extends State<TicTacToePage> {
                             decoration: BoxDecoration(
                               border: Border(
                                 right: col < 2
-                                    ? BorderSide(color: Colors.black)
+                                    ? const BorderSide(color: Colors.black)
                                     : BorderSide.none,
                                 bottom: row < 2
-                                    ? BorderSide(color: Colors.black)
+                                    ? const BorderSide(color: Colors.black)
                                     : BorderSide.none,
                               ),
                             ),
