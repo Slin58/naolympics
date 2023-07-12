@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'client.dart';
+
 class Server {
 
   bool _running;
-
-
   Server(this._running);
 
   void start() async {
+    _running = true;
 
     const port = 7470;
     final server = await ServerSocket.bind(InternetAddress.anyIPv4, port);
@@ -50,7 +51,9 @@ class Server {
 }
 
 
-void main(){
+Future<void> main() async {
+  String? ip = await getCurrentIp();
+  print("Current ip $ip");
   Server server = Server(true);
   server.start();
 }
