@@ -31,9 +31,6 @@ class SocketTestState extends State<SocketTest> {
       });
       return [];
     } else {
-      print(
-          "_______________________________________________________________________________________");
-      print("Aktuelle daten: $list");
       return list;
     }
   }
@@ -43,18 +40,13 @@ class SocketTestState extends State<SocketTest> {
     IconData icon;
 
     void startServer() {
-      print("ich wurde aufgerufen1 isHosting: $isHosting");
       setState(() {
         isHosting = true;
         server.start();
       });
     }
 
-    print("ich wurde aufgerufen2 isHosting: $isHosting");
-
     void stopServer() {
-      print("ich wurde aufgerufen3 isHosting: $isHosting");
-
       setState(() {
         isHosting = false;
         server.stop();
@@ -99,17 +91,16 @@ class SocketTestState extends State<SocketTest> {
                 },
               );
             } else {
-              return Text("No other players found");
+              return const Text("No other players found");
             }
           } else {
-            return Text('No data available.');
+            return const Text('No data available.');
           }
         });
   }
 
   @override
   Widget build(BuildContext context) {
-    print("BUILD LOG :\n isHosting: $isHosting");
     return Scaffold(
         appBar: AppBar(
           title: Text("Connection tests"),

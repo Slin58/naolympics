@@ -27,7 +27,7 @@ class HomePage extends StatelessWidget {
             SizedBox(width: marginSize),
             createNavButton("Tic Tac Toe", context, const TicTacToePage()),
             SizedBox(width: marginSize),
-            createNavButton("Soket Test", context, const SocketTest())
+            createNavButton("Socket Test", context, const SocketTest())
           ],
         ),
       ),
