@@ -1,0 +1,195 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                  Latex Vorlage f\"{u}r Abschlu{\ss}arbeiten                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper,DIV13,pdftex,BCOR10mm,fleqn,liststotoc,bibtotoc,cleardoubleempty]{scrbook}
+%,footexclude,headexclude standard,chapterprefix,dvips
+\usepackage{times}            %Font
+\usepackage[latin1]{inputenc} %erkennt \"{a},\"{o},\"{u}
+\usepackage{german,amsfonts}  %erkennt \3 als {\ss}
+\usepackage[T1]{fontenc}      %z.B. f\"{u}r (besseres) automatisches Trennen nach Umlauten
+% \usepackage{latexsym}         %sonstige Symbole (\partial)
+\usepackage{graphicx}         %[draft]
+%\usepackage[a4,center]{crop}  % cam,frame, habe D:\texmf\dvips\config\config.ps angepa{\ss}t!!!
+%\usepackage{pstricks,pst-node,pst-tree,pst-plot}  %um B\"{a}ume zu zeichnen
+\usepackage{booktabs}         %f\"{u}r sch\"{o}nere Tabellen
+\usepackage{textcomp}         %f\"{u}r \textperthousand = promille
+\usepackage{placeins}         %verhindert Gleiten von Abbildungen (bis \FloatBarrier)
+\usepackage{amsmath} %F\"{u}r Formeln
+\usepackage[breaklinks,pdfborder={0 0 0}]{hyperref} %f\"{u}r Links im PDF
+\usepackage{xcolor,soul} %F\"{u}r Matlab/Octave
+\usepackage{url} %f\"{u}r Hyperlinks im Literaturverzeichnis,alternativ  "hyperref" und "breakurl" [hyphens]
+\usepackage{listings}         %fuer C-Programme
+\usepackage{scrlayer-scrpage}%[automark] f\"{u}r Kopfzeilen
+% \setheadsepline{0.4pt} %
+\pagestyle{scrheadings} %Linie in Kopfzeilen
+\addtolength{\topmargin}{5mm} %gesamten Text auf der Seite nach unten schieben
+%\usepackage{setspace} Zeilenabstand \"{a}ndern. H\"{a}nde weg! Vergr\"{o}{\ss}ert auch den Abstand von Bildunterschriften...
+%\onehalfspacing
+
+\lstset{language=C,
+basicstyle=\ttfamily\footnotesize,
+keywordstyle=\color{blue},
+commentstyle=\color{green},
+stringstyle=\color{red},
+numbers=left,
+stepnumber=1,
+numbersep=5pt,
+%numberstyle=\tiny,
+breaklines=true,
+breakautoindent=true,
+postbreak=\space,
+tabsize=2,
+showspaces=false,
+showstringspaces=false,
+extendedchars=true,
+backgroundcolor=\color{black!10},
+captionpos=b }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter
+%von http://studiy.tu-cottbus.de/projektwiki/wissen:latex:diplomarbeit
+\titlehead{%  {\centering Seitenkopf}
+  {Hochschule f\"{u}r angewandte Wissenschaften\\
+   Fachhochschule W\"{u}rzburg-Schweinfurt\\
+   Fakult\"{a}t Informatik und Wirtschaftsinformatik}}
+\subject{Bachelorarbeit}
+\title{Hier steht der Titel der Arbeit\\ ein- oder zweizeilig\\[10mm]}
+\subtitle{\normalsize{vorgelegt an der Hochschule f\"{u}r angewandte Wissenschaften Fachhochschule W\"{u}rzburg-Schweinfurt in der Fakult\"{a}t Informatik und Wirtschaftsinformatik zum Abschluss eines Studiums im Studiengang Informatik}}
+\author{Rainer Zufall}
+\date{\normalsize{Eingereicht am: Datum}}
+\publishers{
+  \normalsize{Erstpr\"{u}fer: Prof. } \\
+  \normalsize{Zweitpr\"{u}fer: Prof. }\\
+}
+
+%\uppertitleback{ }
+%\lowertitleback{ }
+
+\maketitle
+
+\thispagestyle{empty}
+\section*{Selbstst\"{a}ndigkeitserkl\"{a}rung}
+Hiermit versichere ich, dass ich die vorgelegte Bachelorarbeit/Masterarbeit selbstst\"{a}ndig verfasst und noch nicht anderweitig zu Pr\"{u}fungszwecken vorgelegt habe. Alle benutzten Quellen und Hilfsmittel sind angegeben, w\"{o}rtliche und sinngem\"{a}{\ss}e Zitate wurden als solche gekennzeichnet.\\[15mm]
+%% Abstand und Linie
+\vspace{20mm}
+\hrule
+\vspace{5mm}
+Irgendwo, den \date{Datum}
+
+\vspace{5cm}
+\section*{Danksagungen}
+Einen ganz besonderen Dank m\"{o}chte ich meinem Betreuer [...]. Desweiteren danke ich meinen zahlreichen Kommilitonen f\"{u}r viele anregende und aufschlussreiche Diskussionen.
+
+Zu guter Letzt sei den vielen Autoren hilfreicher Werkzeuge [...]
+
+\cleardoublepage     % min. eine Freiseite
+
+\thispagestyle{empty}
+\section*{Kurzfassung}
+In dieser Arbeit geht es um ...
+
+\vspace{5cm}
+\section*{Abstract}
+This thesis is about ....
+
+\nonfrenchspacing
+\renewcommand{\figurename}{Abb.}
+\renewcommand{\tablename}{Tab.}
+
+%\setcounter{page}{7}%  {tocdepth}{1} =section
+%\lstset{language=C, basicstyle=\ttfamily\small, commentstyle=\itshape}
+%\automark[chapter]{chapter} ???
+
+\tableofcontents %
+\listoffigures %
+\listoftables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+%\include{kap1.tex}
+\chapter{Einleitung}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\chapter{State of the Art}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{nao.jpg} %[width=60mm], [height=60mm], [scale=0.75], [angle=45,width=52mm], ....
+\caption{TestXYZ}
+\label{TestXYZ}
+\end{figure}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\section{Unterkapitel}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\subsection{Unter-Unterkapitel}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\begin{lstlisting}[caption={Beispiel f\"{u}r eine Activity}, label={list:activity}]
+    // Kernel Definition
+   __global__ void VecAdd(float* A, float* B, float* C)
+    {
+      int i = threadIdx.x;
+      C[i] = A[i] + B[i];
+    }
+    int main(void)
+    {
+    ...
+    // Kernel Invocation with N threads
+    return 0;
+    }
+    \end{lstlisting}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\subsection{Unter-Unterkapitel2}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\newpage
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\chapter{Eigene Ideen}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|r}
+  \hline
+  A & B & C \\
+\hline
+ 1 & 2 & 3  \\
+\hline
+ 4 & 5 & 6 \\
+\end{tabular}
+\caption{Testtabelle}
+\label{TestXYZ}
+\end{table}
+blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\chapter{Umsetzung}
+\chapter{Experimente und Ergebnisse}
+\chapter{Zusammenfassung und Ausblick}
+Hier wird eine Buch zitiert \cite{book-minimal} und hier ein anderes \cite{article-full}.
+
+%In der Realit\"{a}t sollten die Kapitel in einzelnen Dateien gespeichert werden und diese mit \include eingebunden werden.
+%\include{einleitung}
+%
+%\include{zusammenfassung}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter
+%\addpart{Anhang}
+%\appendix
+%\include{anhang_hard}
+%\addcontentsline{toc}{\bibliography}
+
+\bibliographystyle{plain}%geralpha, dinat, dalpha, ...
+\nocite{*}
+\bibliography{gerxampl}
+
+\end{document}
+
