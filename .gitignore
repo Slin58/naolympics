@@ -1,0 +1,15 @@
+*.png
+*.jpg
+vision/vision copy.py
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.lof
+.DS_Store
+*.bbl
+*.blg
