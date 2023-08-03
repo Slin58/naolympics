@@ -112,7 +112,7 @@ def template_match(image, patch):
         # cv2.waitKey(0)
         return result
 
-def current_approach(img, debug=[], tile_canny=0):
+def current_approach(img, debug=[], tile_canny=0, tile_offset=40):
         #create a 2d array to hold the gamestate
         gamestate = [["-","-","-"],["-","-","-"],["-","-","-"]]
 
@@ -165,17 +165,10 @@ def current_approach(img, debug=[], tile_canny=0):
                         # create new image from binary, for further analysis. Trim off the edge that has a line
                         # tile = thresh1[x+40:x+w-80,y+40:y+h-80]
                         if tile_canny:
-                            tile = cv2.Canny(thresh1[y+20:y+h-20,x+20:x+w-20], 100, 150)
+                            tile = cv2.Canny(thresh1[y+tile_offset:y+h-tile_offset,x+tile_offset:x+w-tile_offset], 100, 150)
                         else:
-                            tile = thresh1[y+40:y+h-40,x+40:x+w-40]
-                            
-                        
-                        if 3 in debug:
-                            tileRes = cv2.resize(tile,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+                            tile = thresh1[y+tile_offset:y+h-tile_offset,x+tile_offset:x+w-tile_offset]
 
-                            cv2.imshow(str(tileCount), tileRes)
-                            cv2.waitKey(0)
-                            cv2.destroyAllWindows()
 
                         # tileCont, tileHier = cv2.findContours(tile, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                         # cv2.drawContours(img, tileCont, -1, (0, 250, 0), 10)
@@ -205,15 +198,25 @@ def current_approach(img, debug=[], tile_canny=0):
                             tileCount = 9
                         else:
                              print("Undefined tile!")
-                        print("tile nr: ", tileCount, " x: ",x, " y: ",y," width: ",w, " height: ",h,"tileX: ",tileX," tileY: ",tileY)  
+                        
+                        if 3 in debug:
+                            print("tile nr: ", tileCount, " x: ",x, " y: ",y," width: ",w, " height: ",h,"tileX: ",tileX," tileY: ",tileY)  
+                            
+                        
+                        if 4 in debug:
+                            tileRes = cv2.resize(tile,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
 
+                            cv2.imshow(str(tileCount), tileRes)
+                            cv2.waitKey(0)
+                            cv2.destroyAllWindows()
+                            
                         #HoughCircles(image, Method, ratio of accumulator array, minDist between circles, param1 for houghGrad higher canny thres, param2 for houghGrad accumulator array thres)
                         circles = cv2.HoughCircles(tile,cv2.HOUGH_GRADIENT, 1, 200, param1 = 200,
                 param2 = 20, minRadius = 65, maxRadius = 130)
                         if(circles is not None):
                                 cv2.drawContours(img, [cnt], -1, (255, 0,0), 5)
                                 for pt in circles[0,:]:
-                                    a, b, r = int(pt[0]+x+40), int(pt[1]+y+40), pt[2]
+                                    a, b, r = int(pt[0]+x+tile_offset), int(pt[1]+y+tile_offset), pt[2]
     
                                     cv2.circle(img, (a, b), r, (255, 0, 0), 10)
                                     gamestate[tileY][tileX] = "O"
@@ -238,8 +241,9 @@ def current_approach(img, debug=[], tile_canny=0):
                                     x1,y1,x2,y2=points[0]
                                         # Draw the lines joing the points
                                         # On the original image
-                                    cv2.line(img,(x1+x+40,y1+y+40),(x2+x+40,y2+y+40),(255,0,0),2)
+                                    cv2.line(img,(x1+x+tile_offset,y1+y+tile_offset),(x2+x+tile_offset,y2+y+tile_offset),(255,0,0),2)
                                 gamestate[tileY][tileX] = "X"
+                                print("Cross in ", tileCount)
 
                         cv2.putText(img, str(tileCount), (x+75, y+300), cv2.FONT_HERSHEY_SIMPLEX, 10, (0,0,255), 20)
                         cv2.circle(img, center, 5, (0, 255, 0))
@@ -259,7 +263,7 @@ def current_approach(img, debug=[], tile_canny=0):
             res = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
 
             # display image and release resources when key is pressed
-            cv2.imshow('image1',res)
+            cv2.imshow('Result',res)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
@@ -368,7 +372,7 @@ if __name__ == "__main__":
         temp = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\with_borders_temp.jpg')
         # lol = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\lol.png')
         # empty = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\with_borders_empty.jpg')
-        # test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test1_cut.jpg')
+        test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test1_cut.jpg')
         test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test2_cut.jpg')
         test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test3_cut.jpg')
         test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test4_cut.jpg')
@@ -379,4 +383,4 @@ if __name__ == "__main__":
         # cv2.imshow('Detected', detected)
         # cv2.waitKey(0)
         # detect_game_board(empty, 4)
-        current_approach(img=test3_cut, debug=[2] , tile_canny=0)
+        current_approach(img=test4_cut, debug=[] , tile_canny=0)
