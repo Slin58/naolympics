@@ -112,7 +112,7 @@ def template_match(image, patch):
         # cv2.waitKey(0)
         return result
 
-def current_approach(img, debug=[], canny=0, tile_canny=0):
+def current_approach(img, debug=[], tile_canny=0):
         #create a 2d array to hold the gamestate
         gamestate = [["-","-","-"],["-","-","-"],["-","-","-"]]
 
@@ -121,51 +121,23 @@ def current_approach(img, debug=[], canny=0, tile_canny=0):
         # get the image width and height
         img_width = img.shape[0]
         img_height = img.shape[1]
-        # img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-        img = cv2.GaussianBlur(img, (5, 5), 1.5)
         if 1 in debug:
-            denoiseRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
-            cv2.imshow("Denoised image", denoiseRes)
+            imgRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+            cv2.imshow("Input image", imgRes)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-
-        # turn into grayscale
-        img_g =  cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        if 2 in debug:
-            grayRes = cv2.resize(img_g,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
-            cv2.imshow("Gray input image", grayRes)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-        # if canny:
-        #     thresh1 = cv2.Canny(img_g, 120, 150)
-            
-            
-        # # turn into thresholded binary
-        # else:
-        #     # img_g = filters.sobel(img_g)
-        #     # thresh = filters.threshold_otsu(img_g)
-        #     # thresh1 = img_g
-        #     # thresh1[thresh1 >= thresh] = 255
-        #     # thresh1[thresh1 < thresh] = 0
-        #     # thresh1 = np.uint8(thresh1)
-        #     # #remove noise from binary
-        #     ret,thresh1 = cv2.threshold(img_g,147,255,cv2.THRESH_BINARY)
-        #     #remove noise from binary
-        #     thresh1 = cv2.morphologyEx(thresh1, cv2.MORPH_OPEN, kernel)
         
         thresh1 = process(img)
 
-        if 3 in debug:
+        if 2 in debug:
             threshRes = cv2.resize(thresh1,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
-            cv2.imshow("Thresholded image", threshRes)
+            cv2.imshow("Processed image", threshRes)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
 
         #find and draw contours. RETR_EXTERNAL retrieves only the extreme outer contours
         contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        tileCount = 0
         if(len(contours) > 1):
             contours = sorted(contours, key=lambda x: cv2.contourArea(x))[1:]
             print("contours size: ", len(contours))
@@ -188,7 +160,6 @@ def current_approach(img, debug=[], canny=0, tile_canny=0):
 
         for cnt in contours:
                         # use boundingrect to get coordinates of tile
-                        tileCount = tileCount+1
                         x,y,w,h = cv2.boundingRect(cnt)
                         center = _get_center_position_of_rectangle(x,x+w, y, y+h)
                         # create new image from binary, for further analysis. Trim off the edge that has a line
@@ -196,24 +167,24 @@ def current_approach(img, debug=[], canny=0, tile_canny=0):
                         if tile_canny:
                             tile = cv2.Canny(thresh1[y+20:y+h-20,x+20:x+w-20], 100, 150)
                         else:
-                            tile = thresh1[y+20:y+h-20,x+20:x+w-20]
+                            tile = thresh1[y+40:y+h-40,x+40:x+w-40]
+                            
                         
-                        if 4 in debug:
+                        if 3 in debug:
                             tileRes = cv2.resize(tile,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
 
                             cv2.imshow(str(tileCount), tileRes)
                             cv2.waitKey(0)
                             cv2.destroyAllWindows()
 
-
+                        # tileCont, tileHier = cv2.findContours(tile, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                        # cv2.drawContours(img, tileCont, -1, (0, 250, 0), 10)
                         # create new image from main image, so we can draw the contours easily
-                        imgTile = img[y+20:y+h-20,x+20:x+w-20]
                         # cv2.drawContours(thresh1, [cnt], -1, (255,0,0), 15)
                         #determine the array indexes of the tile
                         tileX = int(round(x/w))
                         tileY = int(round(y/h))
-                        print("tile nr: ", tileCount, " x: ",x, " y: ",y," width: ",w, " height: ",h,"tileX: ",tileX," tileY: ",tileY)  
-                        
+                        tileCount = 0
                         if(tileY == 0 and tileX == 0):
                             tileCount = 1
                         elif(tileY == 1 and tileX == 0):
@@ -233,11 +204,25 @@ def current_approach(img, debug=[], canny=0, tile_canny=0):
                         elif(tileY == 2 and tileX == 2):
                             tileCount = 9
                         else:
-                             exit(1)
+                             print("Undefined tile!")
+                        print("tile nr: ", tileCount, " x: ",x, " y: ",y," width: ",w, " height: ",h,"tileX: ",tileX," tileY: ",tileY)  
 
-                        outerContourArea = cv2.contourArea(cnt)
                         #HoughCircles(image, Method, ratio of accumulator array, minDist between circles, param1 for houghGrad higher canny thres, param2 for houghGrad accumulator array thres)
-                        lines = cv2.HoughLinesP(
+                        circles = cv2.HoughCircles(tile,cv2.HOUGH_GRADIENT, 1, 200, param1 = 200,
+                param2 = 20, minRadius = 65, maxRadius = 130)
+                        if(circles is not None):
+                                cv2.drawContours(img, [cnt], -1, (255, 0,0), 5)
+                                for pt in circles[0,:]:
+                                    a, b, r = int(pt[0]+x+40), int(pt[1]+y+40), pt[2]
+    
+                                    cv2.circle(img, (a, b), r, (255, 0, 0), 10)
+                                    gamestate[tileY][tileX] = "O"
+                                    print("circle in ", tileCount)
+                            # put a number in the tile
+                        
+
+                        else:
+                            lines = cv2.HoughLinesP(
                                     tile, # Input edge image
                                     1, # Distance resolution in pixels
                                     np.math.pi/180, # Angle resolution in radians
@@ -245,28 +230,16 @@ def current_approach(img, debug=[], canny=0, tile_canny=0):
                                     minLineLength=50, # Min allowed length of line
                                     maxLineGap=10 # Max allowed gap between line for joining them
                                     )
-                        if(lines is not None):
-                            # # Iterate over points
-                            cv2.drawContours(img, [cnt], -1, (255, 0,0), 5)
-                            for points in lines:
-                                    # Extracted points nested in the list
-                                x1,y1,x2,y2=points[0]
-                                    # Draw the lines joing the points
-                                    # On the original image
-                                cv2.line(img,(x1+x,y1+y),(x2+x,y2+y),(255,0,0),2)
-                            gamestate[tileY][tileX] = "X"
-                        else:
-                            circles = cv2.HoughCircles(tile,cv2.HOUGH_GRADIENT, 1, 200, param1 = 200,
-                param2 = 20, minRadius = 10, maxRadius = 100)
-                            if(circles is not None):
-                                    cv2.drawContours(img, [cnt], -1, (255, 0,0), 5)
-                                    for pt in circles[0,:]:
-                                            a, b, r = int(pt[0]+x), int(pt[1]+y), pt[2]
-    
-                                            cv2.circle(img, (a, b), r, (255, 0, 0), 10)
-                                    gamestate[tileY][tileX] = "O"
-                                    print("circle in ", tileCount)
-                            # put a number in the tile
+                            if(lines is not None):
+                                # # Iterate over points
+                                cv2.drawContours(img, [cnt], -1, (255, 0,0), 5)
+                                for points in lines:
+                                        # Extracted points nested in the list
+                                    x1,y1,x2,y2=points[0]
+                                        # Draw the lines joing the points
+                                        # On the original image
+                                    cv2.line(img,(x1+x+40,y1+y+40),(x2+x+40,y2+y+40),(255,0,0),2)
+                                gamestate[tileY][tileX] = "X"
 
                         cv2.putText(img, str(tileCount), (x+75, y+300), cv2.FONT_HERSHEY_SIMPLEX, 10, (0,0,255), 20)
                         cv2.circle(img, center, 5, (0, 255, 0))
@@ -293,11 +266,11 @@ def current_approach(img, debug=[], canny=0, tile_canny=0):
 
 def process(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_blur = cv2.GaussianBlur(img_gray, (5, 5), 0)
+    img_blur = cv2.GaussianBlur(img_gray, (9, 9), 0)
     img_canny = cv2.Canny(img_blur, 0, 100)
     kernel = np.ones((2, 2))
-    img_dilate = cv2.dilate(img_canny, kernel, iterations=8)
-    return cv2.erode(img_dilate, kernel, iterations=2)
+    img_dilate = cv2.dilate(img_canny, kernel, iterations=10)
+    return cv2.erode(img_dilate, kernel, iterations=4)
 
 def convex_hull(cnt):
     peri = cv2.arcLength(cnt, True)
@@ -396,8 +369,8 @@ if __name__ == "__main__":
         # lol = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\lol.png')
         # empty = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\with_borders_empty.jpg')
         # test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test1_cut.jpg')
-        # test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test2_cut.jpg')
-        # test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test3_cut.jpg')
+        test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test2_cut.jpg')
+        test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test3_cut.jpg')
         test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test4_cut.jpg')
 
         # hand_drawn = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\filledTicTacToe3.png')
@@ -406,4 +379,4 @@ if __name__ == "__main__":
         # cv2.imshow('Detected', detected)
         # cv2.waitKey(0)
         # detect_game_board(empty, 4)
-        current_approach(img=test4_cut, debug=[1,2,3] , canny=0, tile_canny=1)
+        current_approach(img=test3_cut, debug=[2] , tile_canny=0)
