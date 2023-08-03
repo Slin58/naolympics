@@ -188,19 +188,19 @@ def current_approach(img, debug=[], tile_canny=0):
                         if(tileY == 0 and tileX == 0):
                             tileCount = 1
                         elif(tileY == 1 and tileX == 0):
-                            tileCount = 2
-                        elif(tileY == 2 and tileX == 0):
-                            tileCount = 3
-                        elif(tileY == 0 and tileX == 1):
                             tileCount = 4
+                        elif(tileY == 2 and tileX == 0):
+                            tileCount = 7
+                        elif(tileY == 0 and tileX == 1):
+                            tileCount = 2
                         elif(tileY == 1 and tileX == 1):
                             tileCount = 5
                         elif(tileY == 2 and tileX == 1):
-                            tileCount = 6
-                        elif(tileY == 0 and tileX == 2):
-                            tileCount = 7
-                        elif(tileY == 1 and tileX == 2):
                             tileCount = 8
+                        elif(tileY == 0 and tileX == 2):
+                            tileCount = 3
+                        elif(tileY == 1 and tileX == 2):
+                            tileCount = 6
                         elif(tileY == 2 and tileX == 2):
                             tileCount = 9
                         else:
