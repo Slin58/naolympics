@@ -11,5 +11,3 @@ vision/vision copy.py
 *.toc
 *.lof
 .DS_Store
-*.bbl
-*.blg
