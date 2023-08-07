@@ -3,6 +3,7 @@ import cv2
 from skimage import filters, feature, io, transform
 from PIL import Image
 import numpy as np
+import vision_definitions
 """
   First get an image from Nao, then show it on the screen with PIL.
   """
@@ -31,16 +32,53 @@ def get_image_from_nao(ip, port):
     return np_im
 
 def detect_game_board(img, debug=[]):
+    input_img = np.copy(img)
     edge_img, all_contours, inner_contours = find_board_contours(img, debug)
     if len(inner_contours) == 9:
-        detect_tictactoe_state(img=img, debug=debug)
+        detect_tictactoe_state(img=input_img, debug=debug)
     else:
-        print("Contours not detected correctly. Please adjust method parameters or improve image quality")
+        detect_connect_four_state(img=input_img, debug=debug)
+        # print("Contours not detected correctly. Please adjust method parameters or improve image quality")
 
+def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120):
+        gamestate = [["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"]]
+        processed_img = process_image_to_edge_map(img)
+        if 1 in debug:
+            processedImgRes = cv2.resize(processed_img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+            cv2.imshow("Processed image", processedImgRes)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        circles = cv2.HoughCircles(processed_img,cv2.HOUGH_GRADIENT, 1, 200, param1 = 200,
+                    param2 = 15, minRadius = minRadius, maxRadius = maxRadius)
+        if circles is not None:
+            img_width = float(img.shape[1])
+            img_height = float(img.shape[0])
+            circles = np.array(circles[0,:]).astype("int")
+            circles = circles.reshape(6,7,3)
+            circleCount = 0
+            for i,row in enumerate(circles):
+                for j,column in enumerate(circles):
+                    circleCount += 1
+                    # print("Circle nr: ", circleCount, "X-Pos: ", pt[0], "Y-Pos: ", pt[1])
+                    a, b, r = circles[i][j][0], circles[i][j][1], circles[i][j][2]
+                    cv2.putText(img, str(circleCount), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(250,0,0), thickness=2)
+
+                    cv2.circle(img, (a, b), r, (250, 0, 0), 5)
+        
+        print("Gamestate:")
+        for line in gamestate:
+            linetxt = ""
+            for cel in line:
+                    linetxt = linetxt + "|" + cel
+            print(linetxt)
+        imgRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+        cv2.imshow("Processed image", imgRes)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+            
 def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadius=80):
         #create a 2d array to hold the gamestate
         gamestate = [["-","-","-"],["-","-","-"],["-","-","-"]]
-
         edge_img, all_contours, inner_contours = find_board_contours(img, debug)
 
         for cnt in inner_contours:
@@ -179,7 +217,7 @@ def process_image_to_edge_map(img):
     kernel = np.ones((2, 2))
     img_dilate = cv2.dilate(img_canny, kernel, iterations=8)
     return cv2.erode(img_dilate, kernel, iterations=6)
-    
+     
 def _get_center_position_of_rectangle(x1,x2,y1,y2):
         return (x1+int((x2-x1)/2), int(y1+(y2-y1)/2))
 
@@ -190,18 +228,10 @@ def record_image_from_nao(path, ip, port):
     cv2.imwrite(path, recorded)
 
 if __name__ == "__main__":
-  # image = get_image_as_array("10.30.4.32", 9559)  
-        # img = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\with_borders.jpg')
-        # temp = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\with_borders_temp.jpg')
-        # lol = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\lol.png')
-        # empty = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\with_borders_empty.jpg')
-        test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test1_cut.jpg')
-        test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test2_cut.jpg')
-        test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test3_cut.jpg')
-        test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\test4_cut.jpg')
-        recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\recorded_cut.png')
-        # hand_drawn = cv2.imread('C:\\Users\\jogehring\\Documents\\Projektarbeit\\naolympics\\vision\\filledTicTacToe3.png')
-        # detected = template_match(img, temp)
-        # record_image_from_nao("recorded3.png", "10.30.4.13", 9559)
-        # detect_game_board(empty, 4)
-        detect_tictactoe_state(img=recorded, debug=[] , tile_offset=20, minRadius=40, maxRadius=80)
+        # test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test1_cut.jpg')
+        # test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test2_cut.jpg')
+        # test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test3_cut.jpg')
+        # test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test4_cut.jpg')
+        # recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded_cut.png')
+        connect4_filled = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect_four_filled_cut.png')
+        detect_connect_four_state(img=connect4_filled, debug=[1])
