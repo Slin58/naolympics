@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../services/client.dart';
 import '../services/server.dart';
+import '../services/network/connection_service.dart';
 
 class SocketTest extends StatefulWidget {
   const SocketTest({super.key});
@@ -21,18 +21,6 @@ class SocketTestState extends State<SocketTest> {
     isHosting = false;
     wifi = true;
     server = Server(false);
-  }
-
-  Future<List<String>> _showDevices() async {
-    var list = await getDevices();
-    if (list == null) {
-      setState(() {
-        wifi = false;
-      });
-      return [];
-    } else {
-      return list;
-    }
   }
 
   FloatingActionButton _toggleHostButton() {
@@ -69,7 +57,7 @@ class SocketTestState extends State<SocketTest> {
 
   FutureBuilder<List<String>> _ipListElement() {
     return FutureBuilder<List<String>>(
-        future: _showDevices(),
+        future: ConnectionService.getDevices(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator(); // Show a loading indicator
@@ -86,7 +74,6 @@ class SocketTestState extends State<SocketTest> {
                   final item = listData[index];
                   return ListTile(
                     title: Text(item),
-                    onTap: () => sendMessage(item),
                   );
                 },
               );

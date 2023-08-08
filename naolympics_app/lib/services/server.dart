@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'client.dart';
+import 'package:naolympics_app/services/network/connection_service.dart';
 
 class Server {
 
@@ -52,8 +52,6 @@ class Server {
 
 
 Future<void> main() async {
-  String? ip = await getCurrentIp();
-  print("Current ip $ip");
   Server server = Server(true);
   server.start();
 }
