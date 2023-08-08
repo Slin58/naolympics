@@ -54,17 +54,24 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120):
             img_width = float(img.shape[1])
             img_height = float(img.shape[0])
             circles = np.array(circles[0,:]).astype("int")
+            circles = np.array(sorted(circles, key=lambda x: [x[1]]))
             circles = circles.reshape(6,7,3)
             circleCount = 0
             for i,row in enumerate(circles):
-                for j,column in enumerate(circles):
+                row = np.array(sorted(row, key=lambda x: [x[0]]))
+                for j,pt in enumerate(row):
                     circleCount += 1
                     # print("Circle nr: ", circleCount, "X-Pos: ", pt[0], "Y-Pos: ", pt[1])
-                    a, b, r = circles[i][j][0], circles[i][j][1], circles[i][j][2]
+                    a, b, r = pt[0], pt[1], pt[2]
+                    avgColor = np.average(img[b][a])
+                    if avgColor < 250:
+                        if img[b][a][2] - 100 > img[b][a][1] and img[b][a][2] - 100 > img[b][a][0]:
+                            gamestate[i][j] = "R"
+                        else:
+                            gamestate[i][j] = "Y"
                     cv2.putText(img, str(circleCount), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(250,0,0), thickness=2)
 
                     cv2.circle(img, (a, b), r, (250, 0, 0), 5)
-        
         print("Gamestate:")
         for line in gamestate:
             linetxt = ""
@@ -232,6 +239,8 @@ if __name__ == "__main__":
         # test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test2_cut.jpg')
         # test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test3_cut.jpg')
         # test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test4_cut.jpg')
-        # recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded_cut.png')
+        recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded_cut.png')
         connect4_filled = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect_four_filled_cut.png')
         detect_connect_four_state(img=connect4_filled, debug=[1])
+        # detect_tictactoe_state(img=recorded)
+        
