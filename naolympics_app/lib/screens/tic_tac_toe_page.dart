@@ -202,14 +202,12 @@ class TicTacToeState extends State<TicTacToePage> {
                           child: Container(
                             width: fieldSize / 3,
                             height: fieldSize / 3,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               border: Border(
-                                right: col < 2
-                                    ? const BorderSide(color: Colors.black)
-                                    : BorderSide.none,
-                                bottom: row < 2
-                                    ? const BorderSide(color: Colors.black)
-                                    : BorderSide.none,
+                                right: BorderSide(color: Colors.black),
+                                left: BorderSide(color: Colors.black),
+                                bottom: BorderSide(color: Colors.black),
+                                top: BorderSide(color: Colors.black),
                               ),
                             ),
                             child: Center(child: setIcon(row, col)),
