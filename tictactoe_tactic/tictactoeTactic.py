@@ -1,12 +1,12 @@
 # coding=utf-8
 import random
 
-#restructure idea: do methods do best move, do good move, do okay move, do bad move
+
+# restructure idea: do methods do best move, do good move, do okay move, do bad move
 # -> than for every amountOfEmptyFields it is decided depending on how difficult the game should be which move is done
 
-#difficulties: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
+# difficulties: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
 def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
-
     amountEmpty = 0
     for i in range(0, len(field)):
         for j in range(0, len(field[i])):
@@ -53,7 +53,7 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
                     print("set mark next to other mark")
                     return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)]
 
-        # if Ecke + Mitte -> gegenüberliegende Ecke                         entspricht 1Diagonale hat sign bei beidem
+        # if placed in a corner + middle: Play opposing corner
         if field[1][1] != signEmpty:
             if field[0][0] != signEmpty:
                 print("play in the opposing corner")
@@ -94,10 +94,10 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
                     print("play middle")
                     return 4
                 else:
-                    for i in range(0, len(amountsOwn)):
-                        if amountsOwn[i] == 1 and amountsOpponent[i] == 0:
+                    for j in range(0, len(amountsOwn)):
+                        if amountsOwn[j] == 1 and amountsOpponent[j] == 0:
                             print("set mark next to other mark")
-                            return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)]
+                            return getEmptyPlacesIn(field, j, signEmpty)[random.randint(0, 1)]
 
         # if Ecke + nichtanliegende Kante -> gegenüberliegende Ecke         entspricht nirgends hat sign bei beidem
         if field[0][0] != signEmpty:
@@ -115,7 +115,6 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
 
         print("Random Empty Corner")
         return getRandomEmptyCorner(field, signEmpty)
-
 
     # check rows
     # check if wining move possible
@@ -137,19 +136,22 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
         for i in range(0, 3):
             for j in range(3, 6):
                 for k in range(6, 8):
-                    if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[j] == 1 and amountsOpponent[j] == 0:
+                    if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[j] == 1 and \
+                            amountsOpponent[j] == 0:
                         for place1 in getEmptyPlacesIn(field, i, signEmpty):
                             for place2 in getEmptyPlacesIn(field, j, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
                                     return place1
-                    if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[k] == 1 and amountsOpponent[k] == 0:
+                    if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[k] == 1 and \
+                            amountsOpponent[k] == 0:
                         for place1 in getEmptyPlacesIn(field, i, signEmpty):
                             for place2 in getEmptyPlacesIn(field, k, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
                                     return place1
-                    if amountsOwn[j] == 1 and amountsOpponent[j] == 0 and amountsOwn[k] == 1 and amountsOpponent[k] == 0:
+                    if amountsOwn[j] == 1 and amountsOpponent[j] == 0 and amountsOwn[k] == 1 and \
+                            amountsOpponent[k] == 0:
                         for place1 in getEmptyPlacesIn(field, j, signEmpty):
                             for place2 in getEmptyPlacesIn(field, k, signEmpty):
                                 if place1 == place2:
@@ -221,6 +223,7 @@ def amountDiagonal2(field, sign):
 
     return amount
 
+
 def getRandomEmptyEdge(field, signEmpty):
     rand = random.choice([1, 3, 5, 7])
     i = 0
@@ -243,6 +246,8 @@ def getRandomEmptyEdge(field, signEmpty):
         return rand
 
     return getRandomEmptyEdge(field, signEmpty)
+
+
 def getRandomEmptyCorner(field, signEmpty):
     rand = random.choice([0, 2, 6, 8, 4])  # left_upper, right_upper, left_down, right_down, middle
     i = 0
@@ -321,86 +326,10 @@ def getNumberFromCoord(i, j):
     return None
 
 
-def setPointo(field, place):
-    counter = 0
-    for i in range(0, len(field)):
-        for j in range(0, len(field)):
-            if counter == place:
-                field[i][j] = 'o'
-            counter += 1
+# benötigter Input:
+# drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners
+# field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']] -> aktuelles Feld mit jeweils gesetzten Zeichen (hier '_' als nicht belegtes Feld)
+# Schwierigkeitsgrad ist auch wählbar: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
 
-    return field
-
-
-def setPointo2(field, i, j):
-    field[i][j] = 'o'
-    return field
-
-
-def setPointx(field, place):
-    counter = 0
-    for i in range(0, len(field)):
-        for j in range(0, len(field)):
-            if counter == place:
-                field[i][j] = 'o'
-            counter += 1
-
-    return field
-
-
-def setPointx2(field, i, j):
-    field[i][j] = 'x'
-    return field
-
-
-def ausgabe(field):
-    for i in range(0, len(field)):
-        for j in range(0, len(field)):
-            print (field[i][j]),
-        print ("\n")
-
-
-def playerStarts():
-    field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
-    ausgabe(field)
-
-    while True:
-
-        x = input("FeldX: ")
-        y = input("FeldY: ")
-        while field[x][y] != '_':
-            x = input("FeldX: ")
-            y = input("FeldY: ")
-        field = setPointx2(field, x, y)
-
-        ausgabe(field)
-
-        result = nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='m')
-        print(result)
-        field = setPointo(field, result)
-        ausgabe(field)
-
-
-def robotStarts():
-    field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
-    ausgabe(field)
-
-    while True:
-        result = nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='m')
-        print(result)
-        field = setPointo(field, result)
-        ausgabe(field)
-
-        x = input("FeldX: ")
-        y = input("FeldY: ")
-        while field[x][y] != '_':
-            x = input("FeldX: ")
-            y = input("FeldY: ")
-        field = setPointx2(field, x, y)
-
-        ausgabe(field)
-
-
-if __name__ == "__main__":
-    playerStarts()
-    #robotStarts()
+# Output:
+# Place -> enthält Nummerierung des Felds startet links oben bei 0 und zählt noch links nach rechts Zeilenweise bis nach rechts unten 8
