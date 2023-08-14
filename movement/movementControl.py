@@ -5,54 +5,49 @@ import time
 
 import armPosition
 
-# IP address of the NAO robot
-robotIP = "10.30.4.13"
 
-# Port number of the ALMotion proxy
-PORT = 9559
-
-
-def crouch():
-    postureProxy = ALProxy("ALRobotPosture", robotIP, 9559)
+def crouch(robotIP, port):
+    postureProxy = ALProxy("ALRobotPosture", robotIP, port)
     postureProxy.goToPosture("Crouch", 1.0)
 
 
-def stand():
-    postureProxy = ALProxy("ALRobotPosture", robotIP, 9559)
+def stand(robotIP, port):
+    postureProxy = ALProxy("ALRobotPosture", robotIP, port)
     postureProxy.goToPosture("Stand", 1.0)
 
 
-def disableAutonomousLife():
-    autonomous_life_proxy = ALProxy("ALAutonomousLife", robotIP, 9559)
+def disableAutonomousLife(robotIP, port):
+    autonomous_life_proxy = ALProxy("ALAutonomousLife", robotIP, port)
     autonomous_life_proxy.setState("disabled")
 
 
-def tabletPreparationYAngle():
-    armMovement(position=armPosition.positionTabletPreparation, arm="L", go_back=False)
+def tabletPreparationXAngle(robotIP, port):
+    armMovement(robotIP, port, arm="L", position=armPosition.positionTabletPreparation, go_back=False)
 
-    armMovement(position=armPosition.positionTabletPreparation, arm="R", go_back=False)
+    armMovement(robotIP, port, arm="R", position=armPosition.positionTabletPreparation, go_back=False)
 
 
-def tabletPosition():
-    armMovement(position=armPosition.positionLUp[4][0], arm="L", go_back=False)
+def tabletPosition(robotIP, port):
+    armMovement(robotIP, port, arm="L", position=armPosition.positionLUp[4][0], go_back=False)
 
-    armMovement(position=armPosition.positionLUp[4][8], arm="R", go_back=False)
-    openHand(arm="R")
-    openHand(arm="L")
+    armMovement(robotIP, port, arm="R", position=armPosition.positionLUp[4][8], go_back=False)
+    openHand(robotIP, port, arm="L")
+    openHand(robotIP, port, arm="R")
 
-def startPositionL():
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
+
+def startPositionL(robotIP, port):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
 
     for i in range(0, 5):
         i = 4 - i  # order of movement swapped that the robot won't hit the tablet
         motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i],
                                                 armPosition.positionStart[i] * almath.TO_RAD, 0.2)
         motionProxy.waitUntilMoveIsFinished()
-    openHand(arm="L")
+    openHand(robotIP, port, arm="L")
 
 
-def startPositionR():
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
+def startPositionR(robotIP, port):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
 
     for i in range(1, 5):
         i = 4 - i  # order of movement swapped that the robot won't hit the tablet
@@ -63,11 +58,11 @@ def startPositionR():
     motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0],
                                             armPosition.positionStart[0] * almath.TO_RAD, 0.2)
     motionProxy.waitUntilMoveIsFinished()
-    openHand(arm="R")
+    openHand(robotIP, port, arm="R")
 
 
-def openHand(arm):
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
+def openHand(robotIP, port, arm):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
 
     if arm == "R":
         hand_name = "RHand"
@@ -89,8 +84,8 @@ def openHand(arm):
     motionProxy.waitUntilMoveIsFinished()
 
 
-def closeHand(arm):
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
+def closeHand(robotIP, port, arm):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
 
     if arm == "R":
         hand_name = "RHand"
@@ -107,8 +102,8 @@ def closeHand(arm):
     motionProxy.waitUntilMoveIsFinished()
 
 
-def clickRHandSpecific():
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
+def clickRHandSpecific(robotIP, port):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
 
     # Enable the arm control
     motionProxy.setStiffnesses("RArm", 1.0)
@@ -130,8 +125,8 @@ def clickRHandSpecific():
     print("done")
 
 
-def armMovement(position, arm, go_back):
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
+def armMovement(robotIP, port, arm, position, go_back):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
 
     # for stabilization (without it the robot may fall over)
     motionProxy.setStiffnesses("LLeg", 1.0)
@@ -155,7 +150,7 @@ def armMovement(position, arm, go_back):
         time.sleep(0.2)
 
         if go_back:
-            startPositionL()
+            startPositionL(robotIP, port)
 
     elif arm == "R":
         # for right arm, use left arm positions with right arm:
@@ -173,7 +168,7 @@ def armMovement(position, arm, go_back):
         time.sleep(0.2)
 
         if go_back:
-            startPositionR()
+            startPositionR(robotIP, port)
 
     else:
         print('wrong arm: "L" or "R" possible')
@@ -218,64 +213,62 @@ def getInterpolatedPosition(left, up):     # translate comma amounts for Left an
     for i in range(0, 5):
         positionResult[i] = positionL1[i] * (1 - difL) + positionL2[i] * difL
 
-    print("Position1: ", armPosition.positionLUp[left1][up1])
-    print("Position2: ", armPosition.positionLUp[left1][up2])
-    print("Position3: ", armPosition.positionLUp[left2][up1])
-    print("Position4: ", armPosition.positionLUp[left2][up2])
-    print("positionL1 :", positionL1)
-    print("positionL2 :", positionL2)
-    print("positionResult :", positionResult)
-
     return positionResult
 
 
-def clickTicTacToe(positionName):
+def clickTicTacToe(robotIP, port, positionName):
     if positionName == 0:
-        armMovement(position=getInterpolatedPosition(left=1, up=6), arm="L", go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1, up=6), go_back=True)
     elif positionName == 1:
-        armMovement(position=getInterpolatedPosition(left=0, up=6), arm="L", go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=6), go_back=True)
     elif positionName == 2:
-        armMovement(position=getInterpolatedPosition(left=1, up=6), arm="R", go_back=True)
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1, up=6), go_back=True)
     elif positionName == 3:
-        armMovement(position=getInterpolatedPosition(left=1, up=4.5), arm="L", go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1, up=4.5), go_back=True)
     elif positionName == 4:
-        armMovement(position=getInterpolatedPosition(left=0, up=4.5), arm="L", go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=4.5), go_back=True)
     elif positionName == 5:
-        armMovement(position=getInterpolatedPosition(left=1, up=4.5), arm="R", go_back=True)
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1, up=4.5), go_back=True)
     elif positionName == 6:
-        armMovement(position=getInterpolatedPosition(left=1, up=2.5), arm="L", go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1, up=2.5), go_back=True)
     elif positionName == 7:
-        armMovement(position=getInterpolatedPosition(left=0, up=2.5), arm="L", go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=2.5), go_back=True)
     elif positionName == 8:
-        armMovement(position=getInterpolatedPosition(left=1, up=2.5), arm="R", go_back=True)
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1, up=2.5), go_back=True)
 
 
-def clickConnectFour(positionName):
+def clickConnectFour(robotIP, port, positionName):
+    # todo
+    print("not implemented yet")
+
+
+def celebrate(robotIP, port):
+    # todo
+    print("not implemented yet")
+
+
+def disappointment(robotIP, port):
     # todo
     print("not implemented yet")
 
 
 if __name__ == "__main__":
-    # disableAutonomousLife()
-    # stand()
+    # after startup of nao
+    # movementControl.disableAutonomousLife(robotIP, PORT)
+    # movementControl.stand(robotIP, PORT)
 
-    # tabletPreparationYAngle()
-    # tabletPosition()
+    # tablet positioning
+    # use app Bubble Level (or similar to calibrate z-Angle)
+    # movementControl.tabletPreparationXAngle(robotIP, PORT)
+    # movementControl.tabletPosition(robotIP, PORT) # y-Angle
 
-    # startPositionL()
-    # startPositionR()
+    # start positions
+    # movementControl.startPositionL(robotIP, PORT)
+    # movementControl.startPositionR(robotIP, PORT)
+
     # openHand(arm="R")
     # openHand(arm="L")
 
-    """
-    # repeating this:  
-    field = [['o', 'o', 'x'], ['x', 'x', '_'], ['_', 'x', 'o']] # field = vision()
-
-    result = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
-
-    clickTicTacToe(result)
-    """
-
-    armMovement(position=getInterpolatedPosition(left=0.7, up=1.8), arm="L", go_back=True)
+    armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=0.7, up=1.8), arm="L", go_back=True)
 
     # closeHand(arm="L")

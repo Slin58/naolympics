@@ -1,33 +1,38 @@
 from vision import vision
 from tictactoe_tactic import tictactoeTactic
-from movement import armPosition, movementControl
+from movement import movementControl
+
+# IP address of the NAO robot
+robotIP = "10.30.4.13"
+
+# Port number of the ALMotion proxy
+PORT = 9559
 
 if __name__ == "__main__":
+    # after startup of nao
+    # movementControl.disableAutonomousLife(robotIP, PORT)
+    # movementControl.stand(robotIP, PORT)
 
-    # movement_control.disableAutonomousLife()
-    # movement_control.stand()
+    # tablet positioning
+    # use app Bubble Level (or similar to calibrate z-Angle)
+    # movementControl.tabletPreparationXAngle(robotIP, PORT)
+    # movementControl.tabletPosition(robotIP, PORT) # y-Angle
 
-    # wasserwaage
-    #movement_control.tabletPreparationYAngle()
-    # movement_control.tabletPosition()
+    # start positions
+    # movementControl.startPositionL(robotIP, PORT)
+    # movementControl.startPositionR(robotIP, PORT)
 
-    #movement_control.startPositionL()
-    #movement_control.startPositionR()
-
-
-    # repeating this:  
-   # field = [['o', 'o', 'x'], ['x', 'x', '_'], ['_', 'x', 'o']] # field = vision()
-
-    img = vision.get_image_from_nao(ip="10.30.4.13", port=9559)
-    field = vision.detect_tictactoe_state(img)
+    # repeating this:
+    img = vision.get_image_from_nao(ip=robotIP, port=PORT)
+    field = vision.detect_tictactoe_state(img)  # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
     print(field)
 
-    result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='e')
+    # difficulty = e -> easy ,m -> medium,h -> hard,i -> impossible
+    result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='i')
     print(result)
 
-    movementControl.clickTicTacToe(result)
+    movementControl.clickTicTacToe(robotIP, PORT, result)
 
+    # todo implement if won celebration else disappointment
 
-    #movement_control.armMovement(position=getInterpolatedPosition(left=0.7, up=1.8), arm="L", go_back=True)
-
-    # closeHand(arm="L")
+    # closeHand(robotIP, PORT, arm="L")
