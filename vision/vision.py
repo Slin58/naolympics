@@ -1,6 +1,7 @@
 from naoqi import ALProxy
+#import opencv-python
 import cv2
-from skimage import filters, feature, io, transform
+#from skimage import filters, feature, io, transform
 from PIL import Image
 import numpy as np
 import vision_definitions
@@ -179,9 +180,10 @@ def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadiu
             # resize final image
             res = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
             # display image and release resources when key is pressed
-            cv2.imshow('Result',res)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+          #  cv2.imshow('Result',res)
+         #   cv2.waitKey(0)
+          #  cv2.destroyAllWindows()
+            return gamestate
 
 def find_board_contours(img, debug):
     if 1 in debug:
@@ -219,11 +221,11 @@ def find_board_contours(img, debug):
 
 def process_image_to_edge_map(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_blur = cv2.GaussianBlur(img_gray, (9, 9), 0)
+    img_blur = cv2.GaussianBlur(img_gray, (7, 7), 0)
     img_canny = cv2.Canny(img_blur, 0, 100)
     kernel = np.ones((2, 2))
     img_dilate = cv2.dilate(img_canny, kernel, iterations=8)
-    return cv2.erode(img_dilate, kernel, iterations=6)
+    return cv2.erode(img_dilate, kernel, iterations=4)
      
 def _get_center_position_of_rectangle(x1,x2,y1,y2):
         return (x1+int((x2-x1)/2), int(y1+(y2-y1)/2))

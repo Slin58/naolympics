@@ -4,7 +4,6 @@ from naoqi import ALProxy
 import time
 
 import armPosition
-import tictactoeTactic
 
 # IP address of the NAO robot
 robotIP = "10.30.4.13"
@@ -244,11 +243,11 @@ def clickTicTacToe(positionName):
     elif positionName == 5:
         armMovement(position=getInterpolatedPosition(left=1, up=4.5), arm="R", go_back=True)
     elif positionName == 6:
-        armMovement(position=getInterpolatedPosition(left=1, up=2), arm="L", go_back=True)
+        armMovement(position=getInterpolatedPosition(left=1, up=2.5), arm="L", go_back=True)
     elif positionName == 7:
-        armMovement(position=getInterpolatedPosition(left=0, up=2), arm="L", go_back=True)
+        armMovement(position=getInterpolatedPosition(left=0, up=2.5), arm="L", go_back=True)
     elif positionName == 8:
-        armMovement(position=getInterpolatedPosition(left=1, up=2), arm="R", go_back=True)
+        armMovement(position=getInterpolatedPosition(left=1, up=2.5), arm="R", go_back=True)
 
 
 def clickConnectFour(positionName):
