@@ -7,7 +7,7 @@ import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
 void main() {
   Logger.root.level = Level.ALL; // defaults to Level.INFO
   Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.time}: ${record.message}');
+    print("${record.level.name} ${record.time} '${record.loggerName}': ${record.message}");
   });
   runApp(const MyApp());
 }
