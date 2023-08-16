@@ -13,3 +13,5 @@ vision/vision copy.py
 .DS_Store
 *.bbl
 *.blg
+*.bkp
+*.dtmp
