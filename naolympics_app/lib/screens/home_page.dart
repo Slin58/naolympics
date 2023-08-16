@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:naolympics_app/screens/socket_test.dart';
 
 import 'tic_tac_toe_page.dart';
 import 'connect_four_page.dart';
@@ -24,7 +25,9 @@ class HomePage extends StatelessWidget {
           children: [
             createNavButton("Connect Four", context, const ConnectFourPage()),
             SizedBox(width: marginSize),
-            createNavButton("Tic Tac Toe", context, const TicTacToePage())
+            createNavButton("Tic Tac Toe", context, const TicTacToePage()),
+            SizedBox(width: marginSize),
+            createNavButton("Socket Test", context, const SocketTest())
           ],
         ),
       ),
