@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:naolympics_app/screens/connect_four_page.dart';
 import 'package:naolympics_app/screens/home_page.dart';
 import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
 
 void main() {
+  Logger.root.level = Level.ALL; // defaults to Level.INFO
+  Logger.root.onRecord.listen((record) {
+    print("${record.level.name} ${record.time} '${record.loggerName}': ${record.message}");
+  });
   runApp(const MyApp());
 }
 

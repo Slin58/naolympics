@@ -38,56 +38,81 @@ def detect_game_board(img, debug=[]):
     if len(inner_contours) == 9:
         detect_tictactoe_state(img=input_img, debug=debug)
     else:
-        detect_connect_four_state(img=input_img, debug=debug)
+        cv2.drawContours(img, inner_contours, -1, (0, 250, 0), 3)
+        imgCopy = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+        cv2.imshow("inner contours", imgCopy)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        detect_connect_four_state(img=input_img, debug=debug, minRadius=5, maxRadius=15)
         # print("Contours not detected correctly. Please adjust method parameters or improve image quality")
 
-def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120):
+def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_thresh=15,circle_distance=100, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70, dilate_iterations=2, erode_iterations=1, white_thresh=250, red_thresh=100):
         gamestate = [["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"], ["-","-","-","-","-","-","-"]]
-        processed_img = process_image_to_edge_map(img)
+        processed_img = process_image_to_edge_map(img=img, gaussian_kernel_size=gaussian_kernel_size, canny_lower_thresh=canny_lower_thresh, canny_upper_thresh=canny_upper_thresh, dilate_iterations=dilate_iterations, erode_iterations=erode_iterations)
+        # edge_img, all_contours, inner_contours = find_board_contours(img, debug)
         if 1 in debug:
+            # cv2.drawContours(img, all_contours, -1, (0, 0, 250), 3)
             processedImgRes = cv2.resize(processed_img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
             cv2.imshow("Processed image", processedImgRes)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-        circles = cv2.HoughCircles(processed_img,cv2.HOUGH_GRADIENT, 1, 200, param1 = 200,
-                    param2 = 15, minRadius = minRadius, maxRadius = maxRadius)
+        
+        circles = cv2.HoughCircles(processed_img,cv2.HOUGH_GRADIENT, 1, circle_distance, param1 = 200,
+                    param2 = acc_thresh, minRadius = minRadius, maxRadius = maxRadius)
         if circles is not None:
             img_width = float(img.shape[1])
             img_height = float(img.shape[0])
+            if 2 in debug:
+                for c in circles[0, :]:
+                    a, b, r = c[0], c[1], c[2]
+                    cv2.circle(img, (a, b), r, (250, 0, 0), 5)
+                imgRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+                cv2.imshow("Processed image", imgRes)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
             circles = np.array(circles[0,:]).astype("int")
             circles = np.array(sorted(circles, key=lambda x: [x[1]]))
-            circles = circles.reshape(6,7,3)
-            circleCount = 0
-            for i,row in enumerate(circles):
-                row = np.array(sorted(row, key=lambda x: [x[0]]))
-                for j,pt in enumerate(row):
-                    circleCount += 1
-                    # print("Circle nr: ", circleCount, "X-Pos: ", pt[0], "Y-Pos: ", pt[1])
-                    a, b, r = pt[0], pt[1], pt[2]
-                    avgColor = np.average(img[b][a])
-                    if avgColor < 250:
-                        if img[b][a][2] - 100 > img[b][a][1] and img[b][a][2] - 100 > img[b][a][0]:
-                            gamestate[i][j] = "R"
-                        else:
-                            gamestate[i][j] = "Y"
-                    cv2.putText(img, str(circleCount), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(250,0,0), thickness=2)
+            if(len(circles) == 42):
+                circles = circles.reshape(6,7,3)
+                circleCount = 0
+                # lower_red = np.array([0, 0, 200], dtype = "uint8") 
+                # upper_red= np.array([0, 0, 255], dtype = "uint8")
+                # lower_yellow = np.array([0, 0, 200], dtype = "uint8") 
+                # upper_yellow = np.array([0, 0, 255], dtype = "uint8")
+                
+                for i,row in enumerate(circles):
+                    row = np.array(sorted(row, key=lambda x: [x[0]]))
+                    for j,pt in enumerate(row):
+                        circleCount += 1
+                        # print("Circle nr: ", circleCount, "X-Pos: ", pt[0], "Y-Pos: ", pt[1])
+                        a, b, r = pt[0], pt[1], pt[2]
+                        avgColor = np.average(img[b][a])
+                        if avgColor < white_thresh:
+                            if(img[b][a][2] - red_thresh > img[b][a][1] and img[b][a][2] - red_thresh > img[b][a][0]):
+                                gamestate[i][j] = "R"
+                        # elif cv2.inRange(img[b,a], lower_yellow, upper_yellow):
+                            else:
+                                gamestate[i][j] = "Y"   
+                        cv2.putText(img, str(circleCount), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(250,0,0), thickness=2)
 
-                    cv2.circle(img, (a, b), r, (250, 0, 0), 5)
-        print("Gamestate:")
-        for line in gamestate:
-            linetxt = ""
-            for cel in line:
-                    linetxt = linetxt + "|" + cel
-            print(linetxt)
-        imgRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
-        cv2.imshow("Processed image", imgRes)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+                        cv2.circle(img, (a, b), r, (250, 0, 0), 5)
+                print("Gamestate:")
+                for line in gamestate:
+                    linetxt = ""
+                    for cel in line:
+                            linetxt = linetxt + "|" + cel
+                    print(linetxt)
+                imgRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+                cv2.imshow("Processed image", imgRes)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+            else:
+                print("Field not detected correctly")
             
-def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadius=80):
+def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadius=80, acc_thresh=15, contour_area_thresh=500, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70, dilate_iterations=2, erode_iterations=1):
         #create a 2d array to hold the gamestate
         gamestate = [["-","-","-"],["-","-","-"],["-","-","-"]]
-        edge_img, all_contours, inner_contours = find_board_contours(img, debug)
+        edge_img, all_contours, inner_contours = find_board_contours(img, debug, contour_area_thresh=contour_area_thresh, gaussian_kernel_size=gaussian_kernel_size, canny_lower_thresh=canny_lower_thresh, canny_upper_thresh=canny_upper_thresh, dilate_iterations=dilate_iterations, erode_iterations=erode_iterations)
 
         for cnt in inner_contours:
                         # use boundingrect to get coordinates of tile
@@ -133,7 +158,7 @@ def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadiu
                         #HoughCircles(image, Method, ratio of accumulator array, minDist between circles, param1 for houghGrad higher canny thres, param2 for houghGrad accumulator array thres)
                         if tileCount != -1:
                             circles = cv2.HoughCircles(tile,cv2.HOUGH_GRADIENT, 1, 200, param1 = 200,
-                    param2 = 25, minRadius = minRadius, maxRadius = maxRadius)
+                    param2 = acc_thresh, minRadius = minRadius, maxRadius = maxRadius)
                             if(circles is not None):
                                     cv2.drawContours(img, [cnt], -1, (255, 0,0), 5)
                                     for pt in circles[0,:]:
@@ -185,22 +210,22 @@ def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadiu
           #  cv2.destroyAllWindows()
             return gamestate
 
-def find_board_contours(img, debug):
+def find_board_contours(img, debug, contour_area_thresh=500, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70, dilate_iterations=2, erode_iterations=1):
     if 1 in debug:
         imgRes = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
         cv2.imshow("Input image", imgRes)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         
-    processed_img = process_image_to_edge_map(img)
-
+    processed_img = process_image_to_edge_map(img=img, gaussian_kernel_size=gaussian_kernel_size, canny_lower_thresh=canny_lower_thresh, canny_upper_thresh=canny_upper_thresh, dilate_iterations=dilate_iterations, erode_iterations=erode_iterations)
+    copy = np.copy(processed_img)
     if 2 in debug:
         threshRes = cv2.resize(processed_img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
         cv2.imshow("Processed image", threshRes)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
                 
-    all_contours, hierarchy = cv2.findContours(processed_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    all_contours, hierarchy = cv2.findContours(copy, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if all_contours is None:
         print("Error with contours")
         exit(1)
@@ -208,7 +233,7 @@ def find_board_contours(img, debug):
     print(len(all_contours), len(hierarchy[0]))
     for i in range(len(all_contours)):
         h = hierarchy[0][i]
-        if h[3] == 0 and cv2.contourArea(all_contours[i]) > 500:
+        if h[3] == 0 and cv2.contourArea(all_contours[i]) > contour_area_thresh:
                 inner_contours.append(all_contours[i])
     cv2.drawContours(img, inner_contours, -1, (0, 255, 0), 3)
     if 5 in debug:
@@ -219,30 +244,66 @@ def find_board_contours(img, debug):
     return processed_img,all_contours,inner_contours
 
 
-def process_image_to_edge_map(img):
+def process_image_to_edge_map(img, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70, dilate_iterations=2, erode_iterations=1):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_blur = cv2.GaussianBlur(img_gray, (7, 7), 0)
-    img_canny = cv2.Canny(img_blur, 0, 100)
+    img_blur = cv2.GaussianBlur(img_gray, (gaussian_kernel_size, gaussian_kernel_size), 0)
+    # threshRes = cv2.resize(img_blur,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
+    # cv2.imshow("Processed image", threshRes)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    img_canny = cv2.Canny(img_blur, canny_lower_thresh, canny_upper_thresh)
     kernel = np.ones((2, 2))
-    img_dilate = cv2.dilate(img_canny, kernel, iterations=8)
-    return cv2.erode(img_dilate, kernel, iterations=4)
+    img_dilate = cv2.dilate(img_canny, kernel, iterations=dilate_iterations)
+    return cv2.erode(img_dilate, kernel, iterations=erode_iterations)
      
 def _get_center_position_of_rectangle(x1,x2,y1,y2):
         return (x1+int((x2-x1)/2), int(y1+(y2-y1)/2))
 
 def record_image_from_nao(path, ip, port):
-    recorded = get_image_from_nao(ip, port) 
-    cv2.imshow('Detected', recorded)
-    cv2.waitKey(0)
+    recorded = get_image_from_nao(ip, port)
+    recorded = cv2.cvtColor(recorded, cv2.COLOR_BGR2RGB)  
+    # cv2.imshow('Detected', recorded)
+    # cv2.waitKey(0)
     cv2.imwrite(path, recorded)
 
 if __name__ == "__main__":
         # test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test1_cut.jpg')
         # test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test2_cut.jpg')
         # test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test3_cut.jpg')
-        # test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test4_cut.jpg')
-        recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded_cut.png')
-        connect4_filled = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect_four_filled_cut.png')
-        detect_connect_four_state(img=connect4_filled, debug=[1])
-        # detect_tictactoe_state(img=recorded)
+        #test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test4_cut.jpg')
+        #recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded2_cut.png')
+        # connect4_filled = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect_four_filled_cut.png')
+        # connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect4_recorded_glare.png')
+        connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\connect4_rims_filled.png')
+        test = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\tic_tac_toe.png')
+
+        #detect_connect_four_state(img=connect4_recorded, debug=[2], minRadius=40, maxRadius=55,acc_thresh=20,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=210)
+        detect_tictactoe_state(img=test, debug=[2], minRadius=75, maxRadius=85, acc_thresh=20, canny_upper_thresh=30, dilate_iterations=8, erode_iterations=4, gaussian_kernel_size=7)
+        # detect_game_board(connect4_recorded, debug=[1])
+        # record_image_from_nao(path=".\\tic_tac_toe.png", ip="10.30.4.13", port=9559)
+
+
+        """
+            Fuer real life images:
+
         
+            TICTACTOE:
+            - Canny: ca. 20-40 upper, bestes Ergebnis bisher 30
+            - Gauss: ca. 5-9, bestes Ergebnis bisher 7
+            - Dilate: ca. 8-12, bestes Ergebnis bisher 8
+            - Erode: ca. 2-8, bestes Ergebnis bisher 4
+            - Hough Radius Range: bestes Ergebnis bisher 75-80
+            - Circle Acc Thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 20
+            
+            - Wenn acc_thresh hoeher -> erode muss niedriger werden
+            
+            CONNECT4:
+            - Canny: ca. 20-40 upper, bestes Ergebnis bisher 30
+            - Gauss: ca. 9-15, bestes Ergebnis bisher 13
+            - Dilate: ca. 0-4, bestes Ergebnis bisher 4
+            - Erode: ca. 0-2, bestes Ergebnis bisher 1
+            - Hough Radius Range: bestes Ergebnis bisher 40-55
+            - Circle Acc Thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 20
+            - white_thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 210
+            - red_thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 100
+        """
