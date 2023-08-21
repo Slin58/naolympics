@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -27,42 +28,45 @@ class SocketTestState extends State<SocketTest> {
     wifi = true;
   }
 
+  Future<void> _startServer() async {
+    setState(() {
+      isHosting = true;
+    });
+    ConnectionService.createHost()
+        .then((value) => _handleClientConnection(value))
+        .timeout(const Duration(minutes: 1),
+            onTimeout: () => () {
+                  UIUtils.showTemporaryAlert(context, "Connection timed out.");
+                });
+  }
+
+  _handleClientConnection(Socket? value) {
+    print("host future finished");
+    if (value != null) {
+      MultiplayerState.setHost(value);
+      Navigator.pop(context);
+    } else {
+      UIUtils.showTemporaryAlert(context, "fail");
+      Navigator.pop(context);
+    }
+  }
+
+  void _stopServer() {
+    setState(() {
+      isHosting = false;
+      server.stop();
+    });
+  }
+
   FloatingActionButton _toggleHostButton() {
     void Function() action;
     IconData icon;
 
-    Future<void> startServer() async {
-      setState(() {
-        isHosting = true;
-      });
-      ConnectionService.createHost()
-          .then((value) => () {
-              print("host future finished");
-                if (value != null) {
-                  Navigator.pop(context);
-                } else {
-                  UIUtils.showTemporaryAlert(context, "fail");
-                }
-              })
-          .timeout(const Duration(minutes: 1),
-              onTimeout: () => () {
-                    UIUtils.showTemporaryAlert(
-                        context, "Connection timed out.");
-                  });
-    }
-
-    void stopServer() {
-      setState(() {
-        isHosting = false;
-        server.stop();
-      });
-    }
-
     if (!isHosting) {
-      action = startServer;
+      action = _startServer;
       icon = Icons.play_arrow;
     } else {
-      action = stopServer;
+      action = _stopServer;
       icon = Icons.stop;
     }
 
@@ -96,7 +100,7 @@ class SocketTestState extends State<SocketTest> {
                   return ListTile(
                     title: Text(item),
                     onTap: () async {
-                      handleConnectionsAsClient(item, context);
+                      _handleHostConnection(item, context);
                     },
                   );
                 },
@@ -110,7 +114,7 @@ class SocketTestState extends State<SocketTest> {
         });
   }
 
-  handleConnectionsAsClient(String ip, BuildContext context) async {
+  _handleHostConnection(String ip, BuildContext context) async {
     Socket? socket = await ConnectionService.connectToHost(ip);
 
     if (socket == null) {
