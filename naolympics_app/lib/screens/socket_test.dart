@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import '../services/server.dart';
-import '../services/network/connection_service.dart';
+import 'package:flutter/material.dart';
+import 'package:naolympics_app/services/MultiplayerState.dart';
+import 'package:naolympics_app/utils/utils.dart';
+
+import '../../services/network/connection_service.dart';
+import '../../services/server.dart';
 
 class SocketTest extends StatefulWidget {
   const SocketTest({super.key});
@@ -17,21 +21,33 @@ class SocketTestState extends State<SocketTest> {
 
   @override
   void initState() {
+    server = Server(false);
     super.initState();
     isHosting = false;
     wifi = true;
-    server = Server(false);
   }
 
   FloatingActionButton _toggleHostButton() {
     void Function() action;
     IconData icon;
 
-    void startServer() {
+    Future<void> startServer() async {
       setState(() {
         isHosting = true;
-        server.start();
       });
+      ConnectionService.createHost()
+          .then((value) => () {
+                if (value != null) {
+                  Navigator.pop(context);
+                } else {
+                  UIUtils.showTemporaryAlert(context, "fail");
+                }
+              })
+          .timeout(const Duration(minutes: 1),
+              onTimeout: () => () {
+                    UIUtils.showTemporaryAlert(
+                        context, "Connection timed out.");
+                  });
     }
 
     void stopServer() {
@@ -55,9 +71,13 @@ class SocketTestState extends State<SocketTest> {
     );
   }
 
+  Future<List<String>> _showDevices() async {
+    return isHosting ? [] : await ConnectionService.getDevices();
+  }
+
   FutureBuilder<List<String>> _ipListElement() {
     return FutureBuilder<List<String>>(
-        future: ConnectionService.getDevices(),
+        future: _showDevices(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator(); // Show a loading indicator
@@ -74,6 +94,9 @@ class SocketTestState extends State<SocketTest> {
                   final item = listData[index];
                   return ListTile(
                     title: Text(item),
+                    onTap: () async {
+                      handleConnectionsAsClient(item, context);
+                    },
                   );
                 },
               );
@@ -86,6 +109,27 @@ class SocketTestState extends State<SocketTest> {
         });
   }
 
+  handleConnectionsAsClient(String ip, BuildContext context) async {
+    Socket? socket = await ConnectionService.connectToHost(ip);
+
+    if (socket == null) {
+      UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
+    } else {
+      MultiplayerState.connection = socket;
+      MultiplayerState.history.add(ip);
+      Navigator.pop(context);
+
+      socket.listen((event) {
+        String page = event.toString();
+        if (page == 'begin') {
+          return;
+        } else {
+          Navigator.pushNamed(context, page);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,16 +140,16 @@ class SocketTestState extends State<SocketTest> {
         body: Center(
           child: Column(children: [
             Visibility(
-              child: _ipListElement(),
               visible: wifi && !isHosting,
+              child: _ipListElement(),
             ),
             Visibility(
-              child: Text("Turn on wifi or hotspot"),
               visible: !wifi && !isHosting,
+              child: Text("Turn on wifi or hotspot"),
             ),
             Visibility(
-              child: Text("Currently Hosting"),
               visible: isHosting,
+              child: Text("Currently Hosting"),
             ),
           ]),
         ));

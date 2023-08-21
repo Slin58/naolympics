@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:logging/logging.dart';
+import '../../utils/logger.dart';
+
 
 class NetworkService {
-  final log = Logger((NetworkService).toString());
+  final log = getLogger();
   final Socket _connection;
 
   NetworkService(this._connection);
 
   Future<void> sendData(Uint8List data) {
-    log.info("Sending data to ${_connection.remoteAddress}.");
+    log.i("Sending data to ${_connection.remoteAddress}.");
     _connection.add(data);
     return _connection.flush();
   }
@@ -23,14 +24,14 @@ class NetworkService {
       final receivedData = Uint8List.fromList(data);
       completer.complete(receivedData);
     }, onDone: () {
-      log.info("Received data from ${_connection.remoteAddress}");
+      log.i("Received data from ${_connection.remoteAddress}");
     });
 
     return completer.future;
   }
 
   Future<void> closeConnection() {
-    log.info("Closing connection to ${_connection.remoteAddress}");
+    log.i("Closing connection to ${_connection.remoteAddress}");
     return _connection.close();
   }
 }

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:naolympics_app/screens/connect_four_page.dart';
 import 'package:naolympics_app/screens/home_page.dart';
 import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
+import 'package:naolympics_app/utils/observer_utils.dart';
 
 void main() {
-  Logger.root.level = Level.ALL; // defaults to Level.INFO
-  Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.time}: ${record.message}');
-  });
-  runApp(const MyApp());
+  Logger.level = Level.debug;
+  runApp(MaterialApp(
+    home: const MyApp(),
+    navigatorObservers: [ObserverUtils.routeObserver],
+  ));
 }
 
 class MyApp extends StatelessWidget {
