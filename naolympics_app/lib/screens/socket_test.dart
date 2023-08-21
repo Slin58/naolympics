@@ -28,35 +28,33 @@ class SocketTestState extends State<SocketTest> {
     wifi = true;
   }
 
-  Future<void> _startServer() async {
-    setState(() {
-      isHosting = true;
-    });
-    ConnectionService.createHost()
-        .then((value) => _handleClientConnection(value))
-        .timeout(const Duration(minutes: 1),
-            onTimeout: () => () {
-                  UIUtils.showTemporaryAlert(context, "Connection timed out.");
-                });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Connection tests"),
+        ),
+        floatingActionButton: _toggleHostButton(),
+        body: Center(
+          child: Column(children: [
+            Visibility(
+              visible: wifi && !isHosting,
+              child: _ipListElement(),
+            ),
+            Visibility(
+              visible: !wifi && !isHosting,
+              child: const Text("Turn on wifi or hotspot"),
+            ),
+            Visibility(
+              visible: isHosting,
+              child: const Text("Currently Hosting"),
+            ),
+          ]),
+        ));
   }
 
-  _handleClientConnection(Socket? value) {
-    print("host future finished");
-    if (value != null) {
-      MultiplayerState.setHost(value);
-      Navigator.pop(context);
-    } else {
-      UIUtils.showTemporaryAlert(context, "fail");
-      Navigator.pop(context);
-    }
-  }
 
-  void _stopServer() {
-    setState(() {
-      isHosting = false;
-      server.stop();
-    });
-  }
 
   FloatingActionButton _toggleHostButton() {
     void Function() action;
@@ -74,6 +72,35 @@ class SocketTestState extends State<SocketTest> {
       onPressed: action,
       child: Icon(icon),
     );
+  }
+
+  Future<void> _startServer() async {
+    setState(() {
+      isHosting = true;
+    });
+    ConnectionService.createHost()
+        .then((value) => _handleClientConnection(value))
+        .timeout(const Duration(minutes: 1),
+        onTimeout: () => () {
+          UIUtils.showTemporaryAlert(context, "Connection timed out.");
+        });
+  }
+
+  _handleClientConnection(Socket? value) {
+    if (value != null) {
+      MultiplayerState.setHost(value);
+      Navigator.pop(context);
+    } else {
+      UIUtils.showTemporaryAlert(context, "fail");
+      Navigator.pop(context);
+    }
+  }
+
+  void _stopServer() {
+    setState(() {
+      isHosting = false;
+      server.stop();
+    });
   }
 
   Future<List<String>> _showDevices() async {
@@ -135,28 +162,4 @@ class SocketTestState extends State<SocketTest> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Connection tests"),
-        ),
-        floatingActionButton: _toggleHostButton(),
-        body: Center(
-          child: Column(children: [
-            Visibility(
-              visible: wifi && !isHosting,
-              child: _ipListElement(),
-            ),
-            Visibility(
-              visible: !wifi && !isHosting,
-              child: Text("Turn on wifi or hotspot"),
-            ),
-            Visibility(
-              visible: isHosting,
-              child: Text("Currently Hosting"),
-            ),
-          ]),
-        ));
-  }
 }
