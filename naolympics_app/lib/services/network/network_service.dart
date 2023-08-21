@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:logger/logger.dart';
+import '../../utils/logger.dart';
 
 
 class NetworkService {
-  final log = Logger();
+  final log = getLogger();
   final Socket _connection;
 
   NetworkService(this._connection);

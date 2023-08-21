@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:logger/logger.dart';
-
+import '../../utils/logger.dart';
 import 'network_analyzer.dart';
 
 class ConnectionService {
-  static final log = Logger();
+  static final log = getLogger();
   static const int port = 7470;
 
   static Future<Socket> connectToHost(final String ip) {

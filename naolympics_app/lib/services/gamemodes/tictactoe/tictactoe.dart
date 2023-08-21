@@ -1,10 +1,11 @@
-import 'package:logger/logger.dart';
 import 'package:naolympics_app/services/gamemodes/gamemode.dart';
+
+import '../../../utils/logger.dart';
 
 abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> _playField;
   TicTacToeFieldValues _currentTurn;
-  static final log = Logger();
+  static final log = getLogger();
 
   TicTacToe()
       : _playField =
