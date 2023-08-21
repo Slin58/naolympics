@@ -10,7 +10,7 @@ from movement import movementControl
 import random
 
 # IP address of the NAO
-robotIP = "10.30.4.13"
+robotIP = "10.30.4.32"
 
 # Port number
 PORT = 9559
@@ -132,25 +132,46 @@ if __name__ == "__main__":
 
     #play_against_opponent(robotIP, PORT)
 
+    def on_word_recognized(value):
+        recognized_word = value[0]
+        print("Recognized:", recognized_word)
+
+        if recognized_word == "hallo":
+            tts.say("Hello!")
+
+
     tts = ALProxy("ALTextToSpeech", robotIP, PORT)
     asr = ALProxy("ALSpeechRecognition", robotIP, PORT)
+    memory = ALProxy("ALMemory", robotIP, PORT)
+
+    #memory.unsubscribeToEvent("WordRecognized", "on_word_recognized")
+    #asr.unsubscribe("MySpeechRecognition")
 
     asr.setLanguage("German")
 
     # Example: Adds "yes", "no" and "please" to the vocabulary (without wordspotting)
-    vocabulary = ["Ja", "Okay"]
+    vocabulary = ["Ja", "hallo"]
     asr.setVocabulary(vocabulary, False)
 
     # Start the speech recognition engine with user Test_ASR
-    asr.subscribe("Test_ASR")
-    print 'Speech recognition engine started'
-    tts.say("Möchten Sie Tic-Tac-Toe gegen mich spielen?")
+    memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
 
-    time.sleep(5)
+    print 'Speech recognition engine started'
+
+    #tts.say("Möchten Sie Tic-Tac-Toe gegen mich spielen?")
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        # Clean up
+        asr.unsubscribe("MySpeechRecognition")
+        memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
+
+
+"""    time.sleep(5)
     if asr.callback("Test_ASR", "Ja", ):
         tts.say("Juhu lass uns spielen")
     else:
         tts.say("Okay dann ein andernmal")
-    asr.unsubscribe("Test_ASR")
-
-
+    asr.unsubscribe("Test_ASR")"""
