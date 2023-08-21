@@ -1,32 +1,32 @@
 import 'dart:io';
 
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 
 import 'network_analyzer.dart';
 
 class ConnectionService {
-  static final log = Logger((ConnectionService).toString());
+  static final log = Logger();
   static const int port = 7470;
 
   static Future<Socket> connectToHost(final String ip) {
-    log.info("Trying to connect to $ip.");
+    log.i("Trying to connect to $ip.");
     return Socket.connect(ip, port);
   }
 
   static Future<ServerSocket> createHost() {
-    log.info("Now hosting on port $port.");
+    log.i("Now hosting on port $port.");
     return ServerSocket.bind(InternetAddress.anyIPv4, port);
   }
 
   static Future<List<String>> getDevices() async {
     final String? ip = await _getCurrentIp();
-    log.info("Detected ip of the system: $ip");
+    log.i("Detected ip of the system: $ip");
     if (ip == null) {
       return Future(() => List.empty());
     } else {
       final String submask = ip.substring(0, ip.lastIndexOf('.'));
       final List<String> devices = await _discoverDevices(submask, port);
-      log.info("Found ip adresses for given port: $devices");
+      log.i("Found ip adresses for given port: $devices");
 
       if (devices.contains(ip)) {
         devices.remove(ip);
