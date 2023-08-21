@@ -23,12 +23,14 @@ class UIUtils {
   }
 
   static void showTemporaryAlert(BuildContext context, String text) {
-    showDialog(context: context, builder: (context) {
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.of(context).pop(true);
-      });
-      return AlertDialog(title: Text(text));
-    });
+    showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.of(context).pop(true);
+          });
+          return AlertDialog(title: Text(text));
+        });
   }
 
   static Container debugBorder(Widget child) {

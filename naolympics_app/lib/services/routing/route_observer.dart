@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/MultiplayerState.dart';
-import 'package:naolympics_app/utils/logger.dart';
 
 class MultiplayerRouteObserver extends RouteObserver<PageRoute<dynamic>> {
-
-  static final log = getLogger();
+  static final log = Logger((MultiplayerRouteObserver).toString());
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    log.i("Changing page from $previousRoute to $route.");
+    log.info("Changing page from $previousRoute to $route.");
     if (MultiplayerState.isHosting()) {
       MultiplayerState.connection!.write(route.toString());
     }
@@ -20,7 +19,7 @@ class MultiplayerRouteObserver extends RouteObserver<PageRoute<dynamic>> {
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    log.i("Changing page from $previousRoute to $route.");
+    log.info("Changing page from $previousRoute to $route.");
     if (MultiplayerState.isHosting()) {
       MultiplayerState.connection!.write(route.toString());
     }

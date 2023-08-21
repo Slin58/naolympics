@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:logger/logger.dart';
+import 'package:logging/logging.dart';
 
-import '../../utils/logger.dart';
 import 'network_analyzer.dart';
 
 class ConnectionService {
-  static final log = getLogger();
+  static final log = Logger((ConnectionService).toString());
   static const String hostPrefix = "[HOST]:";
   static const String clientPrefix = "[CLIENT]:";
 
@@ -29,7 +28,7 @@ class ConnectionService {
         return null;
       }
     } catch (error) {
-      _clientLog(error.toString(), level: Level.error);
+      _clientLog(error.toString(), level: Level.SEVERE);
       return null;
     }
   }
@@ -75,7 +74,7 @@ class ConnectionService {
           break;
         }
       } catch (error) {
-        _hostLog(error.toString(), level: Level.error);
+        _hostLog(error.toString(), level: Level.WARNING);
       }
     }
     _hostLog("Stopping to listen to incoming connections.");
@@ -96,7 +95,7 @@ class ConnectionService {
         completer.complete(socket);
       }
     }, onError: (error) {
-      _hostLog('Error: $error', level: Level.error);
+      _hostLog('Error: $error', level: Level.SEVERE);
       completer.completeError(error);
     }, onDone: () {
       _hostLog("finished handling connection to client");
@@ -107,13 +106,13 @@ class ConnectionService {
 
   static Future<List<String>> getDevices() async {
     final String? ip = await _getCurrentIp();
-    log.i("Current ip of the system: $ip");
+    log.info("Current ip of the system: $ip");
     if (ip == null) {
       return Future(() => List.empty());
     } else {
       final String submask = ip.substring(0, ip.lastIndexOf('.'));
       final List<String> devices = await _discoverDevices(submask, port);
-      log.i("Found ip addresses for given port: $devices");
+      log.info("Found ip addresses for given port: $devices");
 
       if (devices.contains(ip)) {
         devices.remove(ip);
@@ -167,16 +166,16 @@ class ConnectionService {
   static void _showPrefixLog(String prefix, String message, Level? level) {
     switch (level) {
       case null:
-        log.i("$prefix $message");
+        log.info("$prefix $message");
         break;
-      case Level.debug:
-        log.d("$prefix $message");
+      case Level.SEVERE:
+        log.severe("$prefix $message");
         break;
-      case Level.error:
-        log.e("$prefix $message");
+      case Level.WARNING:
+        log.warning("$prefix $message");
         break;
-      case Level.warning:
-        log.w("$prefix $message");
+      case Level.FINE:
+        log.fine("$prefix $message");
         break;
       default:
         throw UnimplementedError("Log-level $level is not implemented!");
