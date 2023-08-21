@@ -1,7 +1,7 @@
 import random
 
 
-def logic(field, signOwn, signOpponent, signEmpty, mistake_factor):
+def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
     priority = [0, 0, 0, 0, 0, 0, 0]
     for row in range(0, 7):
         priority[row] = get_priorities(field, row, signOwn, signOpponent, signEmpty, 0.15, mistake_factor)

@@ -46,7 +46,7 @@ if __name__ == "__main__":
     ausgabe()
 
     while True:
-        y = connect_four_tactic.logic(field, 'x', 'o', '_', mistake_factor=0)
+        y = connect_four_tactic.nextMove(field, 'x', 'o', '_', mistake_factor=0)
         setPointx(0, y)
 
         ausgabe()

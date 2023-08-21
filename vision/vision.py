@@ -128,95 +128,76 @@ def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadiu
                            dilate_iterations=2, erode_iterations=1):
     # create a 2d array to hold the gamestate
     gamestate = [["-", "-", "-"], ["-", "-", "-"], ["-", "-", "-"]]
-    edge_img, all_contours, inner_contours = find_board_contours(img, debug, contour_area_thresh=contour_area_thresh,
+    edge_img, outer_contours, inner_contours = find_board_contours(img, debug, contour_area_thresh=contour_area_thresh,
                                                                  gaussian_kernel_size=gaussian_kernel_size,
                                                                  canny_lower_thresh=canny_lower_thresh,
                                                                  canny_upper_thresh=canny_upper_thresh,
                                                                  dilate_iterations=dilate_iterations,
                                                                  erode_iterations=erode_iterations)
     if len(inner_contours) == 9:
-        for cnt in inner_contours:
-            # use boundingrect to get coordinates of tile
-            x, y, w, h = cv2.boundingRect(cnt)
-            # create new image from binary, for further analysis. Trim off the edge that has a line
-            tile = edge_img[y + tile_offset:y + h - tile_offset, x + tile_offset:x + w - tile_offset]
+        # outer_x, outer_y, outer_w, outer_h = cv2.boundingRect(outer_contours[0])
+        inner_contours = np.array(sorted(inner_contours, key=lambda x: [cv2.boundingRect(x)[1]]))
+        inner_contours = np.reshape(inner_contours, (3,3))
+        tileCount = 0
+        for i, row in enumerate(inner_contours):
+            row = np.array(sorted(row, key=lambda x: [cv2.boundingRect(x)[0]]))
+            for j, cnt in enumerate(row):
+                tileCount += 1
+                # use boundingrect to get coordinates of tile
+                x, y, w, h = cv2.boundingRect(cnt)
+                # create new image from binary, for further analysis. Trim off the edge that has a line
+                tile = edge_img[y + tile_offset:y + h - tile_offset, x + tile_offset:x + w - tile_offset]
+                #
+                # if 3 in debug:
+                #     print("tile nr: ", tileCount, " x: ", x, " y: ", y, " width: ", w, " height: ", h, "tileX: ", tile_y,
+                #           " tileY: ", tile_x)
 
-            # determine the array indexes of the tile
-            tileX = int(round(x / w))
-            tileY = int(round(y / h))
-            tileCount = 0
-            if tileY == 0 and tileX == 0:
-                tileCount = 1
-            elif (tileY == 1 and tileX == 0):
-                tileCount = 4
-            elif (tileY == 2 and tileX == 0):
-                tileCount = 7
-            elif (tileY == 0 and tileX == 1):
-                tileCount = 2
-            elif (tileY == 1 and tileX == 1):
-                tileCount = 5
-            elif (tileY == 2 and tileX == 1):
-                tileCount = 8
-            elif (tileY == 0 and tileX == 2):
-                tileCount = 3
-            elif (tileY == 1 and tileX == 2):
-                tileCount = 6
-            elif (tileY == 2 and tileX == 2):
-                tileCount = 9
-            else:
-                print("Undefined tile!")
-                tileCount = -1
+                if 4 in debug:
+                    tileRes = cv2.resize(tile, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+                    cv2.imshow(str(tileCount), tileRes)
+                    cv2.waitKey(0)
+                    cv2.destroyAllWindows()
 
-            if 3 in debug:
-                print("tile nr: ", tileCount, " x: ", x, " y: ", y, " width: ", w, " height: ", h, "tileX: ", tileX,
-                      " tileY: ", tileY)
-
-            if 4 in debug:
-                tileRes = cv2.resize(tile, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-                cv2.imshow(str(tileCount), tileRes)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-
-            # HoughCircles(image, Method, ratio of accumulator array, minDist between circles, param1 for houghGrad higher canny thres, param2 for houghGrad accumulator array thres)
-            if tileCount != -1:
-                circles = cv2.HoughCircles(tile, cv2.HOUGH_GRADIENT, 1, 200, param1=200,
-                                           param2=acc_thresh, minRadius=minRadius, maxRadius=maxRadius)
-                if circles is not None:
-                    cv2.drawContours(img, [cnt], -1, (255, 0, 0), 5)
-                    for pt in circles[0, :]:
-                        a, b, r = int(pt[0] + x + tile_offset), int(pt[1] + y + tile_offset), pt[2]
-
-                        cv2.circle(img, (a, b), r, (255, 0, 0), 10)
-                        gamestate[tileY][tileX] = "O"
-                        print("circle in ", tileCount)
-                # put a number in the tile
-                else:
-                    lines = cv2.HoughLinesP(
-                        tile,  # Input edge image
-                        1,  # Distance resolution in pixels
-                        np.math.pi / 180,  # Angle resolution in radians
-                        threshold=9,  # Min number of votes for valid line
-                        minLineLength=50,  # Min allowed length of line
-                        maxLineGap=10  # Max allowed gap between line for joining them
-                    )
-                    if lines is not None:
-                        # # Iterate over points
+                # HoughCircles(image, Method, ratio of accumulator array, minDist between circles, param1 for houghGrad higher canny thres, param2 for houghGrad accumulator array thres)
+                if tileCount != -1:
+                    circles = cv2.HoughCircles(tile, cv2.HOUGH_GRADIENT, 1, 200, param1=200,
+                                               param2=acc_thresh, minRadius=minRadius, maxRadius=maxRadius)
+                    if circles is not None:
                         cv2.drawContours(img, [cnt], -1, (255, 0, 0), 5)
-                        for points in lines:
-                            # Extracted points nested in the list
-                            x1, y1, x2, y2 = points[0]
-                            # Draw the lines joing the points
-                            # On the original image
-                            cv2.line(img, (x1 + x + tile_offset, y1 + y + tile_offset),
-                                     (x2 + x + tile_offset, y2 + y + tile_offset), (255, 0, 0), 2)
-                        gamestate[tileY][tileX] = "X"
-                        print("Cross in ", tileCount)
+                        for pt in circles[0, :]:
+                            a, b, r = int(pt[0] + x + tile_offset), int(pt[1] + y + tile_offset), pt[2]
 
-                cv2.putText(img, str(tileCount), (x + 10, y + 30), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
-                            color=(0, 0, 255), thickness=2)
-                if 6 in debug:
-                    center = _get_center_position_of_rectangle(x, x + w, y, y + h)
-                    cv2.circle(img, center, 5, (0, 255, 0))
+                            cv2.circle(img, (a, b), r, (255, 0, 0), 10)
+                            gamestate[i][j] = "O"
+                            print("circle in ", tileCount)
+                    # put a number in the tile
+                    else:
+                        lines = cv2.HoughLinesP(
+                            tile,  # Input edge image
+                            1,  # Distance resolution in pixels
+                            np.math.pi / 180,  # Angle resolution in radians
+                            threshold=9,  # Min number of votes for valid line
+                            minLineLength=50,  # Min allowed length of line
+                            maxLineGap=10  # Max allowed gap between line for joining them
+                        )
+                        if lines is not None:
+                            # # Iterate over points
+                            cv2.drawContours(img, [cnt], -1, (255, 0, 0), 5)
+                            for points in lines:
+                                # Extracted points nested in the list
+                                x1, y1, x2, y2 = points[0]
+                                # Draw the lines joing the points
+                                # On the original image
+                                cv2.line(img, (x1 + x + tile_offset, y1 + y + tile_offset),
+                                         (x2 + x + tile_offset, y2 + y + tile_offset), (255, 0, 0), 2)
+                            gamestate[i][j] = "X"
+                            print("Cross in ", tileCount)
+
+                    cv2.putText(img, str(tileCount), (x + 10, y + 30), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
+                                color=(0, 0, 255), thickness=2)
+                    if 6 in debug:
+                        center = _get_center_position_of_rectangle(x, x + w, y, y + h)
+                        cv2.circle(img, center, 5, (0, 255, 0))
 
         #if len(all_contours) > 0:
             # print the gamestate
@@ -227,11 +208,12 @@ def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadiu
                 linetxt = linetxt + "|" + cel
             print(linetxt)
             # resize final image
-            #res = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
+        if 6 in debug:
+            res = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
             # display image and release resources when key is pressed
-            #  cv2.imshow('Result',res)
-            #   cv2.waitKey(0)
-            #  cv2.destroyAllWindows()
+            cv2.imshow('Result',res)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
         return gamestate
     else:
         return None
@@ -261,18 +243,21 @@ def find_board_contours(img, debug, contour_area_thresh=500, gaussian_kernel_siz
         print("Error with contours")
         exit(1)
     inner_contours = []
+    outer_contours = []
     print(len(all_contours), len(hierarchy[0]))
     for i in range(len(all_contours)):
         h = hierarchy[0][i]
         if h[3] == 0 and cv2.contourArea(all_contours[i]) > contour_area_thresh:
             inner_contours.append(all_contours[i])
+        if h[3] == -1:
+            outer_contours.append(all_contours[i])
     cv2.drawContours(img, inner_contours, -1, (0, 255, 0), 3)
     if 5 in debug:
         cv2.imshow("inner contours", img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     print("inner contours size: ", len(inner_contours))
-    return processed_img, all_contours, inner_contours
+    return processed_img, outer_contours, inner_contours
 
 
 def process_image_to_edge_map(img, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70,
@@ -302,10 +287,6 @@ def record_image_from_nao(path, ip, port):
 
 
 if __name__ == "__main__":
-    # test1_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test1_cut.jpg')
-    # test2_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test2_cut.jpg')
-    # test3_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test3_cut.jpg')
-    # test4_cut = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\test4_cut.jpg')
     # recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded2_cut.png')
     # connect4_filled = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect_four_filled_cut.png')
     # connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect4_recorded_glare.png')
@@ -313,7 +294,7 @@ if __name__ == "__main__":
     test = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\tic_tac_toe.png')
 
     # detect_connect_four_state(img=connect4_recorded, debug=[2], minRadius=40, maxRadius=55,acc_thresh=20,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=210)
-    detect_tictactoe_state(img=test, debug=[2], minRadius=75, maxRadius=85, acc_thresh=20, canny_upper_thresh=30,
+    detect_tictactoe_state(img=test, debug=[1,2,6], minRadius=75, maxRadius=85, acc_thresh=20, canny_upper_thresh=30,
                            dilate_iterations=8, erode_iterations=4, gaussian_kernel_size=7)
     # detect_game_board(connect4_recorded, debug=[1])
     # record_image_from_nao(path=".\\tic_tac_toe.png", ip="10.30.4.13", port=9559)
