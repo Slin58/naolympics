@@ -35,7 +35,7 @@ class ConnectionService {
 
   static Future<ConnectionStatus> _handleServerConnection(Socket socket) async {
     _clientLog("Sending connection message.");
-    socket.write(ConnectionStatus.connecting.toBytes());
+    socket.add(ConnectionStatus.connecting.toBytes());
     await socket.flush();
 
     final completer = Completer<ConnectionStatus>();
@@ -90,7 +90,7 @@ class ConnectionService {
       _hostLog("Server received '$data' and parsed it to '$value'");
       if (value == ConnectionStatus.connecting) {
         _hostLog("Sending success message to ${socket.remoteAddress.address}");
-        socket.write(ConnectionStatus.connectionSuccessful.toBytes());
+        socket.add(ConnectionStatus.connectionSuccessful.toBytes());
         await socket.flush();
         completer.complete(socket);
       }

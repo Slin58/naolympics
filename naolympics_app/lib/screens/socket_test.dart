@@ -37,6 +37,7 @@ class SocketTestState extends State<SocketTest> {
       });
       ConnectionService.createHost()
           .then((value) => () {
+              print("host future finished");
                 if (value != null) {
                   Navigator.pop(context);
                 } else {
