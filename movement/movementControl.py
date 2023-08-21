@@ -243,8 +243,20 @@ def clickTicTacToe(robotIP, port, positionName):
 
 
 def clickConnectFour(robotIP, port, positionName):
-    # todo
-    print("not implemented yet")
+    if positionName == 0:
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=2.25, up=6), go_back=True)
+    elif positionName == 1:
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1.6, up=6), go_back=True)
+    elif positionName == 2:
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0.93, up=6), go_back=True)
+    elif positionName == 3:
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=6), go_back=True)
+    elif positionName == 4:
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=0.23, up=6), go_back=True)
+    elif positionName == 5:
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=0.93, up=6), go_back=True)
+    elif positionName == 6:
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1.6, up=6), go_back=True)
 
 
 def celebrate(robotIP, port):
@@ -269,11 +281,11 @@ if __name__ == "__main__":
 
     # start positions
     # movementControl.startPositionL(robotIP, PORT)
-    # movementControl.startPositionR(robotIP, PORT)
+    #startPositionR("10.30.4.13", 9559)
 
     # openHand(arm="R")
     # openHand(arm="L")
 
-    armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=1.7, up=6), arm="L", go_back=True)
-
+    #armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=1.7, up=6), arm="L", go_back=True)
+    clickConnectFour("10.30.4.13", 9559, 6)
     # closeHand(arm="L")
