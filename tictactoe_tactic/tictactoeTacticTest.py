@@ -56,7 +56,7 @@ def playerStarts():
 
         ausgabe(field)
 
-        result = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='m')
+        result = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
         print(result)
         field = setPointo(field, result)
         ausgabe(field)
@@ -67,7 +67,7 @@ def robotStarts():
     ausgabe(field)
 
     while True:
-        result = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='m')
+        result = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
         print(result)
         field = setPointo(field, result)
         ausgabe(field)
@@ -83,8 +83,8 @@ def robotStarts():
 
 
 if __name__ == "__main__":
-    playerStarts()
-    # robotStarts()
+    # playerStarts()
+    robotStarts()
 
 # benötigter Input:
 # drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners

@@ -61,6 +61,11 @@ def startPositionR(robotIP, port):
     openHand(robotIP, port, arm="R")
 
 
+def startPosition(robotIP, port):
+    startPositionL(robotIP, port)
+    startPositionR(robotIP, port)
+
+
 def openHand(robotIP, port, arm):
     motionProxy = ALProxy("ALMotion", robotIP, port)
 
@@ -147,7 +152,7 @@ def armMovement(robotIP, port, arm, position, go_back):
             motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i], position[i] * almath.TO_RAD, 0.2)
             motionProxy.waitUntilMoveIsFinished()
 
-        time.sleep(0.2)
+        time.sleep(0.15)
 
         if go_back:
             startPositionL(robotIP, port)
@@ -165,7 +170,7 @@ def armMovement(robotIP, port, arm, position, go_back):
             motionProxy.angleInterpolationWithSpeed(armPosition.positionR[i], (position[i] * (-1)) * almath.TO_RAD, 0.2)
             motionProxy.waitUntilMoveIsFinished()
 
-        time.sleep(0.2)
+        time.sleep(0.15)
 
         if go_back:
             startPositionR(robotIP, port)
@@ -218,23 +223,23 @@ def getInterpolatedPosition(left, up):     # translate comma amounts for Left an
 
 def clickTicTacToe(robotIP, port, positionName):
     if positionName == 0:
-        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1, up=6), go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1.2, up=6), go_back=True)
     elif positionName == 1:
         armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=6), go_back=True)
     elif positionName == 2:
-        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1, up=6), go_back=True)
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1.2, up=6), go_back=True)
     elif positionName == 3:
-        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1, up=4.5), go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1.2, up=4.3), go_back=True)
     elif positionName == 4:
-        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=4.5), go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=4.3), go_back=True)
     elif positionName == 5:
-        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1, up=4.5), go_back=True)
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1.2, up=4.3), go_back=True)
     elif positionName == 6:
-        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1, up=2.5), go_back=True)
+        armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=1.2, up=2.5), go_back=True)
     elif positionName == 7:
         armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=0, up=2.5), go_back=True)
     elif positionName == 8:
-        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1, up=2.5), go_back=True)
+        armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1.2, up=2.5), go_back=True)
 
 
 def clickConnectFour(robotIP, port, positionName):
@@ -269,6 +274,6 @@ if __name__ == "__main__":
     # openHand(arm="R")
     # openHand(arm="L")
 
-    armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=0.7, up=1.8), arm="L", go_back=True)
+    armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=1.7, up=6), arm="L", go_back=True)
 
     # closeHand(arm="L")
