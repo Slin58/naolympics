@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     while True:
         y = connect_four_tactic.nextMove(field, 'x', 'o', '_', mistake_factor=0)
-        setPointx(0, y)
+        setPointx(-1, y)
 
         ausgabe()
 
@@ -55,6 +55,6 @@ if __name__ == "__main__":
 
         while field[0][y] != '_':
             y = input("Reihe: ")
-        setPointo(0, y)
+        setPointo(-1, y)
 
         ausgabe()

@@ -17,7 +17,11 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
 
 
 def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPriorities, mistake_factor):
-    i = get_position(field, 0, j, signEmpty)
+    i = get_position(field, -1, j, signEmpty)
+
+    if i <= -1:
+        print "-99 no field left"
+        return -99
 
     prioritiesRow = get_priority(field, i, j, 0, 1, signOwn, signOpponent, signEmpty, mistake_factor)
     prioritiesColumn = get_priority(field, i, j, 1, 0, signOwn, signOpponent, signEmpty, mistake_factor)
