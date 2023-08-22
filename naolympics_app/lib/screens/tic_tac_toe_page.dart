@@ -25,7 +25,6 @@ class TicTacToeState extends State<TicTacToePage> with RouteAware {
     if (MultiplayerState.connection == null) {
       ticTacToe = TicTacToeLocal();
     } else {
-      print ('___________________________________________________________');
       ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!);
     }
   }

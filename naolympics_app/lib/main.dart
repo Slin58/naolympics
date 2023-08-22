@@ -8,8 +8,7 @@ import 'package:naolympics_app/utils/observer_utils.dart';
 void main() {
   Logger.root.level = Level.ALL; // defaults to Level.INFO
   Logger.root.onRecord.listen((record) {
-    print(
-        "${record.level.name} ${record.time} '${record.loggerName}': ${record.message}");
+    print("${record.level.name}\t${record.time}\t'${record.loggerName}':\t${record.message}");
   });
   runApp(MaterialApp(
     home: const MyApp(),

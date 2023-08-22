@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
 
 import 'network_analyzer.dart';
@@ -36,12 +35,13 @@ class ConnectionService {
 
   static Future<ConnectionStatus> _handleServerConnection(Socket socket) async {
     _clientLog("Sending connection message.");
-    socket.write(ConnectionStatus.connecting.toBytes());
+    socket.add(ConnectionStatus.connecting.toBytes());
     await socket.flush();
 
     final completer = Completer<ConnectionStatus>();
 
-    _clientLog("Trying to listen to incoming data from ${socket.remoteAddress.address}");
+    _clientLog(
+        "Trying to listen to incoming data from ${socket.remoteAddress.address}");
     socket.listen((data) {
       ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
       _clientLog("Client received '$data' and parsed it to '$value'");
@@ -66,12 +66,15 @@ class ConnectionService {
 
     await for (Socket socket in serverSocket) {
       _hostLog("Incoming connection from ${socket.remoteAddress.address}");
-
-      Socket? client = await _handleClientConnections(socket);
-      if (client != null) {
-        _hostLog("exiting connection loop, because of value: $client");
-        connection = socket;
-        break;
+      try {
+        Socket? client = await _handleClientConnections(socket);
+        if (client != null) {
+          _hostLog("exiting connection loop, because of value: $client");
+          connection = socket;
+          break;
+        }
+      } catch (error) {
+        _hostLog(error.toString(), level: Level.WARNING);
       }
     }
     _hostLog("Stopping to listen to incoming connections.");
@@ -82,26 +85,21 @@ class ConnectionService {
   static _handleClientConnections(Socket socket) async {
     final completer = Completer<Socket?>();
 
-    socket.listen(
-      (data) async {
-        ConnectionStatus? value =
-            ConnectionStatus.bytesToConnectionStatus(data);
-        _hostLog("Server received '$data' and parsed it to '$value'");
-        if (value == ConnectionStatus.connecting) {
-          _hostLog("Sending success message to ${socket.remoteAddress.address}");
-          socket.write(ConnectionStatus.connectionSuccessful.toBytes());
-          await socket.flush();
-          completer.complete(socket);
-        }
-      },
-      onError: (error) {
-        _hostLog('Error: $error', level: Level.SEVERE);
-        completer.completeError(error);
-      },
-      onDone: () {
-        _hostLog("finished handling connection to client");
+    socket.listen((data) async {
+      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
+      _hostLog("Server received '$data' and parsed it to '$value'");
+      if (value == ConnectionStatus.connecting) {
+        _hostLog("Sending success message to ${socket.remoteAddress.address}");
+        socket.add(ConnectionStatus.connectionSuccessful.toBytes());
+        await socket.flush();
+        completer.complete(socket);
       }
-    );
+    }, onError: (error) {
+      _hostLog('Error: $error', level: Level.SEVERE);
+      completer.completeError(error);
+    }, onDone: () {
+      _hostLog("finished handling connection to client");
+    });
 
     return completer.future.timeout(timeoutDuration);
   }
@@ -166,12 +164,21 @@ class ConnectionService {
   }
 
   static void _showPrefixLog(String prefix, String message, Level? level) {
-    switch(level) {
-      case null: log.info("$prefix $message"); break;
-      case Level.FINE: log.fine("$prefix $message"); break;
-      case Level.SEVERE: log.severe("$prefix $message"); break;
-      case Level.WARNING: log.warning("$prefix $message"); break;
-      default: throw UnimplementedError("Log-level $level is not implemented!");
+    switch (level) {
+      case null:
+        log.info("$prefix $message");
+        break;
+      case Level.SEVERE:
+        log.severe("$prefix $message");
+        break;
+      case Level.WARNING:
+        log.warning("$prefix $message");
+        break;
+      case Level.FINE:
+        log.fine("$prefix $message");
+        break;
+      default:
+        throw UnimplementedError("Log-level $level is not implemented!");
     }
   }
 }

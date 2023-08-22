@@ -18,7 +18,6 @@ class GameSelectionStateMultiplayer extends GameSelectionState with RouteAware {
 
   @override
   void didChangeDependencies() {
-    print("Ich wurde aufgerufen");
     super.didChangeDependencies();
     ObserverUtils.routeObserver.subscribe(this, ModalRoute.of(context)!);
   }
