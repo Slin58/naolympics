@@ -68,7 +68,7 @@ def play_tictactoe_against_opponent(robotIP, PORT, difficulty="m"):
                                               gaussian_kernel_size=9)
         time.sleep(0.5)
         field_none_counter = 0
-        while field is None:    # while field is None mit counter bis 3
+        while field is None:  # while field is None mit counter bis 3
             field_none_counter += 1
             time.sleep(0.5)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
@@ -112,40 +112,47 @@ def play_tictactoe_against_opponent(robotIP, PORT, difficulty="m"):
 
         movementControl.clickTicTacToe(robotIP, PORT, result)
 
+
 def play_connect_four_against_opponent(robotIP, PORT):
     field_after_move = []
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55,acc_thresh=10,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13)
+        field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
+                                                 circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
+                                                 erode_iterations=1, gaussian_kernel_size=13)
         field_none_counter = 0
-        while field is None:    # while field is None mit counter bis 3
+        while field is None:  # while field is None mit counter bis 3
             field_none_counter += 1
             time.sleep(0.5)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55,acc_thresh=10,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13)
+            field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10,
+                                                     circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
+                                                     erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 # todo implement if won celebration else disappointment
-                break
-        # if field == field_after_move:
-        #     time.sleep(1)
-        #     continue
-        #
-        # print(field)
-        # img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        # field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10, circle_distance=120,
-        #                                          canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1,
-        #                                          gaussian_kernel_size=13, white_thresh=210)
+                return
+        if field == field_after_move:
+            time.sleep(1)
+            continue
+        else:
+            print("field", field)
+            print("field_after_move", field_after_move)
+            print("comparison not successful")
+
+        print(field)
+        img = vision.get_image_from_nao(ip=robotIP, port=PORT)
+        field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10, circle_distance=120,
+                                                 canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1,
+                                                 gaussian_kernel_size=13)
         #
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
         result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
-        # result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='i')
-        # field_after_move = field
+        field_after_move = field
+        field_after_move = connect_four_tactic.setPointY(field_after_move, -1, result)
         print(result)
 
-
         movementControl.clickConnectFour(robotIP, PORT, result)
-        time.sleep(4.0)
 
 if __name__ == "__main__":
     # after startup of nao
@@ -161,16 +168,18 @@ if __name__ == "__main__":
     # movementControl.startPosition(robotIP, PORT)
     # vision.record_image_from_nao("../230822_faulty_recognition_c4.png", robotIP, PORT)
     # play_tictactoe_against_opponent(robotIP, PORT, difficulty='h')
-    # play_connect_four_against_opponent(robotIP,   PORT)
-    img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-    field = vision.detect_connect_four_state(img,debug=[], minRadius=30, maxRadius=55,acc_thresh=10, circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=100)
-    print(field)
-    result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
-    # result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='i')
-    # field_after_move = field
-    print(result)
-
-    movementControl.clickConnectFour(robotIP, PORT, result)
+    play_connect_four_against_opponent(robotIP,   PORT)
+    # img = vision.get_image_from_nao(ip=robotIP, port=PORT)
+    # field = vision.detect_connect_four_state(img, debug=[], minRadius=30, maxRadius=55, acc_thresh=10,
+    #                                          circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
+    #                                          erode_iterations=1, gaussian_kernel_size=13, white_thresh=100)
+    # print(field)
+    # result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
+    # # result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='i')
+    # # field_after_move = field
+    # print(result)
+    #
+    # movementControl.clickConnectFour(robotIP, PORT, result)
     # vision.detect_connect_four_state(img,
 
     # field = vision.detect_connect_four_state(img,debug=[1,2,3,4,5], minRadius=30, maxRadius=55,acc_thresh=10,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=100)
@@ -186,8 +195,8 @@ if __name__ == "__main__":
     # asr = ALProxy("ALSpeechRecognition", robotIP, PORT)
     # memory = ALProxy("ALMemory", robotIP, PORT)
 
-    #memory.unsubscribeToEvent("WordRecognized", "on_word_recognized")
-    #asr.unsubscribe("MySpeechRecognition")
+    # memory.unsubscribeToEvent("WordRecognized", "on_word_recognized")
+    # asr.unsubscribe("MySpeechRecognition")
 
     # asr.setLanguage("German")
     #
@@ -200,7 +209,7 @@ if __name__ == "__main__":
     #
     # print 'Speech recognition engine started'
 
-    #tts.say("Möchten Sie Tic-Tac-Toe gegen mich spielen?")
+    # tts.say("Möchten Sie Tic-Tac-Toe gegen mich spielen?")
 #
 #     try:
 #         while True:

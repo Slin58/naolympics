@@ -154,6 +154,22 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     return [priorityWin, priorityDefend]
 
 
+def setPointY(field, i, j):
+    if i < 5 and field[i + 1][j] == '-':
+        return setPointY(field, i + 1, j)
+    else:
+        field[i][j] = 'Y'
+        return field
+
+
+def setPointR(field, i, j):
+    if i < 5 and field[i + 1][j] == '-':
+        return setPointR(field, i + 1, j)
+    else:
+        field[i][j] = 'R'
+        return field
+
+
 def get_position(field, i, j, signEmpty):
     if i < 5 and field[i + 1][j] == signEmpty:
         return get_position(field, i + 1, j, signEmpty)
