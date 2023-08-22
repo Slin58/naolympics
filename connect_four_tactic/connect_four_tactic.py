@@ -17,7 +17,7 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
 
 
 def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPriorities, mistake_factor):
-    i = get_position(field, 0, j)
+    i = get_position(field, 0, j, signEmpty)
 
     prioritiesRow = get_priority(field, i, j, 0, 1, signOwn, signOpponent, signEmpty, mistake_factor)
     prioritiesColumn = get_priority(field, i, j, 1, 0, signOwn, signOpponent, signEmpty, mistake_factor)
@@ -150,8 +150,8 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     return [priorityWin, priorityDefend]
 
 
-def get_position(field, i, j):
-    if i < 5 and field[i + 1][j] == '_':
-        return get_position(field, i + 1, j)
+def get_position(field, i, j, signEmpty):
+    if i < 5 and field[i + 1][j] == signEmpty:
+        return get_position(field, i + 1, j, signEmpty)
     else:
         return i

@@ -51,9 +51,31 @@ def detect_game_board(img, debug=[]):
         # print("Contours not detected correctly. Please adjust method parameters or improve image quality")
 
 
+def get_pixel_color(pixel):
+    # Definieren Sie Farbbereiche fuer Rot, Weiss und Gelb
+    red_lower = np.array([0, 0, 100], np.uint8)
+    red_upper = np.array([80, 80, 255], np.uint8)
+
+    white_lower = np.array([100, 100, 100], np.uint8)
+    white_upper = np.array([255, 255, 255], np.uint8)
+
+    yellow_lower = np.array([0, 120, 120], np.uint8)
+    yellow_upper = np.array([100, 255, 255], np.uint8)
+
+    # Ueberpruefen Sie, ob der Pixel in einem der Farbbereiche liegt
+    if cv2.inRange(pixel, red_lower, red_upper).all():
+        return "R"
+    elif cv2.inRange(pixel, white_lower, white_upper).all():
+        return "-"
+    elif cv2.inRange(pixel, yellow_lower, yellow_upper).all():
+        return "Y"
+    else:
+        return "F"
+
 def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_thresh=15, circle_distance=100,
                               gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70, dilate_iterations=2,
                               erode_iterations=1, white_thresh=250, red_thresh=100):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gamestate = [["-", "-", "-", "-", "-", "-", "-"], ["-", "-", "-", "-", "-", "-", "-"],
                  ["-", "-", "-", "-", "-", "-", "-"], ["-", "-", "-", "-", "-", "-", "-"],
                  ["-", "-", "-", "-", "-", "-", "-"], ["-", "-", "-", "-", "-", "-", "-"]]
@@ -72,8 +94,6 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
     circles = cv2.HoughCircles(processed_img, cv2.HOUGH_GRADIENT, 1, circle_distance, param1=200,
                                param2=acc_thresh, minRadius=minRadius, maxRadius=maxRadius)
     if circles is not None:
-        img_width = float(img.shape[1])
-        img_height = float(img.shape[0])
         if 2 in debug:
             for c in circles[0, :]:
                 a, b, r = c[0], c[1], c[2]
@@ -98,13 +118,7 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                     circleCount += 1
                     # print("Circle nr: ", circleCount, "X-Pos: ", pt[0], "Y-Pos: ", pt[1])
                     a, b, r = pt[0], pt[1], pt[2]
-                    avgColor = np.average(img[b][a])
-                    if avgColor < white_thresh:
-                        if (img[b][a][2] - red_thresh > img[b][a][1] and img[b][a][2] - red_thresh > img[b][a][0]):
-                            gamestate[i][j] = "R"
-                        # elif cv2.inRange(img[b,a], lower_yellow, upper_yellow):
-                        else:
-                            gamestate[i][j] = "Y"
+                    gamestate[i][j] = get_pixel_color(img[b][a])
                     cv2.putText(img, str(circleCount), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(250, 0, 0),
                                 thickness=2)
 
@@ -115,10 +129,12 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                 for cel in line:
                     linetxt = linetxt + "|" + cel
                 print(linetxt)
-            imgRes = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
-            cv2.imshow("Processed image", imgRes)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            if 6 in debug:
+                imgRes = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
+                cv2.imshow("Processed image", imgRes)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+            return gamestate
         else:
             print("Field not detected correctly")
 
@@ -262,7 +278,7 @@ def find_board_contours(img, debug, contour_area_thresh=500, gaussian_kernel_siz
 
 def process_image_to_edge_map(img, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70,
                               dilate_iterations=2, erode_iterations=1):
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     img_blur = cv2.GaussianBlur(img_gray, (gaussian_kernel_size, gaussian_kernel_size), 0)
     # threshRes = cv2.resize(img_blur,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
     # cv2.imshow("Processed image", threshRes)
@@ -280,7 +296,7 @@ def _get_center_position_of_rectangle(x1, x2, y1, y2):
 
 def record_image_from_nao(path, ip, port):
     recorded = get_image_from_nao(ip, port)
-    recorded = cv2.cvtColor(recorded, cv2.COLOR_BGR2RGB)
+    # recorded = cv2.cvtColor(recorded, cv2.COLOR_RGB2RGB)
     # cv2.imshow('Detected', recorded)
     # cv2.waitKey(0)
     cv2.imwrite(path, recorded)
@@ -292,10 +308,11 @@ if __name__ == "__main__":
     # connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect4_recorded_glare.png')
     connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\connect4_rims_filled.png')
     test = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\tic_tac_toe.png')
+    faulty = cv2.imread('C:\\Users\\jogehring\\Documents\GitHub\\naolympics\\230822_faulty_recognition_c4.png')
 
-    # detect_connect_four_state(img=connect4_recorded, debug=[2], minRadius=40, maxRadius=55,acc_thresh=20,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=210)
-    detect_tictactoe_state(img=test, debug=[1,2,6], minRadius=75, maxRadius=85, acc_thresh=20, canny_upper_thresh=30,
-                           dilate_iterations=8, erode_iterations=4, gaussian_kernel_size=7)
+    detect_connect_four_state(img=faulty, debug=[1,2], minRadius=40, maxRadius=55,acc_thresh=10,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=210)
+    # detect_tictactoe_state(img=test, debug=[1,2,6], minRadius=75, maxRadius=85, acc_thresh=20, canny_upper_thresh=30,
+    #                        dilate_iterations=8, erode_iterations=4, gaussian_kernel_size=7)
     # detect_game_board(connect4_recorded, debug=[1])
     # record_image_from_nao(path=".\\tic_tac_toe.png", ip="10.30.4.13", port=9559)
 
