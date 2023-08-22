@@ -62,17 +62,21 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     restAvailable2 = True
     winningMoveDir1 = True
     winningMoveDir2 = True
+    defendNecessaryDir1 = True
+    defendNecessaryDir2 = True
     winningMove = 0
-    # todo factor fuer andere Felder anpassen bzw. Berechnung noch anpassen siehe beispiel unten
+    defendMove = 0
 
     # direction1
     if 0 <= i - up <= 5 and 0 <= j - right <= 6:
         if field[i - up][j - right] == signOwn:
             priorityWin = priorityWin + 12
             winningMove += 1
+            defendNecessaryDir1 = False
         elif field[i - up][j - right] == signOpponent:
             priorityWin = priorityWin - 8
             priorityDefend = priorityDefend + 10
+            defendMove += 1
             restAvailable1 = False
             winningMoveDir1 = False
         elif field[i - up][j - right] == signEmpty:
@@ -82,11 +86,13 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     if 0 <= i - (up+up) <= 5 and 0 <= j - (right+right) <= 6:
         if field[i - (up+up)][j - (right+right)] == signOwn and restAvailable1:
             priorityWin = priorityWin + 9
+            defendNecessaryDir1 = False
             if winningMoveDir1:
                 winningMove += 1
-        elif field[i - (up+up)][j - (right+right)] == signOpponent:
+        elif field[i - (up+up)][j - (right+right)] == signOpponent and defendNecessaryDir1:
             priorityWin = priorityWin - 6
             priorityDefend = priorityDefend + 10
+            defendMove += 1
             restAvailable1 = False
             winningMoveDir1 = False
         elif field[i - (up+up)][j - (right+right)] == signEmpty and restAvailable1:
@@ -98,9 +104,10 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
             priorityWin = priorityWin + 6
             if winningMoveDir1:
                 winningMove += 1
-        elif field[i - (up+up+up)][j - (right+right+right)] == signOpponent:
+        elif field[i - (up+up+up)][j - (right+right+right)] == signOpponent and defendNecessaryDir1:
             priorityWin = priorityWin - 4
             priorityDefend = priorityDefend + 10
+            defendMove += 1
             winningMoveDir2 = False
         elif field[i - (up+up+up)][j - (right+right+right)] == signEmpty and restAvailable1:
             priorityWin = priorityWin + 2
@@ -110,11 +117,13 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     if 0 <= i + up <= 5 and 0 <= j + right <= 6:
         if field[i + up][j + right] == signOwn:
             priorityWin = priorityWin + 12
+            defendNecessaryDir2 = False
             if winningMoveDir2:
                 winningMove += 1
         elif field[i + up][j + right] == signOpponent:
             priorityWin = priorityWin - 20
             priorityDefend = priorityDefend + 10
+            defendMove += 1
             restAvailable2 = False
             winningMoveDir2 = False
         elif field[i + up][j + right] == signEmpty:
@@ -124,11 +133,13 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     if 0 <= i + (up+up) <= 5 and 0 <= j + (right+right) <= 6:
         if field[i + (up+up)][j + (right+right)] == signOwn and restAvailable2:
             priorityWin = priorityWin + 11
+            defendNecessaryDir2 = False
             if winningMoveDir2:
                 winningMove += 1
-        elif field[i + (up+up)][j + (right+right)] == signOpponent:
+        elif field[i + (up+up)][j + (right+right)] == signOpponent and defendNecessaryDir2:
             priorityWin = priorityWin - 10
             priorityDefend = priorityDefend + 9
+            defendMove += 1
             restAvailable2 = False
             winningMoveDir2 = False
         elif field[i + (up+up)][j + (right+right)] == signEmpty and restAvailable2:
@@ -140,16 +151,19 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
             priorityWin = priorityWin + 10
             if winningMoveDir2:
                 winningMove += 1
-        elif field[i + (up+up+up)][j + (right+right+right)] == signOpponent:
+        elif field[i + (up+up+up)][j + (right+right+right)] == signOpponent  and defendNecessaryDir2:
             priorityWin = priorityWin - 5
             priorityDefend = priorityDefend + 8
+            defendMove += 1
         elif field[i + (up+up+up)][j + (right+right+right)] == signEmpty and restAvailable2:
             priorityWin = priorityWin + 2
 
     priorityWin = priorityWin + random.randint(0, mistake_factor)
     priorityDefend = priorityDefend + random.randint(0, mistake_factor)
     if winningMove >= 3:
-        return [priorityWin+30, priorityDefend]
+        return [priorityWin+200, priorityDefend]
+    if defendMove >= 3:
+        return [priorityWin, priorityDefend+100]
 
     return [priorityWin, priorityDefend]
 

@@ -16,14 +16,14 @@ field = [['_', '_', '_', '_', '_', '_', '_'],
 
 
 def setPointx(i, j):
-    if i < 5 and field[i][j] == '_' and field[i + 1][j] == '_':
+    if i < 5 and field[i + 1][j] == '_':
         setPointx(i + 1, j)
     else:
         field[i][j] = 'x'
 
 
 def setPointo(i, j):
-    if i < 5 and field[i][j] == '_' and field[i + 1][j] == '_':
+    if i < 5 and field[i + 1][j] == '_':
         setPointo(i + 1, j)
     else:
         field[i][j] = 'o'
