@@ -11,7 +11,7 @@ class ConnectionService {
   static const String hostPrefix = "[HOST]:";
   static const String clientPrefix = "[CLIENT]:";
 
-  static const Duration timeoutDuration = Duration(seconds: 5);
+  static const Duration timeoutDuration = Duration(seconds: 10);
 
   static const int port = 7470;
 
@@ -19,7 +19,15 @@ class ConnectionService {
     try {
       _clientLog("Trying to connect to $ip.");
       Socket connection = await Socket.connect(ip, port);
-      var success = await _handleServerConnection(connection);
+
+      StreamController<String> streamController = StreamController<String>.broadcast();
+      _startListening(streamController, connection);
+
+      //final StreamController<Uint8List> streamController = connection.asBroadcastStream(); //StreamController<String>.broadcast();
+
+
+
+      var success = await _handleServerConnection(streamController, connection);
       _clientLog("Finished method '_handleServerConnection'");
 
       if (success == ConnectionStatus.connectionSuccessful) {
@@ -33,17 +41,27 @@ class ConnectionService {
     }
   }
 
-  static Future<ConnectionStatus> _handleServerConnection(Socket socket) async {
+  static void _startListening(StreamController<String> streamController, Socket socket) {
+    _clientLog("_startListening Method started");
+    socket.listen((data) {
+      String message = String.fromCharCodes(data);
+      streamController.sink.add(message);
+      _clientLog("Shit was just sent from Server and received by client: $message");
+    });
+  }
+
+  static Future<ConnectionStatus> _handleServerConnection(StreamController<String> streamController, Socket socket) async {
     _clientLog("Sending connection message.");
-    socket.add(ConnectionStatus.connecting.toBytes());
-    await socket.flush();
+    streamController.sink.add(String.fromCharCodes(ConnectionStatus.connecting.toBytes()));
+    socket.write(ConnectionStatus.connecting.index);  //todo: experimental
+    //await streamController.flush();
 
     final completer = Completer<ConnectionStatus>();
 
     _clientLog(
         "Trying to listen to incoming data from ${socket.remoteAddress.address}");
-    socket.listen((data) {
-      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
+    streamController.stream.listen((data) {
+      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(Uint8List.fromList(data.codeUnits));
       _clientLog("Client received '$data' and parsed it to '$value'");
 
       if (value == ConnectionStatus.connectionSuccessful) {
@@ -85,13 +103,13 @@ class ConnectionService {
   static _handleClientConnections(Socket socket) async {
     final completer = Completer<Socket?>();
 
-    socket.listen((data) async {
+    socket.listen((data) {  //async
       ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
       _hostLog("Server received '$data' and parsed it to '$value'");
       if (value == ConnectionStatus.connecting) {
         _hostLog("Sending success message to ${socket.remoteAddress.address}");
-        socket.add(ConnectionStatus.connectionSuccessful.toBytes());
-        await socket.flush();
+        socket.write(ConnectionStatus.connectionSuccessful.toBytes());  //todo: was .add before
+        //await socket.flush();
         completer.complete(socket);
       }
     }, onError: (error) {
@@ -138,7 +156,7 @@ class ConnectionService {
 
   static Future<List<NetworkInterface>> _getWlanInterfaces() async {
     final List<NetworkInterface> interfaces =
-        await NetworkInterface.list(type: InternetAddressType.IPv4);
+    await NetworkInterface.list(type: InternetAddressType.IPv4);
 
     return Stream<NetworkInterface>.fromIterable(interfaces)
         .where((i) => WlanInterfaceNames.getValues().contains(i.name))
@@ -208,10 +226,13 @@ enum ConnectionStatus {
     return val;
   }
 
-  static ConnectionStatus? bytesToConnectionStatus(Uint8List bytes) {
+  static ConnectionStatus? bytesToConnectionStatus(Uint8List bytes) {   //todo: client currently sends "[91, 48, 93]" as msg when connecting. this parses to null. am changing this to work temporarily for test purposes
     try {
-      final intEnumValue = bytes[0];
-      return ConnectionStatus.values[intEnumValue];
+      print(bytes);
+      //print(bytes[0]);
+
+      int index = int.parse(String.fromCharCodes(bytes).trim());
+      return ConnectionStatus.values[index];
     } catch (error) {
       return null;
     }
