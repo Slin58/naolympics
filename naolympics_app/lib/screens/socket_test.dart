@@ -7,6 +7,7 @@ import 'package:naolympics_app/utils/utils.dart';
 
 import '../../services/network/connection_service.dart';
 import '../../services/server.dart';
+import '../services/network/socket_manager.dart';
 
 class SocketTest extends StatefulWidget {
   const SocketTest({super.key});
@@ -86,7 +87,7 @@ class SocketTestState extends State<SocketTest> {
         });
   }
 
-  _handleClientConnection(Socket? value) {
+  _handleClientConnection(SocketManager? value) {
     if (value != null) {
       MultiplayerState.setHost(value);
       Navigator.pop(context);
@@ -142,23 +143,23 @@ class SocketTestState extends State<SocketTest> {
   }
 
   _handleHostConnection(String ip, BuildContext context) async {
-    Socket? socket = await ConnectionService.connectToHost(ip);
+    SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
-    if (socket == null) {
+    if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
     } else {
-      MultiplayerState.connection = socket;
+      MultiplayerState.connection = socketManager;
       MultiplayerState.history.add(ip);
       Navigator.pop(context);
 
-      socket.listen((event) {
-        String page = event.toString();
-        if (page == 'begin') {
+      socketManager.broadcastStream.listen((event) {
+        if (event == 'begin') {
           return;
         } else {
-          Navigator.pushNamed(context, page);
+          Navigator.pushNamed(context, event);
         }
       });
+
     }
   }
 

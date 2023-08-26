@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/services/network/socket_manager.dart';
 
 import 'network_analyzer.dart';
 
@@ -15,19 +16,13 @@ class ConnectionService {
 
   static const int port = 7470;
 
-  static Future<Socket?> connectToHost(final String ip) async {
+  static Future<SocketManager?> connectToHost(final String ip) async {
     try {
       _clientLog("Trying to connect to $ip.");
-      Socket connection = await Socket.connect(ip, port);
+      Socket socket = await Socket.connect(ip, port);
+      SocketManager connection = SocketManager(socket, ip, port);
 
-      StreamController<String> streamController = StreamController<String>.broadcast();
-      _startListening(streamController, connection);
-
-      //final StreamController<Uint8List> streamController = connection.asBroadcastStream(); //StreamController<String>.broadcast();
-
-
-
-      var success = await _handleServerConnection(streamController, connection);
+      var success = await _handleServerConnection(connection);
       _clientLog("Finished method '_handleServerConnection'");
 
       if (success == ConnectionStatus.connectionSuccessful) {
@@ -41,29 +36,15 @@ class ConnectionService {
     }
   }
 
-  static void _startListening(StreamController<String> streamController, Socket socket) {
-    _clientLog("_startListening Method started");
-    socket.listen((data) {
-      String message = String.fromCharCodes(data);
-      streamController.sink.add(message);
-      _clientLog("Shit was just sent from Server and received by client: $message");
-    });
-  }
-
-  static Future<ConnectionStatus> _handleServerConnection(StreamController<String> streamController, Socket socket) async {
+  static Future<ConnectionStatus> _handleServerConnection(SocketManager socketManager) async {
     _clientLog("Sending connection message.");
-    streamController.sink.add(String.fromCharCodes(ConnectionStatus.connecting.toBytes()));
-    socket.write(ConnectionStatus.connecting.index);  //todo: experimental
-    //await streamController.flush();
-
+    socketManager.write(ConnectionStatus.connecting); //todo: experimental
     final completer = Completer<ConnectionStatus>();
 
-    _clientLog(
-        "Trying to listen to incoming data from ${socket.remoteAddress.address}");
-    streamController.stream.listen((data) {
-      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(Uint8List.fromList(data.codeUnits));
+    socketManager.broadcastStream.listen((data) {
+      _clientLog("Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
+      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
       _clientLog("Client received '$data' and parsed it to '$value'");
-
       if (value == ConnectionStatus.connectionSuccessful) {
         completer.complete(value);
       }
@@ -77,18 +58,19 @@ class ConnectionService {
     return completer.future.timeout(timeoutDuration);
   }
 
-  static Future<Socket?> createHost() async {
+  static Future<SocketManager?> createHost() async {
     _hostLog("Now hosting on port $port.");
     final serverSocket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    Socket? connection;
+    SocketManager? connection;
 
-    await for (Socket socket in serverSocket) {
-      _hostLog("Incoming connection from ${socket.remoteAddress.address}");
+    await for (Socket tempSocket in serverSocket) {
+      _hostLog("Incoming connection from ${tempSocket.remoteAddress.address}");
       try {
-        Socket? client = await _handleClientConnections(socket);
+        SocketManager socketManager = SocketManager.fromExistingSocket(tempSocket);
+        SocketManager? client = await _handleClientConnections(socketManager);
         if (client != null) {
           _hostLog("exiting connection loop, because of value: $client");
-          connection = socket;
+          connection = socketManager;
           break;
         }
       } catch (error) {
@@ -100,17 +82,17 @@ class ConnectionService {
     return connection;
   }
 
-  static _handleClientConnections(Socket socket) async {
-    final completer = Completer<Socket?>();
-
-    socket.listen((data) {  //async
+  static Future<SocketManager?> _handleClientConnections(SocketManager socketManager) async {
+    final completer = Completer<SocketManager?>();
+    socketManager.broadcastStream.listen((data) {
       ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
       _hostLog("Server received '$data' and parsed it to '$value'");
+
       if (value == ConnectionStatus.connecting) {
-        _hostLog("Sending success message to ${socket.remoteAddress.address}");
-        socket.write(ConnectionStatus.connectionSuccessful.toBytes());  //todo: was .add before
-        //await socket.flush();
-        completer.complete(socket);
+        _hostLog("Sending success message to ${socketManager.socket.remoteAddress.address}");
+        socketManager.write(ConnectionStatus.connectionSuccessful); //todo: was .add before
+        completer.complete(socketManager);
+        _hostLog("finished handling connection to client");
       }
     }, onError: (error) {
       _hostLog('Error: $error', level: Level.SEVERE);
@@ -156,7 +138,7 @@ class ConnectionService {
 
   static Future<List<NetworkInterface>> _getWlanInterfaces() async {
     final List<NetworkInterface> interfaces =
-    await NetworkInterface.list(type: InternetAddressType.IPv4);
+        await NetworkInterface.list(type: InternetAddressType.IPv4);
 
     return Stream<NetworkInterface>.fromIterable(interfaces)
         .where((i) => WlanInterfaceNames.getValues().contains(i.name))
@@ -226,13 +208,14 @@ enum ConnectionStatus {
     return val;
   }
 
-  static ConnectionStatus? bytesToConnectionStatus(Uint8List bytes) {   //todo: client currently sends "[91, 48, 93]" as msg when connecting. this parses to null. am changing this to work temporarily for test purposes
+  static ConnectionStatus? bytesToConnectionStatus(String message) {
+    //todo: client currently sends "[91, 48, 93]" as msg when connecting. this parses to null. am changing this to work temporarily for test purposes
     try {
-      print(bytes);
+      print(message);
       //print(bytes[0]);
 
-      int index = int.parse(String.fromCharCodes(bytes).trim());
-      return ConnectionStatus.values[index];
+      ConnectionStatus connectionStatus = ConnectionStatus.values.firstWhere((e) => e.toString() == message);
+      return connectionStatus;
     } catch (error) {
       return null;
     }
