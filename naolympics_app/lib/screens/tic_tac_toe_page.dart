@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:naolympics_app/services/MultiplayerState.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
+import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
+import 'package:naolympics_app/services/routing/route_aware_widget.dart';
 
 import '../services/gamemodes/tictactoe/tictactoe_local.dart';
+import '../services/routing/observer_utils.dart';
 import '../utils/utils.dart';
 
 class TicTacToePage extends StatefulWidget {
@@ -11,14 +15,21 @@ class TicTacToePage extends StatefulWidget {
   TicTacToeState createState() => TicTacToeState();
 }
 
+
+
 class TicTacToeState extends State<TicTacToePage> {
   late TicTacToe ticTacToe;
 
   @override
   void initState() {
     super.initState();
-    ticTacToe = TicTacToeLocal();
+    if (MultiplayerState.connection == null) {
+      ticTacToe = TicTacToeLocal();
+    } else {
+      ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!.socket!);
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -111,13 +122,13 @@ class TicTacToeState extends State<TicTacToePage> {
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
         UIUtils.getBorderedTextButton(() {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          Navigator.pop(context);
+          Navigator.pop(context);
         }, Icons.arrow_back, 'Go Back', Theme.of(context).primaryColor,
             buttonWidth),
         const SizedBox(width: buttonWidth / 4),
         UIUtils.getBorderedTextButton(() {
-          Navigator.of(context).pop();
+          Navigator.pop(context);
           setState(() {
             ticTacToe.init();
           });
