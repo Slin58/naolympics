@@ -7,10 +7,10 @@ class MultiplayerRouteObserver extends RouteObserver<PageRoute<dynamic>> {
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    log.info("Pushing page from ${previousRoute?.settings.name} to ${route.settings.name}.");
-    if (MultiplayerState.isHosting()) {
-      MultiplayerState.connection!.write(route.toString());
-    }
+    // log.info("Pushing page from ${previousRoute?.settings.name} to ${route.settings.name}.");
+    // if (MultiplayerState.isHosting()) {
+    //   MultiplayerState.connection!.write(route.toString());
+    // }
     super.didPush(route, previousRoute);
 
     // This method is called after a route has been pushed onto the navigator.
@@ -19,10 +19,10 @@ class MultiplayerRouteObserver extends RouteObserver<PageRoute<dynamic>> {
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    log.info("Popping page ${previousRoute?.settings.name} to ${route.settings.name}.");
-    if (MultiplayerState.isHosting()) {
-      MultiplayerState.connection!.write(route.toString());
-    }
+    // log.info("Popping page ${previousRoute?.settings.name} to ${route.settings.name}.");
+    // if (MultiplayerState.isHosting()) {
+    //   MultiplayerState.connection!.write(route.toString());
+    // }
     super.didPop(route, previousRoute);
 
     // This method is called after a route has been popped off the navigator.

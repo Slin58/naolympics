@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 
 
 class NetworkService {
-  final log = Logger((NetworkService).toString());
+  static final log = Logger((NetworkService).toString());
   final Socket _connection;
 
   NetworkService(this._connection);

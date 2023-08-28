@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:naolympics_app/services/MultiplayerState.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
+import 'package:naolympics_app/services/routing/route_aware_widget.dart';
 
 import '../services/gamemodes/tictactoe/tictactoe_local.dart';
-import '../utils/observer_utils.dart';
+import '../services/routing/observer_utils.dart';
 import '../utils/utils.dart';
 
 class TicTacToePage extends StatefulWidget {
@@ -16,7 +17,7 @@ class TicTacToePage extends StatefulWidget {
 
 
 
-class TicTacToeState extends State<TicTacToePage> with RouteAware {
+class TicTacToeState extends State<TicTacToePage> {
   late TicTacToe ticTacToe;
 
   @override
@@ -29,11 +30,6 @@ class TicTacToeState extends State<TicTacToePage> with RouteAware {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    ObserverUtils.routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
 
   @override
   Widget build(BuildContext context) {

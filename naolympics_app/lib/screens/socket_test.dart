@@ -156,7 +156,13 @@ class SocketTestState extends State<SocketTest> {
         if (event == 'begin') {
           return;
         } else {
-          Navigator.pushNamed(context, event);
+          try {
+            Navigator.pushNamed(context, event);
+
+          } on Error {
+            print("____________________________________");
+            print("Issue while trying to push to '$event'");
+          }
         }
       });
 

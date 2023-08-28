@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
+import 'package:naolympics_app/services/routing/route_aware_widget.dart';
 
 import 'game_selection/game_selection.dart';
 
@@ -27,7 +28,11 @@ class HomePage extends StatelessWidget {
           children: [
             createNavButton("Local", context, const GameSelectionPage()),
             SizedBox(height: marginSize / 3.0),
-            createNavButton("Multiplayer", context, const GameSelectionPageMultiplayer()),
+            createNavButton(
+                "Multiplayer",
+                context,
+                RouteAwareWidget((GameSelectionPageMultiplayer).toString(),
+                    child: const GameSelectionPageMultiplayer())),
             //placeholder
           ],
         ),

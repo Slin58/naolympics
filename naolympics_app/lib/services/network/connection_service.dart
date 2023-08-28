@@ -53,6 +53,7 @@ class ConnectionService {
       completer.completeError(error);
     }, onDone: () {
       _clientLog("Finished handling connection to server");
+      return; 
     });
 
     return completer.future.timeout(timeoutDuration);
