@@ -41,7 +41,7 @@ class ConnectionService {
     socketManager.write(ConnectionStatus.connecting); //todo: experimental
     final completer = Completer<ConnectionStatus>();
 
-    socketManager.broadcastStream.listen((data) {
+    StreamSubscription<String> subscription = socketManager.broadcastStream.listen((data) {
       _clientLog("Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
       ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
       _clientLog("Client received '$data' and parsed it to '$value'");
@@ -55,7 +55,7 @@ class ConnectionService {
       _clientLog("Finished handling connection to server");
       return;
     });
-
+    subscription.cancel();
     return completer.future.timeout(timeoutDuration);
   }
 
@@ -85,7 +85,7 @@ class ConnectionService {
 
   static Future<SocketManager?> _handleClientConnections(SocketManager socketManager) async {
     final completer = Completer<SocketManager?>();
-    socketManager.broadcastStream.listen((data) {
+    StreamSubscription<String> subscription = socketManager.broadcastStream.listen((data) {
       ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
       _hostLog("Server received '$data' and parsed it to '$value'");
 
@@ -101,7 +101,7 @@ class ConnectionService {
     }, onDone: () {
       _hostLog("finished handling connection to client");
     });
-
+    subscription.cancel();
     return completer.future.timeout(timeoutDuration);
   }
 

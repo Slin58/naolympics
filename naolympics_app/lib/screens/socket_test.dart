@@ -152,7 +152,7 @@ class SocketTestState extends State<SocketTest> {
       MultiplayerState.history.add(ip);
       Navigator.pop(context);
 
-      socketManager.broadcastStream.listen((event) {
+      StreamSubscription<String> subscription = socketManager.broadcastStream.listen((event) {
         if (event == 'begin') {
           return;
         } else {
@@ -165,7 +165,7 @@ class SocketTestState extends State<SocketTest> {
           }
         }
       });
-
+      subscription.cancel();
     }
   }
 
