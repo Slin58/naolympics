@@ -61,8 +61,7 @@ class ConnectionService {
       return;
     });
 
-    await subscription.cancel();
-    return completer.future.timeout(timeoutDuration);
+    return completer.future.timeout(timeoutDuration).whenComplete(() => subscription.cancel());
   }
 
   static Future<SocketManager?> createHost() async {
@@ -114,8 +113,7 @@ class ConnectionService {
       _hostLog("finished handling connection to client");
     });
 
-    await subscription.cancel();
-    return completer.future.timeout(timeoutDuration);
+    return completer.future.timeout(timeoutDuration).whenComplete(() => subscription.cancel());
   }
 
   static Future<List<String>> getDevices() async {
