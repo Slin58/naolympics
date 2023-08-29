@@ -1,6 +1,5 @@
 import 'dart:io';
 
-
 class Server {
 
   bool _running;

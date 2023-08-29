@@ -4,8 +4,10 @@ import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
 
+
+
 class NetworkService {
-  static final log = Logger((NetworkService).toString());
+  final log = Logger((NetworkService).toString());
   final Socket _connection;
 
   NetworkService(this._connection);

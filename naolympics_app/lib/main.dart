@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/screens/connect_four_page.dart';
 import 'package:naolympics_app/screens/home_page.dart';
 import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
-import 'package:naolympics_app/services/routing/observer_utils.dart';
-
-import 'connect4/ConnectFourPage.dart';
 
 void main() {
   Logger.root.level = Level.ALL; // defaults to Level.INFO
   Logger.root.onRecord.listen((record) {
-    print("${record.time} ${record.level.name} '${record.loggerName}':\t\t${record.message}");
+    String baseMessage = "${record.time} ${record.level.name} '${record.loggerName}':\t\t${record.message}";
+    if(record.level == Level.SEVERE) {
+      baseMessage += "\n${record.error}\n${record.stackTrace}";
+    }
+    print(baseMessage);
   });
-  runApp(MaterialApp(
-    home: const MyApp(),
-    navigatorObservers: [ObserverUtils.getRouteObserver()],
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
