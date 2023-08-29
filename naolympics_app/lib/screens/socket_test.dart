@@ -90,22 +90,22 @@ class SocketTestState extends State<SocketTest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Connection tests"),
+          title: const Text("Connection tests"),
         ),
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [
             Visibility(
-              child: _ipListElement(),
               visible: wifi && !isHosting,
+              child: _ipListElement(),
             ),
             Visibility(
-              child: Text("Turn on wifi or hotspot"),
               visible: !wifi && !isHosting,
+              child: const Text("Turn on wifi or hotspot"),
             ),
             Visibility(
-              child: Text("Currently Hosting"),
               visible: isHosting,
+              child: const Text("Currently Hosting"),
             ),
           ]),
         ));

@@ -26,7 +26,7 @@ class ConnectionService {
     } else {
       final String submask = ip.substring(0, ip.lastIndexOf('.'));
       final List<String> devices = await _discoverDevices(submask, port);
-      log.info("Found ip adresses for given port: $devices");
+      log.info("Found ip addresses for given port: $devices");
 
       if (devices.contains(ip)) {
         devices.remove(ip);
