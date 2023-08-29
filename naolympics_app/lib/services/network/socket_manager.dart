@@ -33,7 +33,7 @@ class SocketManager {
         });
     }
 
-    void write(Object object) {
+    void write(String object) {
         log.info("Now writing to ${socket.remoteAddress.address}");
         socket.write(object);
         socket.flush();

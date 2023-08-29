@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/services/network/json/json_objects/navigation_data.dart';
 import 'package:naolympics_app/services/routing/observer_utils.dart';
 
 import '../MultiplayerState.dart';
@@ -29,8 +32,9 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("didPush '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info("Sending 'didPush' to ${MultiplayerState.getRemoteAddress()}");
-      MultiplayerState.connection!.write(route);
+      log.info(
+          "Sending 'didPush' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
+      _sendNavigationDataToClient(route);
     }
   }
 
@@ -41,9 +45,15 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("didPopNext '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info("Sending 'didPopNext' to ${MultiplayerState.getRemoteAddress()}");
-      MultiplayerState.connection!.write(route);
+      log.info(
+          "Sending 'didPopNext' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
+      _sendNavigationDataToClient(route);
     }
+  }
+
+  static void _sendNavigationDataToClient(String route) {
+    final jsonData = NavigationData(route).toJson();
+    MultiplayerState.connection!.write(json.encode(jsonData));
   }
 
   @override

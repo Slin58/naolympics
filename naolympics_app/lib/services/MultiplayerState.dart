@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'network/socket_manager.dart';
 
 class MultiplayerState {
   static SocketManager? connection;
   static List<String> history = [];
   static bool _hosting = false;
+
 
   static void setHost(SocketManager connection) {
     MultiplayerState.connection = connection;
