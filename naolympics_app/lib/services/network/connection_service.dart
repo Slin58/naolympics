@@ -45,7 +45,7 @@ class ConnectionService {
     socketManager.write(json.encode(data));
     final completer = Completer<ConnectionStatus>();
 
-    socketManager.broadcastStream.listen((data) {
+    StreamSubscription<String> subscription = socketManager.broadcastStream.listen((data) {
       _clientLog(
           "Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
       final jsonData = ConnectionEstablishment.fromJson(json.decode(data));
@@ -62,6 +62,7 @@ class ConnectionService {
       return;
     });
 
+    subscription.cancel();
     return completer.future.timeout(timeoutDuration);
   }
 
@@ -93,7 +94,7 @@ class ConnectionService {
   static Future<SocketManager?> _handleClientConnections(
       SocketManager socketManager) async {
     final completer = Completer<SocketManager?>();
-    socketManager.broadcastStream.listen((data) {
+    StreamSubscription<String> subscription = socketManager.broadcastStream.listen((data) {
       final jsonData = ConnectionEstablishment.fromJson(json.decode(data));
       ConnectionStatus? value = jsonData.connectionStatus;
       _hostLog("Server received '$data' and parsed it to '$value'");
@@ -113,6 +114,7 @@ class ConnectionService {
       _hostLog("finished handling connection to client");
     });
 
+    subscription.cancel();
     return completer.future.timeout(timeoutDuration);
   }
 
