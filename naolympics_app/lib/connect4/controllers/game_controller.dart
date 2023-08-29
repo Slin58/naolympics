@@ -11,13 +11,9 @@ import 'dart:convert';
 
 class GameController extends GetxController {
   static final log = Logger("Connect4");
-
-  RxList<List<int>> _board = RxList<List<int>>();
-  List<List<int>> get board => _board.value;
-  set board(List<List<int>> value) => _board.value = value;
+  List<List<int>> board = [];
   RxBool _turnYellow = true.obs;
   bool get turnYellow => _turnYellow.value;
-
   bool blockTurn = false;
 
   void _buildBoard() {
@@ -41,68 +37,72 @@ class GameController extends GetxController {
 
   Future<void> playColumnMultiplayer(int columnNumber) async {
 
-    final completer = Completer<RxList<List<int>>?>();
-    StreamSubscription<String> subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-      final List<List<int>> temp = jsonDecode(data);  //todo: RxList needs to be converted to List before sendind
-      final RxList<List<int>> receivedBoard = temp.obs;
-      log.info("Server received '$data' and parsed it to '$receivedBoard'");
+/*
+    int winner = 0;
 
-      if (value == ConnectionStatus.connecting) {
-        _hostLog("Sending success message to ${socketManager.socket.remoteAddress.address}");
-        socketManager.write(ConnectionStatus.connectionSuccessful); //todo: was .add before
-        completer.complete(socketManager);
-        _hostLog("finished handling connection to client");
+    while (winner != 0) {
+      List<List<int>>? board = await getBoardFromOtherPlayer();
+
+
+      final int playerNumber = turnYellow ? 1 : 2;
+      if (board[columnNumber].contains(0)) {
+        final int row = board[columnNumber].indexWhere((cell) => cell == 0);
+        board[columnNumber][row] = playerNumber;
+        _turnYellow.value = !_turnYellow.value;
+        update();
+
+        int horizontalWinCond = checkForHorizontalWin(columnNumber);
+        int verticalWinCond = checkForVerticalWin(columnNumber);
+        int diagonalWinCond = checkDiagonalWinCond(columnNumber);
+        print("Horizontal Winner: $horizontalWinCond");
+        print("Vertical Winner: $verticalWinCond");
+
+        int winner = (horizontalWinCond != 0)
+            ? horizontalWinCond
+            : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
+            ? diagonalWinCond
+            : 0;
+
+        if (winner != 0) {
+          _turnYellow.value = true;
+          declareWinner(winner);
+        }
+
+        if (checkForFullBoard() == 1) {
+          int fB = checkForFullBoard();
+          print("FullBoard: $fB");
+          showFullBoardDialog();
+        }
+        blockTurn = true;
+        blockTurn =
+        await Future.delayed(const Duration(seconds: 2), () => false);
       }
-    }, onError: (error) {
-      _hostLog('Error: $error', level: Level.SEVERE);
-      completer.completeError(error);
-    }, onDone: () {
-      _hostLog("finished handling connection to client");
-    });
-    subscription.cancel();
-    return completer.future.timeout(timeoutDuration);
-
-    final int playerNumber = turnYellow ? 1 : 2;
-    if (board[columnNumber].contains(0)) {
-      final int row = board[columnNumber].indexWhere((cell) => cell == 0);
-      board[columnNumber][row] = playerNumber;
-      _turnYellow.value = !_turnYellow.value;
-      update();
-
-      int horizontalWinCond = checkForHorizontalWin(columnNumber);
-      int verticalWinCond = checkForVerticalWin(columnNumber);
-      int diagonalWinCond = checkDiagonalWinCond(columnNumber);
-      print("Horizontal Winner: $horizontalWinCond");
-      print("Vertical Winner: $verticalWinCond");
-
-      int winner = (horizontalWinCond != 0)
-          ? horizontalWinCond
-          : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
-          ? diagonalWinCond
-          : 0;
-
-      if (winner != 0) {
-        _turnYellow.value = true;
-        declareWinner(winner);
+      else {
+        Get.snackbar("Not available", "This column is full already",
+            snackPosition: SnackPosition.BOTTOM);
       }
-
-      if (checkForFullBoard() == 1) {
-        int fB = checkForFullBoard();
-        print("FullBoard: $fB");
-        showFullBoardDialog();
-      }
-      blockTurn = true;
-      blockTurn = await Future.delayed(const Duration(seconds: 2), () => false);
-    }
-    else {
-      Get.snackbar("Not available", "This column is full already",
-          snackPosition: SnackPosition.BOTTOM);
-    }
+    } */
   }
 
 
+  Future<List<List<int>>?>getBoardFromOtherPlayer() {
+    final completer = Completer<List<List<int>>?>();
+    StreamSubscription<String> subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+      board = jsonDecode(data);
 
+      log.info("Server received '$data' and parsed it to '$board'");
+      completer.complete(board);
 
+    }, onError: (error) {
+      log.info('Error: $error');
+      completer.completeError(error);
+    }, onDone: () {
+      log.info("finished getting board from other player");
+    });
+    subscription.cancel();
+
+    return completer.future.timeout(const Duration(seconds: 10));
+  }
 
   Future<void> playColumnLocal(int columnNumber) async {
 
@@ -146,11 +146,11 @@ class GameController extends GetxController {
 
   void showFullBoardDialog() {
     final RxBool buttonVisible = true.obs;
-    final GlobalKey<State> _dialogKey = GlobalKey<State>();
+    final GlobalKey<State> dialogKey = GlobalKey<State>();
 
     Get.dialog(
       AlertDialog(
-        key: _dialogKey,
+        key: dialogKey,
         title: Text('Draw'),
         content: Obx(
               () => buttonVisible.value
@@ -158,7 +158,7 @@ class GameController extends GetxController {
             onPressed: () {
               _buildBoard();
               buttonVisible.value = false;
-              Get.back(id: _dialogKey.currentContext!.hashCode);
+              Get.back(id: dialogKey.currentContext!.hashCode);
             },
             child: Text('OK'),
           )

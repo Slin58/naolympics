@@ -30,8 +30,9 @@ class BoardColumn extends StatelessWidget {
 
     @override
   Widget build(BuildContext context) {
-    var playFunction = gameController.playColumnLocal;
-    if(MultiplayerState.connection != null) playFunction = gameController.playColumnMultiplayer;
+      var playFunction = gameController.playColumnLocal;
+      if (MultiplayerState.connection != null)
+        playFunction = gameController.playColumnMultiplayer;
 
       return GestureDetector( //nao specific
           onTap: () {
@@ -59,4 +60,5 @@ class BoardColumn extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: _buildBoardColumn(),
           ));
+    }
 }

@@ -7,7 +7,7 @@ import '../widgets/board.dart';
 import '../widgets/game_body.dart';
 
 class Connect4Screen extends StatelessWidget {
-  final GameController gameController = Get.find<GameController>();
+  final GameController gameController = Get.put(GameController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
