@@ -26,7 +26,7 @@ class ConnectFourState extends State<ConnectFourPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Connect Four'),
+        title: const Text('Connect Four'),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -49,7 +49,7 @@ class ConnectFourState extends State<ConnectFourPage> {
                   },
                   child: Container(
                     color: color,
-                    margin: EdgeInsets.all(2.0),
+                    margin: const EdgeInsets.all(2.0),
                   ),
                 );
               },

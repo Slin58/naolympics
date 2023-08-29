@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:naolympics_app/services/network/connection_service.dart';
-
 class Server {
 
   bool _running;
