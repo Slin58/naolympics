@@ -9,7 +9,7 @@ part 'navigation_data.g.dart';
 class NavigationData extends JsonData {
   final String route;
 
-  NavigationData(this.route) : super(DataType.connectionEstablishment);
+  NavigationData(this.route) : super(DataType.navigation);
 
   factory NavigationData.fromJson(Map<String, dynamic> json) =>
       _$NavigationDataFromJson(json);
