@@ -16,26 +16,26 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
     if amountEmpty == 9:
         if difficulty == 'i':
             print("play in random corner")
-            return getRandomEmptyCorner(field, signEmpty)
+            return getRandomEmptyCorner(field, signEmpty), False
         elif difficulty == 'h':
             print("play middle")
-            return 4
+            return 4, False
         elif difficulty == 'm' or difficulty == 'e':
             print("play in random edge")
-            return getRandomEmptyEdge(field, signEmpty)
+            return getRandomEmptyEdge(field, signEmpty), False
 
     if amountEmpty == 8:
         if difficulty == 'e' or difficulty == 'm':
-            return getRandomEmptyEdge(field, signEmpty)
+            return getRandomEmptyEdge(field, signEmpty), False
 
         # if placed in a corner: Play middle
         if field[0][0] == signOpponent or field[0][2] == signOpponent or field[2][0] == signOpponent or field[2][2] == signOpponent:
             if difficulty == 'h':
-                return getRandomEmptyCorner(field, signEmpty)
+                return getRandomEmptyCorner(field, signEmpty), False
             if difficulty == 'i':
-                return 4
+                return 4, False
 
-        return getRandomEmptyCorner(field, signEmpty)
+        return getRandomEmptyCorner(field, signEmpty), False
 
     if amountEmpty == 0:
         print("error: No empty field left")
@@ -46,89 +46,89 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
 
     if amountEmpty == 7:
         if difficulty == 'e':
-            return getRandomEmptyEdge(field, signEmpty)
+            return getRandomEmptyEdge(field, signEmpty), False
         if difficulty == 'm':
             for i in range(0, len(amountsOwn)):
                 if amountsOwn[i] == 1 and amountsOpponent[i] == 0:
                     print("set mark next to other mark")
-                    return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)]
+                    return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)], False
 
         # if placed in a corner + middle: Play opposing corner
         if field[1][1] != signEmpty:
             if field[0][0] != signEmpty:
                 print("play in the opposing corner")
-                return 8
+                return 8, False
             if field[0][2] != signEmpty:
                 print("play in the opposing corner")
-                return 6
+                return 6, False
             if field[2][0] != signEmpty:
                 print("play in the opposing corner")
-                return 2
+                return 2, False
             if field[2][2] != signEmpty:
                 print("play in the opposing corner")
-                return 0
+                return 0, False
 
         # if Ecke + gegenüberliegende Ecke -> Dann eine der übrigen Ecken   entspricht 1Diagonale hat sign bei beidem
         for i in range(6, 8):
             if amountsOwn[i] == 1 and amountsOpponent[i] == 1:
                 print("play in random empty corner")
-                return getRandomEmptyCorner(field, signEmpty)
+                return getRandomEmptyCorner(field, signEmpty), False
 
         # if Ecke + andereEcke -> gegenüberliegende Ecke                    entspricht Row/Column hat sign bei beidem
         if (field[0][0] != signEmpty or field[2][2] != signEmpty) and (
                 field[0][2] != signEmpty or field[2][0] != signEmpty):
             print("play in the opposing corner")
             if field[0][0] != signEmpty:
-                return 8
+                return 8, False
             if field[0][2] != signEmpty:
-                return 6
+                return 6, False
             if field[2][0] != signEmpty:
-                return 2
+                return 2, False
             if field[2][2] != signEmpty:
-                return 0
+                return 0, False
 
         # if Ecke + anliegende Kante -> Mitte/Nicht gegenüberliegende Ecke  entspricht Row/Column hat sign bei beidem
         for i in range(0, 6):
             if amountsOwn[i] == 1 and amountsOpponent[i] == 1:
                 if field[1][1] == signEmpty:
                     print("play middle")
-                    return 4
+                    return 4, False
                 else:
                     for j in range(0, len(amountsOwn)):
                         if amountsOwn[j] == 1 and amountsOpponent[j] == 0:
                             print("set mark next to other mark")
-                            return getEmptyPlacesIn(field, j, signEmpty)[random.randint(0, 1)]
+                            return getEmptyPlacesIn(field, j, signEmpty)[random.randint(0, 1)], False
 
         # if Ecke + nichtanliegende Kante -> gegenüberliegende Ecke         entspricht nirgends hat sign bei beidem
         if field[0][0] != signEmpty:
             print("play in the opposing corner")
-            return 8
+            return 8, False
         if field[0][2] != signEmpty:
             print("play in the opposing corner")
-            return 6
+            return 6, False
         if field[2][0] != signEmpty:
             print("play in the opposing corner")
-            return 2
+            return 2, False
         if field[2][2] != signEmpty:
             print("play in the opposing corner")
-            return 0
+            return 0, False
 
         print("Random Empty Corner")
-        return getRandomEmptyCorner(field, signEmpty)
+        return getRandomEmptyCorner(field, signEmpty), False
 
     # check rows
     # check if wining move possible
     for i in range(0, len(amountsOwn)):
         if amountsOwn[i] == 2 and amountsOpponent[i] == 0:
             print("winning move")
-            return getEmptyPlacesIn(field, i, signEmpty)[0]
+            return getEmptyPlacesIn(field, i, signEmpty)[0], True
 
     # check if you have to defend
     if difficulty == 'i' or difficulty == 'h' or difficulty == 'm':
         for i in range(0, len(amountsOwn)):
             if amountsOpponent[i] == 2 and amountsOwn[i] == 0:
                 print("defend")
-                return getEmptyPlacesIn(field, i, signEmpty)[0]
+                return getEmptyPlacesIn(field, i, signEmpty)[0], False
 
     # set mark where ever you can generate two pairs of two (Zwickmuehle) |
     # see rows with columns, rows with diagonals, columns with diagonals
@@ -142,31 +142,31 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
                             for place2 in getEmptyPlacesIn(field, j, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
-                                    return place1
+                                    return place1, False
                     if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[k] == 1 and \
                             amountsOpponent[k] == 0:
                         for place1 in getEmptyPlacesIn(field, i, signEmpty):
                             for place2 in getEmptyPlacesIn(field, k, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
-                                    return place1
+                                    return place1, False
                     if amountsOwn[j] == 1 and amountsOpponent[j] == 0 and amountsOwn[k] == 1 and \
                             amountsOpponent[k] == 0:
                         for place1 in getEmptyPlacesIn(field, j, signEmpty):
                             for place2 in getEmptyPlacesIn(field, k, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
-                                    return place1
+                                    return place1, False
 
     # set mark where you can generate one pair of two
     for i in range(0, len(amountsOwn)):
         if amountsOwn[i] == 1 and amountsOpponent[i] == 0:
             print("set mark next to other mark")
-            return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)]
+            return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)], False
 
     # set mark randomly
     print("mark was set randomly")
-    return getRandomEmptyPlace(field, signEmpty)
+    return getRandomEmptyPlace(field, signEmpty), False
 
 
 def amounts(field, sign):
@@ -325,6 +325,27 @@ def getNumberFromCoord(i, j):
     print("error: no fitting field found")
     return None
 
+def get_field_after_move(field, result, ownSign):
+    field_after_move = field
+    if result == 0:
+        field_after_move[0][0] = ownSign
+    elif result == 1:
+        field_after_move[0][1] = ownSign
+    elif result == 2:
+        field_after_move[0][2] = ownSign
+    elif result == 3:
+        field_after_move[1][0] = ownSign
+    elif result == 4:
+        field_after_move[1][1] = ownSign
+    elif result == 5:
+        field_after_move[1][2] = ownSign
+    elif result == 6:
+        field_after_move[2][0] = ownSign
+    elif result == 7:
+        field_after_move[2][1] = ownSign
+    else:
+        field_after_move[2][2] = ownSign
+    return field_after_move
 
 # benötigter Input:
 # drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners

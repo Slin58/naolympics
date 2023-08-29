@@ -35,6 +35,15 @@ def get_image_from_nao(ip, port):
     np_im = np.asarray(im)
     return np_im
 
+def record_image_from_nao(path, ip, port):
+    recorded = get_image_from_nao(ip, port)
+    cv2.imwrite(path, recorded)
+
+def show_image_from_nao(ip, port):
+    recorded = get_image_from_nao(ip, port)
+    cv2.imshow('Nao POV', recorded)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def detect_game_board(img, debug=[]):
     input_img = np.copy(img)
@@ -294,12 +303,7 @@ def _get_center_position_of_rectangle(x1, x2, y1, y2):
     return (x1 + int((x2 - x1) / 2), int(y1 + (y2 - y1) / 2))
 
 
-def record_image_from_nao(path, ip, port):
-    recorded = get_image_from_nao(ip, port)
-    # recorded = cv2.cvtColor(recorded, cv2.COLOR_RGB2RGB)
-    # cv2.imshow('Detected', recorded)
-    # cv2.waitKey(0)
-    cv2.imwrite(path, recorded)
+
 
 
 if __name__ == "__main__":

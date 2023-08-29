@@ -77,66 +77,66 @@ def choose_game_by_buttons():
 
 
 def play_tictactoe_against_itself(robotIP, PORT):
-    circleTurn = True
-    img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-    field = vision.detect_tictactoe_state(img, debug=[], minRadius=65, maxRadius=85, acc_thresh=15,
-                                          canny_upper_thresh=30, dilate_iterations=6, erode_iterations=4,
-                                          gaussian_kernel_size=9)
-    result = None
-    if field is not None:
-        result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='i')
-        print(result)
-        movementControl.clickTicTacToe(robotIP, PORT, result)
-    else:
-        print("field none!")
-
+    circle_turn = True
     while True:
-        time.sleep(6.0)
-        circleTurn = not circleTurn
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
         field = vision.detect_tictactoe_state(img, debug=[], minRadius=65, maxRadius=85, acc_thresh=15,
-                                              canny_upper_thresh=30, dilate_iterations=6, erode_iterations=4,
+                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
                                               gaussian_kernel_size=9)  # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
-
-        if circleTurn and field is not None:
-            result = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-', difficulty='i')
-        elif field is not None:
-            result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty='h')
+        time.sleep(0.5)
+        field_none_counter = 0
+        while field is None:
+            field_none_counter += 1
+            time.sleep(0.25)
+            img = vision.get_image_from_nao(ip=robotIP, port=PORT)
+            field = vision.detect_tictactoe_state(img, minRadius=65, maxRadius=85, acc_thresh=15,
+                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                                  gaussian_kernel_size=9)
+            if field is None and field_none_counter > 5:
+                print("Game over")
+                # todo implement if won celebration else disappointment
+                return
+        if circle_turn:
+            result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
+                                                       difficulty='i')
         else:
-            break
+            result, winning = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-',
+                                                       difficulty='h')
+        circle_turn = not circle_turn
         print(field)
         movementControl.clickTicTacToe(robotIP, PORT, result)
+        if winning:
+            tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+            tts.say("Juhu, ich habe gewonnen!")
 
 
-def play_connect_four_against_itself(robotIP, PORT):    # todo test after vision is done
-    circleTurn = True
-    img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-    field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
-                                                 circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
-                                                 erode_iterations=1, gaussian_kernel_size=13)
-    result = None
-    if field is not None:
-        result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-', mistake_factor=0)
-        print(result)
-        movementControl.clickConnectFour(robotIP, PORT, result)
-    else:
-        print("field none!")
-
+def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision is done
+    yellow_turn = True
     while True:
-        time.sleep(6.0)
-        circleTurn = not circleTurn
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
         field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
                                                  circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                  erode_iterations=1, gaussian_kernel_size=13)
-
-        if circleTurn and field is not None:
+        time.sleep(0.5)
+        field_none_counter = 0
+        while field is None:
+            field_none_counter += 1
+            time.sleep(0.25)
+            img = vision.get_image_from_nao(ip=robotIP, port=PORT)
+            field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
+                                                     circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
+                                                     erode_iterations=1, gaussian_kernel_size=13)
+            if field is None and field_none_counter > 5:
+                print("Game over")
+                # todo implement if won celebration else disappointment
+                return
+        if yellow_turn:
             result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
-        elif field is not None:
-            result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-', mistake_factor=0)
         else:
-            break
+            result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-', mistake_factor=0)
         print(field)
+        yellow_turn = not yellow_turn
+
         movementControl.clickConnectFour(robotIP, PORT, result)
 
 
@@ -168,30 +168,17 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
         print(field)
 
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-', difficulty=difficulty)
+        result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
+                                                   difficulty=difficulty)
         field_after_move = field
         print(result)
 
-        if result == 0:
-            field_after_move[0][0] = 'O'
-        elif result == 1:
-            field_after_move[0][1] = 'O'
-        elif result == 2:
-            field_after_move[0][2] = 'O'
-        elif result == 3:
-            field_after_move[1][0] = 'O'
-        elif result == 4:
-            field_after_move[1][1] = 'O'
-        elif result == 5:
-            field_after_move[1][2] = 'O'
-        elif result == 6:
-            field_after_move[2][0] = 'O'
-        elif result == 7:
-            field_after_move[2][1] = 'O'
-        else:
-            field_after_move[2][2] = 'O'
+        field_after_move = tictactoeTactic.get_field_after_move(field, result, 'O')
 
         movementControl.clickTicTacToe(robotIP, PORT, result)
+        if winning:
+            tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+            tts.say("Juhu, ich habe gewonnen!")
 
 
 def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
@@ -218,7 +205,7 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
                 print("Game over")
                 # todo implement if won celebration else disappointment
                 return
-            
+
         if field == field_after_move:
             time.sleep(0.5)
             continue
@@ -226,30 +213,16 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
         print(field)
 
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-', difficulty=difficulty)
+        result, winning = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-',
+                                                   difficulty=difficulty)
         field_after_move = field
         print(result)
 
-        if result == 0:
-            field_after_move[0][0] = 'X'
-        elif result == 1:
-            field_after_move[0][1] = 'X'
-        elif result == 2:
-            field_after_move[0][2] = 'X'
-        elif result == 3:
-            field_after_move[1][0] = 'X'
-        elif result == 4:
-            field_after_move[1][1] = 'X'
-        elif result == 5:
-            field_after_move[1][2] = 'X'
-        elif result == 6:
-            field_after_move[2][0] = 'X'
-        elif result == 7:
-            field_after_move[2][1] = 'X'
-        else:
-            field_after_move[2][2] = 'X'
-
+        field_after_move = tictactoeTactic.get_field_after_move(field, result, 'X')
         movementControl.clickTicTacToe(robotIP, PORT, result)
+        if winning:
+            tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+            tts.say("Juhu, ich habe gewonnen!")
 
 
 def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
@@ -278,15 +251,9 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             print("field", field)
             print("field_after_move", field_after_move)
             print("comparison not successful")
-
-        print(field)
-        img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10, circle_distance=120,
-                                                 canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1,
-                                                 gaussian_kernel_size=13)
-        #
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=mistake_factor)
+        result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
+                                              mistake_factor=mistake_factor)
         field_after_move = field
         field_after_move = connect_four_tactic.setPointY(field_after_move, -1, result)
         print(result)
@@ -327,14 +294,9 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             print("field_after_move", field_after_move)
             print("comparison not successful")
 
-        print(field)
-        img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10, circle_distance=120,
-                                                 canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1,
-                                                 gaussian_kernel_size=13)
-        #
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-', mistake_factor=mistake_factor)
+        result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-',
+                                              mistake_factor=mistake_factor)
         field_after_move = field
         field_after_move = connect_four_tactic.setPointR(field_after_move, -1, result)
         print(result)
@@ -351,15 +313,13 @@ if __name__ == "__main__":
     # use app Bubble Level (or similar to calibrate z-Angle)
     # movementControl.tabletPreparationXAngle(robotIP, PORT)
     # movementControl.tabletPosition(robotIP, PORT) # y-Angle with camera parallel
-
+    vision.show_image_from_nao(robotIP, PORT)
     # start positions
     # movementControl.startPosition(robotIP, PORT)
-
 
     # play_tictactoe_against_itself(robotIP, PORT)
     # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
-    #play_connect_four_against_itself(robotIP, PORT)
+    # play_connect_four_against_itself(robotIP, PORT)
     # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 0)
     # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 0)
-
