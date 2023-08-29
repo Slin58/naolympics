@@ -51,15 +51,15 @@ def detect_game_board(img, debug=[]):
         # print("Contours not detected correctly. Please adjust method parameters or improve image quality")
 
 
-def get_pixel_color(pixel):
+def get_pixel_color(pixel, white_lower_thresh):
     # Definieren Sie Farbbereiche fuer Rot, Weiss und Gelb
-    red_lower = np.array([0, 0, 100], np.uint8)
+    red_lower = np.array([0, 0,50], np.uint8)
     red_upper = np.array([80, 80, 255], np.uint8)
 
-    white_lower = np.array([100, 100, 100], np.uint8)
+    white_lower = np.array([white_lower_thresh, white_lower_thresh, white_lower_thresh], np.uint8)
     white_upper = np.array([255, 255, 255], np.uint8)
 
-    yellow_lower = np.array([0, 120, 120], np.uint8)
+    yellow_lower = np.array([0, 100, 100], np.uint8)
     yellow_upper = np.array([100, 255, 255], np.uint8)
 
     # Ueberpruefen Sie, ob der Pixel in einem der Farbbereiche liegt
@@ -74,7 +74,7 @@ def get_pixel_color(pixel):
 
 def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_thresh=15, circle_distance=100,
                               gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70, dilate_iterations=2,
-                              erode_iterations=1, white_thresh=250, red_thresh=100):
+                              erode_iterations=1, white_thresh=250):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gamestate = [["-", "-", "-", "-", "-", "-", "-"], ["-", "-", "-", "-", "-", "-", "-"],
                  ["-", "-", "-", "-", "-", "-", "-"], ["-", "-", "-", "-", "-", "-", "-"],
@@ -99,7 +99,7 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                 a, b, r = c[0], c[1], c[2]
                 cv2.circle(img, (a, b), r, (250, 0, 0), 5)
             imgRes = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
-            cv2.imshow("Processed image", imgRes)
+            cv2.imshow("Circles detected", imgRes)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         circles = np.array(circles[0, :]).astype("int")
@@ -107,10 +107,6 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
         if (len(circles) == 42):
             circles = circles.reshape(6, 7, 3)
             circleCount = 0
-            # lower_red = np.array([0, 0, 200], dtype = "uint8")
-            # upper_red= np.array([0, 0, 255], dtype = "uint8")
-            # lower_yellow = np.array([0, 0, 200], dtype = "uint8")
-            # upper_yellow = np.array([0, 0, 255], dtype = "uint8")
 
             for i, row in enumerate(circles):
                 row = np.array(sorted(row, key=lambda x: [x[0]]))
@@ -118,7 +114,11 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                     circleCount += 1
                     # print("Circle nr: ", circleCount, "X-Pos: ", pt[0], "Y-Pos: ", pt[1])
                     a, b, r = pt[0], pt[1], pt[2]
-                    gamestate[i][j] = get_pixel_color(img[b][a])
+                    gamestate_detected = get_pixel_color(img[b][a], white_thresh)
+                    while gamestate_detected == "F" and white_thresh >= 0:
+                        white_thresh -= 10
+                        gamestate_detected = get_pixel_color(img[b][a], white_thresh)
+                    gamestate[i][j] = gamestate_detected
                     cv2.putText(img, str(circleCount), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(250, 0, 0),
                                 thickness=2)
 
@@ -306,13 +306,16 @@ if __name__ == "__main__":
     # recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\recorded2_cut.png')
     # connect4_filled = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect_four_filled_cut.png')
     # connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\vision\\connect4_recorded_glare.png')
-    connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\connect4_rims_filled.png')
+    # connect4_recorded = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\connect4_rims_filled.png')
     test = cv2.imread('C:\\Users\\jogehring\\Documents\\GitHub\\naolympics\\tic_tac_toe.png')
-    faulty = cv2.imread('C:\\Users\\jogehring\\Documents\GitHub\\naolympics\\230822_faulty_recognition_c4.png')
+    # faulty = cv2.imread('C:\\Users\\jogehring\\Documents\GitHub\\naolympics\\vision\\tic_tac_toe_faulty.png')
+    # cv2.imshow("lol", faulty)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
-    detect_connect_four_state(img=faulty, debug=[1,2], minRadius=40, maxRadius=55,acc_thresh=10,circle_distance=120, canny_upper_thresh=30, dilate_iterations=4, erode_iterations=1, gaussian_kernel_size=13, white_thresh=210)
-    # detect_tictactoe_state(img=test, debug=[1,2,6], minRadius=75, maxRadius=85, acc_thresh=20, canny_upper_thresh=30,
-    #                        dilate_iterations=8, erode_iterations=4, gaussian_kernel_size=7)
+    # detect_connect_four_state(img=faulty, debug=[1,2], minRadius=45, maxRadius=55,acc_thresh=10,circle_distance=120, canny_upper_thresh=40, dilate_iterations=4, erode_iterations=2, gaussian_kernel_size=9, white_thresh=210)
+    detect_tictactoe_state(img=test, debug=[1,2,6], minRadius=75, maxRadius=85, acc_thresh=15, canny_upper_thresh=30,
+                           dilate_iterations=8, erode_iterations=4, gaussian_kernel_size=7)
     # detect_game_board(connect4_recorded, debug=[1])
     # record_image_from_nao(path=".\\tic_tac_toe.png", ip="10.30.4.13", port=9559)
 
