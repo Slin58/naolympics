@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/MultiplayerState.dart';
+import '../../services/network/connection_service.dart';
 import '../screens/widgets/cell.dart';
 
 class GameController extends GetxController {
+  static final log = Logger("Connect4");
+
   RxList<List<int>> _board = RxList<List<int>>();
   List<List<int>> get board => _board.value;
   set board(List<List<int>> value) => _board.value = value;
@@ -33,14 +37,14 @@ class GameController extends GetxController {
     _buildBoard();
   }
 
-
   Future<void> playColumnMultiplayer(int columnNumber) async {
+
     final rxListController = BehaviorSubject<RxList<List<int>>>();
 
     final completer = Completer<RxList<List<int>>?>();
     StreamSubscription<String> subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
       final receivedBoard = RxList<List<int>>([data]);  //todo: change broadcaststream in socket manager to receive bytes instead of strings
-      _hostLog("Server received '$data' and parsed it to '$receivedBoard'");
+      log.info("Server received '$data' and parsed it to '$receivedBoard'");
 
       if (value == ConnectionStatus.connecting) {
         _hostLog("Sending success message to ${socketManager.socket.remoteAddress.address}");
