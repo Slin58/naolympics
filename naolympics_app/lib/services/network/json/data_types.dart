@@ -1,4 +1,4 @@
-enum ConnectionTypes {
+enum DataType {
   connectionEstablishment,
   navigation,
   ticTacToe,

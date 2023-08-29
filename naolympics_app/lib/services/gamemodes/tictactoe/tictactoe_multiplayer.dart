@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
 import 'package:naolympics_app/services/network/network_service.dart';
-
-import '../../../screens/tic_tac_toe_page.dart';
 
 class TicTacToeMultiplayer extends TicTacToe {
   NetworkService networkService;
@@ -23,6 +20,4 @@ class TicTacToeMultiplayer extends TicTacToe {
     }
     return TicTacToeWinner.ongoing;
   }
-
-
 }

@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/network/JSON/connection_establishment.dart';
+import 'package:naolympics_app/services/network/json/json_objects/connection_establishment.dart';
 import 'package:naolympics_app/services/network/socket_manager.dart';
 
 import 'network_analyzer.dart';
@@ -37,15 +38,18 @@ class ConnectionService {
     }
   }
 
-  static Future<ConnectionStatus> _handleServerConnection(SocketManager socketManager) async {
+  static Future<ConnectionStatus> _handleServerConnection(
+      SocketManager socketManager) async {
     _clientLog("Sending connection message.");
-    var connectionEstablishment = ConnectionEstablishment(ConnectionStatus.connecting).toJson();
-    socketManager.write(ConnectionStatus.connecting); //todo: experimental
+    final data = ConnectionEstablishment(ConnectionStatus.connecting).toJson();
+    socketManager.write(json.encode(data));
     final completer = Completer<ConnectionStatus>();
 
     socketManager.broadcastStream.listen((data) {
-      _clientLog("Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
-      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
+      _clientLog(
+          "Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
+      final jsonData = ConnectionEstablishment.fromJson(json.decode(data));
+      ConnectionStatus? value = jsonData.connectionStatus;
       _clientLog("Client received '$data' and parsed it to '$value'");
       if (value == ConnectionStatus.connectionSuccessful) {
         completer.complete(value);
@@ -55,7 +59,7 @@ class ConnectionService {
       completer.completeError(error);
     }, onDone: () {
       _clientLog("Finished handling connection to server");
-      return; 
+      return;
     });
 
     return completer.future.timeout(timeoutDuration);
@@ -69,7 +73,8 @@ class ConnectionService {
     await for (Socket tempSocket in serverSocket) {
       _hostLog("Incoming connection from ${tempSocket.remoteAddress.address}");
       try {
-        SocketManager socketManager = SocketManager.fromExistingSocket(tempSocket);
+        SocketManager socketManager =
+            SocketManager.fromExistingSocket(tempSocket);
         SocketManager? client = await _handleClientConnections(socketManager);
         if (client != null) {
           _hostLog("exiting connection loop, because of value: $client");
@@ -85,15 +90,19 @@ class ConnectionService {
     return connection;
   }
 
-  static Future<SocketManager?> _handleClientConnections(SocketManager socketManager) async {
+  static Future<SocketManager?> _handleClientConnections(
+      SocketManager socketManager) async {
     final completer = Completer<SocketManager?>();
     socketManager.broadcastStream.listen((data) {
-      ConnectionStatus? value = ConnectionStatus.bytesToConnectionStatus(data);
+      final jsonData = ConnectionEstablishment.fromJson(json.decode(data));
+      ConnectionStatus? value = jsonData.connectionStatus;
       _hostLog("Server received '$data' and parsed it to '$value'");
 
       if (value == ConnectionStatus.connecting) {
-        _hostLog("Sending success message to ${socketManager.socket.remoteAddress.address}");
-        socketManager.write(value.toBytes()); //todo: was .add before
+        _hostLog(
+            "Sending success message to ${socketManager.socket.remoteAddress.address}");
+        final successJson = ConnectionEstablishment(value);
+        socketManager.write(json.encode(successJson));
         completer.complete(socketManager);
         _hostLog("finished handling connection to client");
       }
@@ -217,7 +226,8 @@ enum ConnectionStatus {
       print(message);
       //print(bytes[0]);
 
-      ConnectionStatus connectionStatus = ConnectionStatus.values.firstWhere((e) => e.toString() == message);
+      ConnectionStatus connectionStatus =
+          ConnectionStatus.values.firstWhere((e) => e.toString() == message);
       return connectionStatus;
     } catch (error) {
       return null;
