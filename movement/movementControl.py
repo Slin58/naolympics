@@ -110,7 +110,6 @@ def closeHand(robotIP, port, arm):
 def clickRHandSpecific(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
 
-    # Enable the arm control
     motionProxy.setStiffnesses("RArm", 1.0)
 
     motionProxy.angleInterpolationWithSpeed("RShoulderPitch", 18.4 * almath.TO_RAD, 0.2)
@@ -123,9 +122,6 @@ def clickRHandSpecific(robotIP, port):
     motionProxy.waitUntilMoveIsFinished()
     motionProxy.angleInterpolationWithSpeed("RElbowYaw", 67.1 * almath.TO_RAD, 0.2)
     motionProxy.waitUntilMoveIsFinished()
-
-    # Disable the arm control
-    motionProxy.setStiffnesses("RArm", 0.0)
 
     print("done")
 

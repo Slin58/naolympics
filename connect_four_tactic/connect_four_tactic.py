@@ -16,10 +16,12 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
         print("------------")
         print("winning move")
         print("------------")
+        return bestRow, True
     elif priority[bestRow] >= 150:
         print("defend")
+        return bestRow, False
     print("result:", bestRow, priority[bestRow])
-    return bestRow
+    return bestRow, False
 
 
 def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPriorities, mistake_factor):
@@ -58,7 +60,7 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
         print("offense")
     else:
         print("defense")
-    return max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1]) + factorForOtherPriorities * otherPriorities - 0.5 * priority_above_opponent
+    return max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1]) + (factorForOtherPriorities * otherPriorities) - (0.5 * priority_above_opponent)
 
 
 def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mistake_factor):

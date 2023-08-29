@@ -54,10 +54,10 @@ if __name__ == "__main__":
 
         time.sleep(2)
 
-        """y = input("Reihe: ")
+        y = input("Reihe: ")
         while field[0][y] != '_':
-            y = input("Reihe: ")"""
-        y = connect_four_tactic.nextMove(field, 'o', 'x', '_', mistake_factor=0)
+            y = input("Reihe: ")
+        # y = connect_four_tactic.nextMove(field, 'o', 'x', '_', mistake_factor=0)
 
         setPointo(-1, y)
         ausgabe()
