@@ -107,7 +107,7 @@ def play_tictactoe_against_itself(robotIP, PORT):
         movementControl.clickTicTacToe(robotIP, PORT, result)
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
-            tts.say("Juhu, ich habe gewonnen!")
+            tts.say("Juhu, ich habe gewonnen! Loooooooool")
 
 
 def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision is done
@@ -131,13 +131,16 @@ def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision i
                 # todo implement if won celebration else disappointment
                 return
         if yellow_turn:
-            result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
+            result, winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
         else:
-            result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-', mistake_factor=0)
+            result, winning = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-', mistake_factor=0)
         print(field)
         yellow_turn = not yellow_turn
 
         movementControl.clickConnectFour(robotIP, PORT, result)
+        if winning:
+            tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+            tts.say("Juhu, ich habe gewonnen! LOL!")
 
 
 def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
@@ -178,7 +181,7 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
         movementControl.clickTicTacToe(robotIP, PORT, result)
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
-            tts.say("Juhu, ich habe gewonnen!")
+            tts.say("Juhu, ich habe gewonnen! LOL!")
 
 
 def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
@@ -222,7 +225,7 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
         movementControl.clickTicTacToe(robotIP, PORT, result)
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
-            tts.say("Juhu, ich habe gewonnen!")
+            tts.say("Juhu, ich habe gewonnen! LOL!")
 
 
 def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
@@ -252,13 +255,16 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             print("field_after_move", field_after_move)
             print("comparison not successful")
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
+        result,winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
                                               mistake_factor=mistake_factor)
         field_after_move = field
         field_after_move = connect_four_tactic.setPointY(field_after_move, -1, result)
         print(result)
 
         movementControl.clickConnectFour(robotIP, PORT, result)
+        if winning:
+            tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+            tts.say("Juhu, ich habe gewonnen! LOL!")
 
 
 def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
@@ -295,13 +301,16 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             print("comparison not successful")
 
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-',
+        result, winning = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-',
                                               mistake_factor=mistake_factor)
         field_after_move = field
         field_after_move = connect_four_tactic.setPointR(field_after_move, -1, result)
         print(result)
 
         movementControl.clickConnectFour(robotIP, PORT, result)
+        if winning:
+            tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+            tts.say("Juhu, ich habe gewonnen! LOL!")
 
 
 if __name__ == "__main__":
@@ -313,7 +322,7 @@ if __name__ == "__main__":
     # use app Bubble Level (or similar to calibrate z-Angle)
     # movementControl.tabletPreparationXAngle(robotIP, PORT)
     # movementControl.tabletPosition(robotIP, PORT) # y-Angle with camera parallel
-    vision.show_image_from_nao(robotIP, PORT)
+    # vision.show_image_from_nao(robotIP, PORT)
     # start positions
     # movementControl.startPosition(robotIP, PORT)
 
@@ -322,4 +331,4 @@ if __name__ == "__main__":
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
     # play_connect_four_against_itself(robotIP, PORT)
     # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 0)
-    # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 0)
+    play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)
