@@ -62,6 +62,20 @@ class SocketTestState extends State<SocketTest> {
     void Function() action;
     IconData icon;
 
+    void startServer() {
+      setState(() {
+        isHosting = true;
+        server.start();
+      });
+    }
+
+    void stopServer() {
+      setState(() {
+        isHosting = false;
+        server.stop();
+      });
+    }
+
     if (!isHosting) {
       action = _startServer;
       icon = Icons.play_arrow;
