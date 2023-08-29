@@ -22,9 +22,9 @@ def disableAutonomousLife(robotIP, port):
 
 
 def tabletPreparationXAngle(robotIP, port):
-    armMovement(robotIP, port, arm="L", position=armPosition.positionTabletPreparation, go_back=False)
+    armMovement(robotIP, port, arm="L", position=armPosition.positionLTabletPreparation, go_back=False)
 
-    armMovement(robotIP, port, arm="R", position=armPosition.positionTabletPreparation, go_back=False)
+    armMovement(robotIP, port, arm="R", position=armPosition.positionLTabletPreparation, go_back=False)
 
 
 def tabletPosition(robotIP, port):
@@ -41,7 +41,7 @@ def startPositionL(robotIP, port):
     for i in range(0, 5):
         i = 4 - i  # order of movement swapped that the robot won't hit the tablet
         motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i],
-                                                armPosition.positionStart[i] * almath.TO_RAD, 0.2)
+                                                armPosition.positionLStart[i] * almath.TO_RAD, 0.2)
         motionProxy.waitUntilMoveIsFinished()
     openHand(robotIP, port, arm="L")
 
@@ -52,16 +52,22 @@ def startPositionR(robotIP, port):
     for i in range(1, 5):
         i = 4 - i  # order of movement swapped that the robot won't hit the tablet
         motionProxy.angleInterpolationWithSpeed(armPosition.positionR[i],
-                                                armPosition.positionStart[i] * (-1) * almath.TO_RAD, 0.2)
+                                                armPosition.positionLStart[i] * (-1) * almath.TO_RAD, 0.2)
         motionProxy.waitUntilMoveIsFinished()
 
     motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0],
-                                            armPosition.positionStart[0] * almath.TO_RAD, 0.2)
+                                            armPosition.positionLStart[0] * almath.TO_RAD, 0.2)
     motionProxy.waitUntilMoveIsFinished()
     openHand(robotIP, port, arm="R")
 
 
 def startPosition(robotIP, port):
+    motionProxy = ALProxy("ALMotion", robotIP, port)
+    # position of head
+    motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
+    time.sleep(0.2)
+    motionProxy.angleInterpolationWithSpeed("HeadPitch", 8.0 * almath.TO_RAD, 0.2)
+    time.sleep(0.2)
     startPositionL(robotIP, port)
     startPositionR(robotIP, port)
 
@@ -110,6 +116,10 @@ def closeHand(robotIP, port, arm):
 def clickRHandSpecific(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
 
+    motionProxy.setStiffnesses("LLeg", 1.0)
+    motionProxy.setStiffnesses("RLeg", 1.0)
+    motionProxy.setStiffnesses("Body", 1.0)
+    motionProxy.setStiffnesses("LArm", 1.0)
     motionProxy.setStiffnesses("RArm", 1.0)
 
     motionProxy.angleInterpolationWithSpeed("RShoulderPitch", 18.4 * almath.TO_RAD, 0.2)
@@ -256,16 +266,66 @@ def clickConnectFour(robotIP, port, positionName):
 
 
 def celebrate(robotIP, port):
-    # todo
-    print("not implemented yet")
+    startPosition(robotIP, port)
+
+    motionProxy = ALProxy("ALMotion", robotIP, port)
+
+    motionProxy.setStiffnesses("LLeg", 1.0)
+    motionProxy.setStiffnesses("RLeg", 1.0)
+    motionProxy.setStiffnesses("Body", 1.0)
+    motionProxy.setStiffnesses("LArm", 1.0)
+    motionProxy.setStiffnesses("RArm", 1.0)
+
+    tts = ALProxy("ALTextToSpeech", robotIP, port)
+    tts.say("Juhu, ich habe gewonnen! LOL!")
+
+    for i in range(0, 3):
+        motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration1, 0.2)
+        motionProxy.setAngles(armPosition.positionR, armPosition.positionRCelebration1, 0.2)
+
+        time.sleep(1)
+        motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration2, 0.2)
+        motionProxy.setAngles(armPosition.positionR, armPosition.positionRCelebration2, 0.2)
+
+        time.sleep(1)
+
+    startPosition(robotIP, port)
 
 
-def disappointment(robotIP, port):
-    # todo
-    print("not implemented yet")
+def celebrate2(robotIP, port):
+    startPosition(robotIP, port)
+
+    tts = ALProxy("ALTextToSpeech", robotIP, port)
+    tts.say("Juhu, ich habe gewonnen! LOL!")
+
+    motionProxy = ALProxy("ALMotion", robotIP, port)
+
+    motionProxy.setStiffnesses("LLeg", 1.0)
+    motionProxy.setStiffnesses("RLeg", 1.0)
+    motionProxy.setStiffnesses("Body", 1.0)
+    motionProxy.setStiffnesses("LArm", 1.0)
+    motionProxy.setStiffnesses("RArm", 1.0)
+
+    # position of head
+    motionProxy.angleInterpolationWithSpeed("HeadYaw", 30.0 * almath.TO_RAD, 0.2)
+    time.sleep(0.2)
+    motionProxy.angleInterpolationWithSpeed("HeadPitch", 15.0 * almath.TO_RAD, 0.2)
+    time.sleep(0.2)
+
+    motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration3, 0.2)
+    time.sleep(0.8)
+    motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration4, 0.2)
+
+    motionProxy.setAngles(armPosition.positionR, armPosition.positionRCelebration5, 0.2)
+    time.sleep(2)
+
+    startPosition(robotIP, port)
 
 
 if __name__ == "__main__":
+    celebrate2(robotIP="10.30.4.13", port=9559)
+    # startPosition(robotIP="10.30.4.13", port=9559)
+    # celebrate(robotIP="10.30.4.13", port=9559)
     # after startup of nao
     # movementControl.disableAutonomousLife(robotIP, PORT)
     # movementControl.stand(robotIP, PORT)
@@ -283,5 +343,5 @@ if __name__ == "__main__":
     # openHand(arm="L")
 
     #armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=1.7, up=6), arm="L", go_back=True)
-    clickConnectFour("10.30.4.13", 9559, 6)
+    # clickConnectFour("10.30.4.13", 9559, 6)
     # closeHand(arm="L")

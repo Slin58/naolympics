@@ -1,4 +1,5 @@
 # coding=utf-8
+import almath
 
 positionR = ["RShoulderPitch", "RShoulderRoll", "RElbowRoll", "RWristYaw", "RElbowYaw"]
 positionL = ["LShoulderPitch", "LShoulderRoll", "LElbowRoll", "LWristYaw", "LElbowYaw"]
@@ -15,9 +16,24 @@ positionRange = [-119.5 - 119.5, -75, 9 - 15.0, 2 - 85, (0 - 1), -104.3 - 103.9,
 # standing
 # left arm
 
-positionTabletPreparation = [-10, 0, -85, -20, -90]
+positionLTabletPreparation = [-10, 0, -85, -20, -90]
 
-positionStart = [60, 60, -88, 0, 0]
+positionLStart = [60, 60, -88, 0, 0]
+
+positionLCelebration1 = [10 * almath.TO_RAD, 0 * almath.TO_RAD, -85 * almath.TO_RAD, 0 * almath.TO_RAD, -90 * almath.TO_RAD]
+positionLCelebration2 = [-80 * almath.TO_RAD, 5 * almath.TO_RAD, -2 * almath.TO_RAD, 0 * almath.TO_RAD, -90 * almath.TO_RAD]
+
+positionRCelebration1 = [10 * almath.TO_RAD, 0 * almath.TO_RAD, 85 * almath.TO_RAD, 0 * almath.TO_RAD, 90 * almath.TO_RAD]
+positionRCelebration2 = [-80 * almath.TO_RAD, -5 * almath.TO_RAD, 2 * almath.TO_RAD, 0 * almath.TO_RAD, 90 * almath.TO_RAD]
+
+positionLCelebration3 = [0 * almath.TO_RAD, -10 * almath.TO_RAD, -80 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+positionLCelebration4 = [-34 * almath.TO_RAD, -10 * almath.TO_RAD, -65 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+positionLCelebration5 = [-50 * almath.TO_RAD, 60 * almath.TO_RAD, 2 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+
+positionRCelebration3 = [0 * almath.TO_RAD, 10 * almath.TO_RAD, 80 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+positionRCelebration4 = [-34 * almath.TO_RAD, 10 * almath.TO_RAD, 65 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+positionRCelebration5 = [-50 * almath.TO_RAD, -60 * almath.TO_RAD, -2 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+
 
 positionLUp = [
     [[], [], [], [], [], [], [], [], []],

@@ -94,7 +94,6 @@ def play_tictactoe_against_itself(robotIP, PORT):
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if circle_turn:
             result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
@@ -129,7 +128,6 @@ def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision i
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if yellow_turn:
             result, winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-', mistake_factor=0)
@@ -164,7 +162,6 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if field == field_after_move:
             time.sleep(0.5)
@@ -209,7 +206,6 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
 
         if field == field_after_move:
@@ -320,7 +316,7 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
 
 
 def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]):
-    #disable autonomous mode
+    # disable autonomous mode
     if "disable_autonomous" in modes:
         print("Disabling autonomous life...")
         movementControl.disableAutonomousLife(robotIP, PORT)
@@ -353,7 +349,6 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
 
 if __name__ == "__main__":
-    # after startup of nao
     # play_tictactoe_against_itself(robotIP, PORT)
     # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
@@ -361,4 +356,6 @@ if __name__ == "__main__":
     # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
     # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)
     calibrate(["start_position"])
+
+
 

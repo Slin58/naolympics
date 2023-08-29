@@ -67,7 +67,7 @@ def robotStarts():
     ausgabe(field)
 
     while True:
-        result = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
+        result, winning_move = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
         print(result)
         field = setPointo(field, result)
         ausgabe(field)
