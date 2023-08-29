@@ -12,6 +12,12 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
         if priority[row] > maxPriority:
             maxPriority = priority[row]
             bestRow = row
+    if priority[bestRow] >= 200:
+        print("------------")
+        print("winning move")
+        print("------------")
+    elif priority[bestRow] >= 150:
+        print("defend")
     print("result:", bestRow, priority[bestRow])
     return bestRow
 
@@ -163,7 +169,7 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     if winningMove >= 3:
         return [priorityWin+200, priorityDefend]
     if defendMove >= 3:
-        return [priorityWin, priorityDefend+100]
+        return [priorityWin, priorityDefend+150]
 
     return [priorityWin, priorityDefend]
 

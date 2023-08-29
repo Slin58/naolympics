@@ -1,5 +1,7 @@
 # if 3 own in a row or diagonal -> set 4th
 # if 3 opponent in a row or diagonal -> set own on 4th
+import time
+
 import connect_four_tactic
 
 # if 2 own in a row or diagonal -> set 3rd
@@ -48,13 +50,18 @@ if __name__ == "__main__":
     while True:
         y = connect_four_tactic.nextMove(field, 'x', 'o', '_', mistake_factor=0)
         setPointx(-1, y)
-
         ausgabe()
 
-        y = input("Reihe: ")
+        time.sleep(2)
 
+        """y = input("Reihe: ")
         while field[0][y] != '_':
-            y = input("Reihe: ")
-        setPointo(-1, y)
+            y = input("Reihe: ")"""
+        y = connect_four_tactic.nextMove(field, 'o', 'x', '_', mistake_factor=0)
 
+        setPointo(-1, y)
         ausgabe()
+
+        time.sleep(2)
+
+
