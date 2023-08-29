@@ -322,27 +322,32 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
 def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]):
     #disable autonomous mode
     if "disable_autonomous" in modes:
+        print("Disabling autonomous life...")
         movementControl.disableAutonomousLife(robotIP, PORT)
         movementControl.stand(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
     if "z_angle" in modes:
-        print("use app Bubble Level (or similar to calibrate z-Angle)")
+        print("use app Bubble Level (or similar) to calibrate z-Angle")
         raw_input("Press Enter to continue...")
 
     if "x_angle" in modes:
+        print("Preparing for x-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
         movementControl.tabletPreparationXAngle(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
     if "y_angle" in modes:
+        print("Preparing for y-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
         movementControl.tabletPosition(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
     if "vision_check" in modes:
+        print("Recording image of NAOs current vision")
         vision.show_image_from_nao(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
     if "start_position" in modes:
+        print("Getting ready to rumble")
         movementControl.startPosition(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
