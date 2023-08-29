@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
 
-import '../connect_four_page.dart';
+import '../../connect4/ConnectFourPage.dart';
 
 class GameSelectionPage extends StatefulWidget {
   const GameSelectionPage({super.key});

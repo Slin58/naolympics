@@ -4,8 +4,8 @@ import 'package:naolympics_app/services/MultiplayerState.dart';
 import 'package:naolympics_app/services/routing/route_aware_widget.dart';
 import 'package:naolympics_app/utils/utils.dart';
 
+import '../../connect4/ConnectFourPage.dart';
 import '../../services/routing/observer_utils.dart';
-import '../connect_four_page.dart';
 import '../tic_tac_toe_page.dart';
 import 'game_selection.dart';
 
