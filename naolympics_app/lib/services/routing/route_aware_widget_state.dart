@@ -29,7 +29,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("didPush '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info("Sending 'didPush' to ${MultiplayerState.getRemoteAddress()}");
+      log.info("Sending 'didPush' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
       MultiplayerState.connection!.write(route);
     }
   }
@@ -41,7 +41,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("didPopNext '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info("Sending 'didPopNext' to ${MultiplayerState.getRemoteAddress()}");
+      log.info("Sending 'didPopNext' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
       MultiplayerState.connection!.write(route);
     }
   }

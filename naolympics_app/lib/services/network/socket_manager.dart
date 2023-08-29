@@ -33,9 +33,9 @@ class SocketManager {
         });
     }
 
-    void write(Object object) {
+    void write(Uint8List object) {
         log.info("Now writing to ${socket.remoteAddress.address}");
-        socket.write(object);
+        socket.add(object);
         socket.flush();
     }
 

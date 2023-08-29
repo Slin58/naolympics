@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/services/network/JSON/connection_establishment.dart';
 import 'package:naolympics_app/services/network/socket_manager.dart';
 
 import 'network_analyzer.dart';
@@ -38,6 +39,7 @@ class ConnectionService {
 
   static Future<ConnectionStatus> _handleServerConnection(SocketManager socketManager) async {
     _clientLog("Sending connection message.");
+    var connectionEstablishment = ConnectionEstablishment(ConnectionStatus.connecting).toJson();
     socketManager.write(ConnectionStatus.connecting); //todo: experimental
     final completer = Completer<ConnectionStatus>();
 
@@ -91,7 +93,7 @@ class ConnectionService {
 
       if (value == ConnectionStatus.connecting) {
         _hostLog("Sending success message to ${socketManager.socket.remoteAddress.address}");
-        socketManager.write(ConnectionStatus.connectionSuccessful); //todo: was .add before
+        socketManager.write(value.toBytes()); //todo: was .add before
         completer.complete(socketManager);
         _hostLog("finished handling connection to client");
       }

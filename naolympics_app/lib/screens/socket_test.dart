@@ -1,8 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
+import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
 import 'package:naolympics_app/services/MultiplayerState.dart';
+import 'package:naolympics_app/services/routing/route_aware_widget.dart';
 import 'package:naolympics_app/utils/utils.dart';
 
 import '../../services/network/connection_service.dart';
@@ -17,6 +20,7 @@ class SocketTest extends StatefulWidget {
 }
 
 class SocketTestState extends State<SocketTest> {
+  static final log = Logger((SocketTestState).toString());
   bool isHosting = false;
   bool wifi = true;
   late Server server;
@@ -28,7 +32,6 @@ class SocketTestState extends State<SocketTest> {
     isHosting = false;
     wifi = true;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +58,6 @@ class SocketTestState extends State<SocketTest> {
         ));
   }
 
-
-
   FloatingActionButton _toggleHostButton() {
     void Function() action;
     IconData icon;
@@ -82,7 +83,8 @@ class SocketTestState extends State<SocketTest> {
     ConnectionService.createHost()
         .then((value) => _handleClientConnection(value))
         .timeout(const Duration(minutes: 1),
-        onTimeout: () => () {
+        onTimeout: () =>
+            () {
           UIUtils.showTemporaryAlert(context, "Connection timed out.");
         });
   }
@@ -90,7 +92,9 @@ class SocketTestState extends State<SocketTest> {
   _handleClientConnection(SocketManager? value) {
     if (value != null) {
       MultiplayerState.setHost(value);
-      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          RouteAwareWidget((GameSelectionPageMultiplayer).toString(),
+              child: GameSelectionPageMultiplayer())));
     } else {
       UIUtils.showTemporaryAlert(context, "fail");
       Navigator.pop(context);
@@ -142,7 +146,15 @@ class SocketTestState extends State<SocketTest> {
         });
   }
 
-  _handleHostConnection(String ip, BuildContext context) async {
+  static _debug(BuildContext context) {
+    try {
+      Navigator.pushNamed(context, "TicTacToe");
+    } on Error catch (e) {
+      log.severe("onTap error", e);
+    }
+  }
+
+  static _handleHostConnection(String ip, BuildContext context) async {
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
     if (socketManager == null) {
@@ -150,23 +162,47 @@ class SocketTestState extends State<SocketTest> {
     } else {
       MultiplayerState.connection = socketManager;
       MultiplayerState.history.add(ip);
-      Navigator.pop(context);
+      // Navigator.push(context, MaterialPageRoute(
+      //     builder: (context) => const GameSelectionPageMultiplayer()));
+
+
+      Completer<String> completer = Completer();
 
       socketManager.broadcastStream.listen((event) {
         if (event == 'begin') {
-          return;
+          completer.complete("not happening");
         } else {
-          try {
-            Navigator.pushNamed(context, event);
-
-          } on Error {
-            print("____________________________________");
-            print("Issue while trying to push to '$event'");
-          }
+          completer.complete(event);
         }
+      }, onError: (error) {
+        log.severe("Error while receiving routing instructions", error);
+        completer.completeError(error);
+      }, onDone: () {
+        log.info("Done routing????");
       });
-
+      // SCHMUTZ
+      String route = await completer.future
+          .timeout(const Duration(minutes: 1))
+          .catchError((error) {
+        log.severe("Issue with completer", error);
+        return "";
+      });
+      _handleClientRouting(route, context);
     }
   }
 
+  static _handleClientRouting(String route, BuildContext context) {
+    try {
+      log.fine("Completer return value: $route");
+      if (route == "TicTacToe") {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const TicTacToePage()));
+      } else if (route == "") {
+        return;
+      }
+      Navigator.pushNamed(context, route);
+    } on Error catch (e) {
+      log.severe("Issue while trying to push to '$route'", e, e.stackTrace);
+    }
+  }
 }
