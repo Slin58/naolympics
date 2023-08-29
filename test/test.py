@@ -107,7 +107,8 @@ def play_tictactoe_against_itself(robotIP, PORT):
         movementControl.clickTicTacToe(robotIP, PORT, result)
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
-            tts.say("Juhu, ich habe gewonnen! Loooooooool")
+            tts.say("Juhu, ich habe gewonnen! LOL!")
+            return
 
 
 def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision is done
@@ -141,6 +142,7 @@ def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision i
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
             tts.say("Juhu, ich habe gewonnen! LOL!")
+            return
 
 
 def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
@@ -182,6 +184,7 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
             tts.say("Juhu, ich habe gewonnen! LOL!")
+            return
 
 
 def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
@@ -226,6 +229,7 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
             tts.say("Juhu, ich habe gewonnen! LOL!")
+            return
 
 
 def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
@@ -265,6 +269,7 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
             tts.say("Juhu, ich habe gewonnen! LOL!")
+            return
 
 
 def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
@@ -311,24 +316,44 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
         if winning:
             tts = ALProxy("ALTextToSpeech", robotIP, PORT)
             tts.say("Juhu, ich habe gewonnen! LOL!")
+            return
+
+
+def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]):
+    #disable autonomous mode
+    if "disable_autonomous" in modes:
+        movementControl.disableAutonomousLife(robotIP, PORT)
+        movementControl.stand(robotIP, PORT)
+        raw_input("Press Enter to continue...")
+
+    if "z_angle" in modes:
+        print("use app Bubble Level (or similar to calibrate z-Angle)")
+        raw_input("Press Enter to continue...")
+
+    if "x_angle" in modes:
+        movementControl.tabletPreparationXAngle(robotIP, PORT)
+        raw_input("Press Enter to continue...")
+
+    if "y_angle" in modes:
+        movementControl.tabletPosition(robotIP, PORT)
+        raw_input("Press Enter to continue...")
+
+    if "vision_check" in modes:
+        vision.show_image_from_nao(robotIP, PORT)
+        raw_input("Press Enter to continue...")
+
+    if "start_position" in modes:
+        movementControl.startPosition(robotIP, PORT)
+        raw_input("Press Enter to continue...")
 
 
 if __name__ == "__main__":
     # after startup of nao
-    # movementControl.disableAutonomousLife(robotIP, PORT)
-    # movementControl.stand(robotIP, PORT)
-
-    # tablet positioning
-    # use app Bubble Level (or similar to calibrate z-Angle)
-    # movementControl.tabletPreparationXAngle(robotIP, PORT)
-    # movementControl.tabletPosition(robotIP, PORT) # y-Angle with camera parallel
-    # vision.show_image_from_nao(robotIP, PORT)
-    # start positions
-    # movementControl.startPosition(robotIP, PORT)
-
     # play_tictactoe_against_itself(robotIP, PORT)
     # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
     # play_connect_four_against_itself(robotIP, PORT)
-    # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 0)
-    play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)
+    # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
+    # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)
+    calibrate(["start_position"])
+

@@ -1,7 +1,5 @@
 from naoqi import ALProxy
-# import opencv-python
 import cv2
-# from skimage import filters, feature, io, transform
 from PIL import Image
 import numpy as np
 import vision_definitions
