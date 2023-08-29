@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:naolympics_app/screens/socket_test.dart';
-import 'package:naolympics_app/services/MultiplayerState.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
 import 'package:naolympics_app/services/routing/route_aware_widget.dart';
-import 'package:naolympics_app/utils/utils.dart';
+import 'package:naolympics_app/utils/ui_utils.dart';
 
 import '../connect_four_page.dart';
 import '../tic_tac_toe_page.dart';
@@ -23,22 +22,21 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
       SizedBox(
         child: TextButton.icon(
           icon: const Icon(
-            Icons.computer,
+            Icons.stop_outlined,
             size: 40,
             color: Colors.white,
           ),
           label: const Text(
-            "Host game or find players",
+            "Close connection",
             style: TextStyle(color: Colors.white),
           ),
           onPressed: () {
             setState(() {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const SocketTest()));
+              MultiplayerState.closeConnection();
             });
           },
         ),
-      ),
+      )
     ];
   }
 

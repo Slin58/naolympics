@@ -101,7 +101,7 @@ class ConnectionService {
       if (value == ConnectionStatus.connecting) {
         _hostLog(
             "Sending success message to ${socketManager.socket.remoteAddress.address}");
-        final successJson = ConnectionEstablishment(value);
+        final successJson = ConnectionEstablishment(ConnectionStatus.connectionSuccessful);
         socketManager.write(json.encode(successJson));
         completer.complete(socketManager);
         _hostLog("finished handling connection to client");

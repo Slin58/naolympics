@@ -14,6 +14,16 @@ class NavigationData extends JsonData {
   factory NavigationData.fromJson(Map<String, dynamic> json) =>
       _$NavigationDataFromJson(json);
 
+  DataType get data => super.dataType;
+
   @override
   Map<String, dynamic> toJson() => _$NavigationDataToJson(this);
+
+  @override
+  String toString() {
+    return """NavigationData{
+         dataType: ${super.dataType}
+         route: $route}'
+        }""";
+  }
 }

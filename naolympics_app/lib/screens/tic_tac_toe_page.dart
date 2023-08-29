@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:naolympics_app/services/MultiplayerState.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
-import 'package:naolympics_app/services/routing/route_aware_widget.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
 
 import '../services/gamemodes/tictactoe/tictactoe_local.dart';
-import '../services/routing/observer_utils.dart';
-import '../utils/utils.dart';
+import '../utils/ui_utils.dart';
 
 class TicTacToePage extends StatefulWidget {
   const TicTacToePage({super.key});
@@ -14,8 +12,6 @@ class TicTacToePage extends StatefulWidget {
   @override
   TicTacToeState createState() => TicTacToeState();
 }
-
-
 
 class TicTacToeState extends State<TicTacToePage> {
   late TicTacToe ticTacToe;
@@ -26,10 +22,9 @@ class TicTacToeState extends State<TicTacToePage> {
     if (MultiplayerState.connection == null) {
       ticTacToe = TicTacToeLocal();
     } else {
-      ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!.socket!);
+      ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!.socket);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
