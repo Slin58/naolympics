@@ -10,8 +10,8 @@ part 'connection_establishment.g.dart';
 class ConnectionEstablishment extends JsonData {
   final ConnectionStatus connectionStatus;
 
-
-  ConnectionEstablishment(this.connectionStatus) : super(DataType.connectionEstablishment);
+  ConnectionEstablishment(this.connectionStatus)
+      : super(DataType.connectionEstablishment);
 
   factory ConnectionEstablishment.fromJson(Map<String, dynamic> json) =>
       _$ConnectionEstablishmentFromJson(json);
