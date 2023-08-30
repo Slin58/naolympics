@@ -5,7 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/network/json/json_objects/navigation_data.dart';
 import 'package:naolympics_app/services/routing/observer_utils.dart';
 
-import '../MultiplayerState.dart';
+import '../multiplayer_state.dart';
 import 'route_aware_widget.dart';
 
 class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
@@ -51,8 +51,9 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     }
   }
 
-  static void _sendNavigationDataToClient(String route) {
+  static Future<void> _sendNavigationDataToClient(String route) async {
     final jsonData = NavigationData(route).toJson();
+    await Future.delayed(const Duration(milliseconds: 100));
     MultiplayerState.connection!.write(json.encode(jsonData));
   }
 

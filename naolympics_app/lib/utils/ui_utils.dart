@@ -29,7 +29,7 @@ class UIUtils {
           Future.delayed(const Duration(seconds: 1), () {
             Navigator.of(context).pop(true);
           });
-          return AlertDialog(title: Text(text));
+          return AlertDialog(title: Center(child:Text(text)));
         });
   }
 

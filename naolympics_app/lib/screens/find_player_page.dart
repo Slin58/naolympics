@@ -1,26 +1,29 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
-import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
-import 'package:naolympics_app/services/MultiplayerState.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
+import 'package:naolympics_app/services/network/JSON/data_types.dart';
 import 'package:naolympics_app/services/routing/route_aware_widget.dart';
-import 'package:naolympics_app/utils/utils.dart';
+import 'package:naolympics_app/utils/enum_utils.dart';
+import 'package:naolympics_app/utils/ui_utils.dart';
 
 import '../../services/network/connection_service.dart';
 import '../../services/server.dart';
+import '../services/network/json/json_objects/navigation_data.dart';
 import '../services/network/socket_manager.dart';
 
-class SocketTest extends StatefulWidget {
-  const SocketTest({super.key});
+class FindPlayerPage extends StatefulWidget {
+  const FindPlayerPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => SocketTestState();
+  State<StatefulWidget> createState() => FindPlayerPageState();
 }
 
-class SocketTestState extends State<SocketTest> {
-  static final log = Logger((SocketTestState).toString());
+class FindPlayerPageState extends State<FindPlayerPage> {
+  static final log = Logger((FindPlayerPageState).toString());
   bool isHosting = false;
   bool wifi = true;
   late Server server;
@@ -37,7 +40,7 @@ class SocketTestState extends State<SocketTest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Connection tests"),
+          title: const Text("Find Players"),
         ),
         floatingActionButton: _toggleHostButton(),
         body: Center(
@@ -62,20 +65,6 @@ class SocketTestState extends State<SocketTest> {
     void Function() action;
     IconData icon;
 
-    void startServer() {
-      setState(() {
-        isHosting = true;
-        server.start();
-      });
-    }
-
-    void stopServer() {
-      setState(() {
-        isHosting = false;
-        server.stop();
-      });
-    }
-
     if (!isHosting) {
       action = _startServer;
       icon = Icons.play_arrow;
@@ -97,18 +86,20 @@ class SocketTestState extends State<SocketTest> {
     ConnectionService.createHost()
         .then((value) => _handleClientConnection(value))
         .timeout(const Duration(minutes: 1),
-        onTimeout: () =>
-            () {
-          UIUtils.showTemporaryAlert(context, "Connection timed out.");
-        });
+            onTimeout: () => () {
+                  UIUtils.showTemporaryAlert(context, "Connection timed out.");
+                });
   }
 
   _handleClientConnection(SocketManager? value) {
     if (value != null) {
       MultiplayerState.setHost(value);
-      Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          RouteAwareWidget((GameSelectionPageMultiplayer).toString(),
-              child: GameSelectionPageMultiplayer())));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RouteAwareWidget(
+                  (GameSelectionPageMultiplayer).toString(),
+                  child: const GameSelectionPageMultiplayer())));
     } else {
       UIUtils.showTemporaryAlert(context, "fail");
       Navigator.pop(context);
@@ -160,14 +151,6 @@ class SocketTestState extends State<SocketTest> {
         });
   }
 
-  static _debug(BuildContext context) {
-    try {
-      Navigator.pushNamed(context, "TicTacToe");
-    } on Error catch (e) {
-      log.severe("onTap error", e);
-    }
-  }
-
   static _handleHostConnection(String ip, BuildContext context) async {
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
@@ -176,47 +159,38 @@ class SocketTestState extends State<SocketTest> {
     } else {
       MultiplayerState.connection = socketManager;
       MultiplayerState.history.add(ip);
-      // Navigator.push(context, MaterialPageRoute(
-      //     builder: (context) => const GameSelectionPageMultiplayer()));
-
 
       Completer<String> completer = Completer();
 
       socketManager.broadcastStream.listen((event) {
-        if (event == 'begin') {
-          completer.complete("not happening");
-        } else {
-          completer.complete(event);
-        }
+        _handleClientRouting(event, context);
       }, onError: (error) {
         log.severe("Error while receiving routing instructions", error);
         completer.completeError(error);
       }, onDone: () {
-        log.info("Done routing????");
+        log.info("Done routing.");
       });
-      // SCHMUTZ
-      String route = await completer.future
-          .timeout(const Duration(minutes: 1))
-          .catchError((error) {
-        log.severe("Issue with completer", error);
-        return "";
-      });
-      _handleClientRouting(route, context);
     }
   }
 
-  static _handleClientRouting(String route, BuildContext context) {
+  static _handleClientRouting(String jsonData, BuildContext context) {
     try {
-      log.fine("Completer return value: $route");
-      if (route == "TicTacToe") {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const TicTacToePage()));
-      } else if (route == "") {
-        return;
+      NavigationData navData = NavigationData.fromJson(json.decode(jsonData));
+
+      //if (navData.data == DataType.navigation) {
+      if (EnumUtils.enumIsEqual(navData.data, DataType.navigation)) {
+        Navigator.pushNamed(context, navData.route);
+      } else {
+        log.shout("irgendwas ist massiv falsch... $navData");
+        log.shout(
+            "empfange: ${navData.dataType} is ${navData.dataType.runtimeType}");
+        log.shout(
+            "gewollt: ${DataType.navigation} is ${DataType.navigation.runtimeType}");
+        log.shout(
+            "entschluss: ${DataType.navigation.index == navData.dataType.index}");
       }
-      Navigator.pushNamed(context, route);
     } on Error catch (e) {
-      log.severe("Issue while trying to push to '$route'", e, e.stackTrace);
+      log.severe("Issue while trying to push", e, e.stackTrace);
     }
   }
 }

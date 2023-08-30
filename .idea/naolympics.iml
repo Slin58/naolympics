@@ -6,9 +6,6 @@
       <excludeFolder url="file://$MODULE_DIR$/naolympics_app/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/naolympics_app/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/naolympics_app/build" />
-      <excludeFolder url="file://$MODULE_DIR$/naolympics_app/apk/build" />
-      <excludeFolder url="file://$MODULE_DIR$/naolympics_app/apk/.pub" />
-      <excludeFolder url="file://$MODULE_DIR$/naolympics_app/apk/.dart_tool" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

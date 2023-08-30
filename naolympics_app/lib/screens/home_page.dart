@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:naolympics_app/screens/socket_test.dart';
+import 'package:naolympics_app/screens/find_player_page.dart';
 
 import 'game_selection/game_selection.dart';
 
@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
             createNavButton("Local", context, const GameSelectionPage()),
             SizedBox(height: marginSize / 3.0),
             createNavButton(
-                "Multiplayer", context, const SocketTest()) //placeholder
+                "Multiplayer", context, const FindPlayerPage()) //placeholder
           ],
         ),
       ),
@@ -42,7 +42,7 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
         foregroundColor: Colors.blue,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.blue,
             width: 2.5,
           ),
@@ -58,7 +58,7 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
       child: Text(
         title,
         softWrap: false,
-        style: TextStyle(fontSize: 30),
+        style: const TextStyle(fontSize: 30),
       ),
     ),
   );
