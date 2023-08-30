@@ -263,7 +263,6 @@ def play_tictactoe_against_itself(robotIP, PORT):
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if circle_turn:
             result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
@@ -282,7 +281,7 @@ def play_tictactoe_against_itself(robotIP, PORT):
             return
 
 
-def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision is done
+def play_connect_four_against_itself(robotIP, PORT):
     yellow_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
@@ -299,7 +298,6 @@ def play_connect_four_against_itself(robotIP, PORT):  # todo test after vision i
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if yellow_turn:
             result, winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
@@ -337,7 +335,6 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if field == field_after_move:
             time.sleep(0.2)
@@ -383,7 +380,6 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
 
         if field == field_after_move:
@@ -425,7 +421,6 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if field == field_after_move:
             time.sleep(0.2)
@@ -473,7 +468,6 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
                 print("Game over")
-                # todo implement if won celebration else disappointment
                 return
         if field == field_after_move:
             time.sleep(0.2)
