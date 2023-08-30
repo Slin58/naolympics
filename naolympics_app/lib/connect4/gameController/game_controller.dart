@@ -64,19 +64,9 @@ class GameController extends GetxController {
         board[columnNumber][row] = playerNumber;
         update();
 
-        int horizontalWinCond = checkForHorizontalWin(columnNumber);
-        int verticalWinCond = checkForVerticalWin(columnNumber);
-        int diagonalWinCond = checkDiagonalWinCond(columnNumber);
-        print("Horizontal Winner: $horizontalWinCond");
-        print("Vertical Winner: $verticalWinCond");
+        int winner = checkForWinner(columnNumber);
 
-        int winner = (horizontalWinCond != 0)
-            ? horizontalWinCond
-            : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
-            ? diagonalWinCond
-            : 0;
-
-        if (winner != 0) {
+        if (winner != 0) {  //todo: Winner Message an anderen Spieler senden
           declareWinner(winner);
         }
 
@@ -106,17 +96,7 @@ class GameController extends GetxController {
         turnYellow = !turnYellow;
         update();
 
-        int horizontalWinCond = checkForHorizontalWin(columnNumber);
-        int verticalWinCond = checkForVerticalWin(columnNumber);
-        int diagonalWinCond = checkDiagonalWinCond(columnNumber);
-        print("Horizontal Winner: $horizontalWinCond");
-        print("Vertical Winner: $verticalWinCond");
-
-        int winner = (horizontalWinCond != 0)
-            ? horizontalWinCond
-            : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
-            ? diagonalWinCond
-            : 0;
+        int winner = checkForWinner(columnNumber);
 
         if (winner != 0) {
           turnYellow = true;
@@ -135,6 +115,20 @@ class GameController extends GetxController {
         Get.snackbar("Not available", "This column is full already",
             snackPosition: SnackPosition.BOTTOM);
       }
+  }
+
+  int checkForWinner(int columnNumber) {
+    int horizontalWinCond = checkForHorizontalWin(columnNumber);
+    int verticalWinCond = checkForVerticalWin(columnNumber);
+    int diagonalWinCond = checkDiagonalWinCond(columnNumber);
+    print("Horizontal Winner: $horizontalWinCond");
+    print("Vertical Winner: $verticalWinCond");
+
+    return (horizontalWinCond != 0)
+        ? horizontalWinCond
+        : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
+        ? diagonalWinCond
+        : 0;
   }
 
   void showFullBoardDialog() {
