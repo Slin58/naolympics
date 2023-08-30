@@ -49,7 +49,7 @@ def startPositionL(robotIP, port):
 def startPositionR(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
 
-    for i in range(1, 5):
+    for i in range(0, 4):
         i = 4 - i  # order of movement swapped that the robot won't hit the tablet
         motionProxy.angleInterpolationWithSpeed(armPosition.positionR[i],
                                                 armPosition.positionLStart[i] * (-1) * almath.TO_RAD, 0.2)
@@ -63,6 +63,11 @@ def startPositionR(robotIP, port):
 
 def startPosition(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
+    motionProxy.setStiffnesses("LLeg", 1.0)
+    motionProxy.setStiffnesses("RLeg", 1.0)
+    motionProxy.setStiffnesses("Body", 1.0)
+    motionProxy.setStiffnesses("LArm", 1.0)
+    motionProxy.setStiffnesses("RArm", 1.0)
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
@@ -279,11 +284,11 @@ def celebrate1(robotIP, port):
 
     for i in range(0, 3):
         motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration1], 0.2)
-        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionLCelebration1], 0.2)
+        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionRCelebration1], 0.2)
 
         time.sleep(1)
         motionProxy.setAngles(armPosition.positionL,  [i * almath.TO_RAD for i in armPosition.positionLCelebration2], 0.2)
-        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionLCelebration2], 0.2)
+        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionRCelebration2], 0.2)
 
         time.sleep(1)
 
@@ -319,7 +324,7 @@ def celebrate2(robotIP, port):
 
 
 if __name__ == "__main__":
-    celebrate2(robotIP="10.30.4.13", port=9559)
+    celebrate1(robotIP="10.30.4.13", port=9559)
     # startPosition(robotIP="10.30.4.13", port=9559)
     # after startup of nao
     # movementControl.disableAutonomousLife(robotIP, PORT)

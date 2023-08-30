@@ -478,7 +478,7 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 if __name__ == "__main__":
     # after startup of nao
     calibrate(["y_angle"])
-    # choose_game_by_buttons()
+    choose_game_by_buttons()
     # play_tictactoe_against_itself(robotIP, PORT)
     # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
