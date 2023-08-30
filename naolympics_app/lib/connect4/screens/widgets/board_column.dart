@@ -1,25 +1,23 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:naolympics_app/services/MultiplayerState.dart';
-import '../../controllers/game_controller.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
+import '../../gameController/game_controller.dart';
 import 'cell.dart';
 
 class BoardColumn extends StatelessWidget {
-  final GameController gameController = Get.find<GameController>();
-  late final List<int> coinsInColumn;
+  GameController gameController = Get.find<GameController>();
+  late final List<int> chipsInColumn;
   final int columnNumber;
 
   BoardColumn({
     Key? key,
-    required this.coinsInColumn,
+    required this.chipsInColumn,
     required this.columnNumber,
   }) : super(key: key);
 
   List<Cell> _buildBoardColumn() {
     //print(coinsInColumn.length);
-    return coinsInColumn.reversed
+    return chipsInColumn.reversed
         .map((chip) => chip == 1
             ? Cell(currCellState: CellState.YELLOW)
             : chip == 2
@@ -29,7 +27,7 @@ class BoardColumn extends StatelessWidget {
   }
 
     @override
-  Widget build(BuildContext context) {
+    Widget build(BuildContext context) {
       var playFunction = gameController.playColumnLocal;
       if (MultiplayerState.connection != null)
         playFunction = gameController.playColumnMultiplayer;

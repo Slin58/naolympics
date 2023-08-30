@@ -1,19 +1,16 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/MultiplayerState.dart';
-import '../../services/network/connection_service.dart';
+import '../../services/multiplayer_state.dart';
 import '../screens/widgets/cell.dart';
 import 'dart:convert';
-
 
 class GameController extends GetxController {
   static final log = Logger("Connect4");
   List<List<int>> board = [];
-  RxBool _turnYellow = true.obs;
-  bool get turnYellow => _turnYellow.value;
+  //RxBool _turnYellow = true.obs;
+  bool turnYellow = true;
   bool blockTurn = false;
 
   void _buildBoard() {
@@ -35,63 +32,13 @@ class GameController extends GetxController {
     _buildBoard();
   }
 
-  Future<void> playColumnMultiplayer(int columnNumber) async {
-
-/*
-    int winner = 0;
-
-    while (winner != 0) {
-      List<List<int>>? board = await getBoardFromOtherPlayer();
-
-
-      final int playerNumber = turnYellow ? 1 : 2;
-      if (board[columnNumber].contains(0)) {
-        final int row = board[columnNumber].indexWhere((cell) => cell == 0);
-        board[columnNumber][row] = playerNumber;
-        _turnYellow.value = !_turnYellow.value;
-        update();
-
-        int horizontalWinCond = checkForHorizontalWin(columnNumber);
-        int verticalWinCond = checkForVerticalWin(columnNumber);
-        int diagonalWinCond = checkDiagonalWinCond(columnNumber);
-        print("Horizontal Winner: $horizontalWinCond");
-        print("Vertical Winner: $verticalWinCond");
-
-        int winner = (horizontalWinCond != 0)
-            ? horizontalWinCond
-            : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
-            ? diagonalWinCond
-            : 0;
-
-        if (winner != 0) {
-          _turnYellow.value = true;
-          declareWinner(winner);
-        }
-
-        if (checkForFullBoard() == 1) {
-          int fB = checkForFullBoard();
-          print("FullBoard: $fB");
-          showFullBoardDialog();
-        }
-        blockTurn = true;
-        blockTurn =
-        await Future.delayed(const Duration(seconds: 2), () => false);
-      }
-      else {
-        Get.snackbar("Not available", "This column is full already",
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    } */
-  }
-
-
   Future<List<List<int>>?>getBoardFromOtherPlayer() {
     final completer = Completer<List<List<int>>?>();
     StreamSubscription<String> subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-      board = jsonDecode(data);
+      List<List<int>> receivedBoard = jsonDecode(data);
 
-      log.info("Server received '$data' and parsed it to '$board'");
-      completer.complete(board);
+      log.info("Server received '$data' and parsed it to '$receivedBoard'");
+      completer.complete(receivedBoard);
 
     }, onError: (error) {
       log.info('Error: $error');
@@ -104,13 +51,17 @@ class GameController extends GetxController {
     return completer.future.timeout(const Duration(seconds: 10));
   }
 
-  Future<void> playColumnLocal(int columnNumber) async {
+  Future<void> playColumnMultiplayer(int columnNumber) async {
+    int winner = 0;
 
-    final int playerNumber = turnYellow ? 1 : 2;
+      //board = (await getBoardFromOtherPlayer())!;
+      //update();
+       //turnYellow am Ende wieder wechseln solange bis neues Board empfangen wird
+      final int playerNumber = turnYellow ? 1 : 2;
+
       if (board[columnNumber].contains(0)) {
         final int row = board[columnNumber].indexWhere((cell) => cell == 0);
         board[columnNumber][row] = playerNumber;
-        _turnYellow.value = !_turnYellow.value;
         update();
 
         int horizontalWinCond = checkForHorizontalWin(columnNumber);
@@ -126,7 +77,49 @@ class GameController extends GetxController {
             : 0;
 
         if (winner != 0) {
-          _turnYellow.value = true;
+          declareWinner(winner);
+        }
+
+        if (checkForFullBoard() == 1) {
+          int fB = checkForFullBoard();
+          print("FullBoard: $fB");
+          showFullBoardDialog();
+        }
+        blockTurn = true;
+
+        turnYellow = !turnYellow;
+        MultiplayerState.connection!.write(json.encode(board));
+      }
+      else {
+        Get.snackbar("Not available", "This column is full already",
+            snackPosition: SnackPosition.BOTTOM);
+      }
+
+  }
+
+  Future<void> playColumnLocal(int columnNumber) async {
+
+    final int playerNumber = turnYellow ? 1 : 2;
+      if (board[columnNumber].contains(0)) {
+        final int row = board[columnNumber].indexWhere((cell) => cell == 0);
+        board[columnNumber][row] = playerNumber;
+        turnYellow = !turnYellow;
+        update();
+
+        int horizontalWinCond = checkForHorizontalWin(columnNumber);
+        int verticalWinCond = checkForVerticalWin(columnNumber);
+        int diagonalWinCond = checkDiagonalWinCond(columnNumber);
+        print("Horizontal Winner: $horizontalWinCond");
+        print("Vertical Winner: $verticalWinCond");
+
+        int winner = (horizontalWinCond != 0)
+            ? horizontalWinCond
+            : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
+            ? diagonalWinCond
+            : 0;
+
+        if (winner != 0) {
+          turnYellow = true;
           declareWinner(winner);
         }
 

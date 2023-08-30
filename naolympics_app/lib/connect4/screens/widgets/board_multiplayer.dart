@@ -1,21 +1,59 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logging/logging.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
 import '../../gameController/game_controller.dart';
 import 'board_column.dart';
 
-class Board extends StatelessWidget {
+class BoardMultiplayer extends StatelessWidget {
   final GameController gameController = Get.find<GameController>();
+  static final log = Logger((BoardMultiplayer).toString());
 
-  List<BoardColumn> _buildBoard() {
+  List<BoardColumn> _buildBoardMultiplayer() {  //weiß nicht ob das einmal oder bei jeder Aenderung aufgerufen wird; falls bei jeder Aenderung muss die liste
+                                                //woanders genau einmal erstellt werden
+    gameController.turnYellow = MultiplayerState.isHosting() ? true : false;
     int currentColNumber = 0;
-    return gameController.board
+
+    startListening();
+
+    return gameController.board   //Liste hier das erste mal static erstellen
         .map((boardColumn) => BoardColumn(
               chipsInColumn: boardColumn,
               columnNumber: currentColNumber++,
             ))
         .toList();
   }
+
+  Future<void> startListening() async {
+    Completer<List<List<int>>> completer = Completer<List<List<int>>>();
+    StreamSubscription<String>? subscription = null;
+    subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+      List<List<int>> receivedBoard = json.decode(data).map<List<int>>((dynamic innerList) {
+        return (innerList as List<dynamic>).cast<int>().toList();
+      }).toList();
+      log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
+
+      gameController.turnYellow = !gameController.turnYellow;
+      gameController.blockTurn = false;
+      gameController.board = receivedBoard;
+      gameController.update();
+      log.info("finished listening for new Board from oter player");
+
+      completer.complete(receivedBoard);
+    },
+    onError: (error) {
+      log.info("Error while trying to listen for Board Update");
+      completer.completeError(error);
+    }, onDone: () {
+      subscription!.cancel();
+      log.info("Done method of startListening triggered: Probably not intentional lmao");
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +89,7 @@ class Board extends StatelessWidget {
                   children: [
                     GetBuilder<GameController>(
                       builder: (GetxController gameController) => Row(
-                        children: _buildBoard(),
+                        children: _buildBoardMultiplayer(),
                       ),
                     ),
                   ],

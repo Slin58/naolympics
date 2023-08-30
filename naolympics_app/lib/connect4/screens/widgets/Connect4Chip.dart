@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Coin extends StatelessWidget {
-  final Color coinColor;
+class Connect4Chip extends StatelessWidget {
+  final Color chipColor;
 
-  const Coin({
+  const Connect4Chip({
     Key? key,
-    required this.coinColor,
+    required this.chipColor,
   }) : super(key: key);
 
   @override
@@ -15,7 +15,7 @@ class Coin extends StatelessWidget {
       radius: 40,
       backgroundColor: Colors.black,
       child: CircleAvatar(
-        backgroundColor: coinColor,
+        backgroundColor: chipColor,
         radius: 38,
       ),
     );

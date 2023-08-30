@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'Connect4Chip.dart';
 
-import 'coin.dart';
 
 enum CellState {
   EMPTY,
@@ -17,19 +17,19 @@ class Cell extends StatelessWidget {
     required this.currCellState,
   }) : super(key: key);
 
-  Coin _buildCoin() {
+  Connect4Chip _buildChip() {
     switch (this.currCellState) {
       case CellState.YELLOW:
-        return Coin(
-          coinColor: Colors.yellow,
+        return Connect4Chip(
+          chipColor: Colors.yellow,
         );
       case CellState.RED:
-        return Coin(
-          coinColor: Colors.red,
+        return Connect4Chip(
+          chipColor: Colors.red,
         );
       default:
-        return Coin(
-          coinColor: Colors.white,
+        return Connect4Chip(
+          chipColor: Colors.white,
         );
     }
   }
@@ -42,7 +42,7 @@ class Cell extends StatelessWidget {
         Positioned.fill(
             child: Align(
           alignment: Alignment.center,
-          child: _buildCoin(),
+          child: _buildChip(),
         ))
       ],
     );

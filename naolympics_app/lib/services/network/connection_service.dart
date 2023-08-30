@@ -221,7 +221,6 @@ enum ConnectionStatus {
   }
 
   static ConnectionStatus? bytesToConnectionStatus(String message) {
-    //todo: client currently sends "[91, 48, 93]" as msg when connecting. this parses to null. am changing this to work temporarily for test purposes
     try {
       print(message);
       //print(bytes[0]);
