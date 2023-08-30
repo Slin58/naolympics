@@ -71,6 +71,7 @@ positionLUp = [
 ]
 
 # height 49,5 cm -> upper end of tablet
+positionLUp[5][8] = [-40, 23, -31, 0, 0]
 positionLUp[4][8] = [-40, 17, -32, 0, 0]  # exactly left up
 positionLUp[3][8] = [-40, 11, -31, 0, 0]
 positionLUp[2][8] = [-40, 2, -27, 0, 0]
@@ -127,6 +128,7 @@ positionLUp[1][1] = [-5, 24, -76, 0, 0]
 positionLUp[0][1] = [-5, 11, -68, 0, 0]
 
 # height 39 cm -> the lowest point
+positionLUp[5][0] = [0, 62, -76, 0, 0]
 positionLUp[4][0] = [0, 53, -84, 0, 0]
 positionLUp[3][0] = [0, 45, -84, 0, 0]
 positionLUp[2][0] = [0, 35, -81, 0, 0]

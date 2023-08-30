@@ -28,9 +28,9 @@ def tabletPreparationXAngle(robotIP, port):
 
 
 def tabletPosition(robotIP, port):
-    armMovement(robotIP, port, arm="L", position=armPosition.positionLUp[4][0], go_back=False)
+    armMovement(robotIP, port, arm="L", position=getInterpolatedPosition(left=4.4, up=0), go_back=False)
+    armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=4.4, up=8), go_back=False)
 
-    armMovement(robotIP, port, arm="R", position=armPosition.positionLUp[4][8], go_back=False)
     openHand(robotIP, port, arm="L")
     openHand(robotIP, port, arm="R")
 
@@ -63,6 +63,11 @@ def startPositionR(robotIP, port):
 
 def startPosition(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
+    motionProxy.setStiffnesses("LLeg", 1.0)
+    motionProxy.setStiffnesses("RLeg", 1.0)
+    motionProxy.setStiffnesses("Body", 1.0)
+    motionProxy.setStiffnesses("LArm", 1.0)
+    motionProxy.setStiffnesses("RArm", 1.0)
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
@@ -280,11 +285,10 @@ def celebrate1(robotIP, port):
     for i in range(0, 3):
         motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration1], 0.2)
         motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionRCelebration1], 0.2)
-
         time.sleep(1)
+
         motionProxy.setAngles(armPosition.positionL,  [i * almath.TO_RAD for i in armPosition.positionLCelebration2], 0.2)
         motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionRCelebration2], 0.2)
-
         time.sleep(1)
 
     startPosition(robotIP, port)
@@ -319,7 +323,7 @@ def celebrate2(robotIP, port):
 
 
 if __name__ == "__main__":
-    celebrate2(robotIP="10.30.4.13", port=9559)
+    # celebrate2(robotIP="10.30.4.13", port=9559)
     # startPosition(robotIP="10.30.4.13", port=9559)
     # after startup of nao
     # movementControl.disableAutonomousLife(robotIP, PORT)
@@ -328,7 +332,7 @@ if __name__ == "__main__":
     # tablet positioning
     # use app Bubble Level (or similar to calibrate z-Angle)
     # movementControl.tabletPreparationXAngle(robotIP, PORT)
-    # movementControl.tabletPosition(robotIP, PORT) # y-Angle
+    # tabletPosition(robotIP="10.30.4.13", port=9559) # y-Angle
 
     # start positions
     # movementControl.startPositionL(robotIP, PORT)
