@@ -58,9 +58,15 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
     max_of_defense = max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1])
     if max_of_offense > max_of_defense:
         print("offense")
+        return max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0]) \
+            + (factorForOtherPriorities * prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0]) \
+            - (0.5 * priority_above_opponent)
 
     else:
         print("defense")
+        return max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1]) \
+            + (factorForOtherPriorities * prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1]) \
+            - (0.5 * priority_above_opponent)
 
     return max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1]) + (factorForOtherPriorities * otherPriorities) - (0.5 * priority_above_opponent)
 
@@ -104,13 +110,14 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
 
             defendNecessaryDir1 = False
 
-        elif field[i - (up+up)][j - (right+right)] == signOpponent and defendNecessaryDir1:
+        elif field[i - (up+up)][j - (right+right)] == signOpponent:
             priorityWin = priorityWin - 11
             winningMoveDir1 = False
             restAvailable1 = False
 
-            priorityDefend = priorityDefend + 9
-            defendMove += 1
+            if defendNecessaryDir1:
+                priorityDefend = priorityDefend + 9
+                defendMove += 1
 
         elif field[i - (up+up)][j - (right+right)] == signEmpty and restAvailable1:
             priorityWin = priorityWin + 1
@@ -122,11 +129,12 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
             if winningMoveDir1:
                 winningMove += 1
 
-        elif field[i - (up+up+up)][j - (right+right+right)] == signOpponent and defendNecessaryDir1:
+        elif field[i - (up+up+up)][j - (right+right+right)] == signOpponent:
             priorityWin = priorityWin - 10
 
-            priorityDefend = priorityDefend + 6
-            defendMove += 1
+            if defendNecessaryDir1:
+                priorityDefend = priorityDefend + 6
+                defendMove += 1
 
         elif field[i - (up+up+up)][j - (right+right+right)] == signEmpty and restAvailable1:
             priorityWin = priorityWin + 1
@@ -161,13 +169,14 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
 
             defendNecessaryDir2 = False
 
-        elif field[i + (up+up)][j + (right+right)] == signOpponent and defendNecessaryDir2:
+        elif field[i + (up+up)][j + (right+right)] == signOpponent:
             priorityWin = priorityWin - 11
             winningMoveDir2 = False
             restAvailable2 = False
 
-            priorityDefend = priorityDefend + 9
-            defendMove += 1
+            if defendNecessaryDir2:
+                priorityDefend = priorityDefend + 9
+                defendMove += 1
 
         elif field[i + (up+up)][j + (right+right)] == signEmpty and restAvailable2:
             priorityWin = priorityWin + 1
@@ -179,11 +188,12 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
             if winningMoveDir2:
                 winningMove += 1
 
-        elif field[i + (up+up+up)][j + (right+right+right)] == signOpponent and defendNecessaryDir2:
+        elif field[i + (up+up+up)][j + (right+right+right)] == signOpponent:
             priorityWin = priorityWin - 10
+            if defendNecessaryDir2:
+                priorityDefend = priorityDefend + 6
+                defendMove += 1
 
-            priorityDefend = priorityDefend + 6
-            defendMove += 1
         elif field[i + (up+up+up)][j + (right+right+right)] == signEmpty and restAvailable2:
             priorityWin = priorityWin + 1
 
