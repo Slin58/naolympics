@@ -1,7 +1,7 @@
 import 'data_types.dart';
 
 abstract class JsonData {
-  final DataType dataType;
+  DataType dataType;
 
   JsonData(this.dataType);
 
