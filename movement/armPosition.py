@@ -41,19 +41,19 @@ positionLTabletPreparation = [-10, 0, -85, -20, -90]
 
 positionLStart = [60, 60, -88, 0, 0]
 
-positionLCelebration1 = [10 * almath.TO_RAD, 0 * almath.TO_RAD, -85 * almath.TO_RAD, 0 * almath.TO_RAD, -90 * almath.TO_RAD]
-positionLCelebration2 = [-80 * almath.TO_RAD, 5 * almath.TO_RAD, -2 * almath.TO_RAD, 0 * almath.TO_RAD, -90 * almath.TO_RAD]
+positionLCelebration1 = [10, 0, -85, 0, -90]
+positionLCelebration2 = [-80, 5, -2, 0, -90]
 
-positionRCelebration1 = [10 * almath.TO_RAD, 0 * almath.TO_RAD, 85 * almath.TO_RAD, 0 * almath.TO_RAD, 90 * almath.TO_RAD]
-positionRCelebration2 = [-80 * almath.TO_RAD, -5 * almath.TO_RAD, 2 * almath.TO_RAD, 0 * almath.TO_RAD, 90 * almath.TO_RAD]
+positionRCelebration1 = [10, 0, 85, 0, 90]
+positionRCelebration2 = [-80, -5, 2, 0, 90]
 
-positionLCelebration3 = [0 * almath.TO_RAD, -10 * almath.TO_RAD, -80 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
-positionLCelebration4 = [-34 * almath.TO_RAD, -10 * almath.TO_RAD, -65 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
-positionLCelebration5 = [-50 * almath.TO_RAD, 60 * almath.TO_RAD, 2 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+positionLCelebration3 = [0, -10, -80, 0, 0]
+positionLCelebration4 = [-34, -10, -65, 0, 0]
+positionLCelebration5 = [-50, 60, 2, 0, 0]
 
-positionRCelebration3 = [0 * almath.TO_RAD, 10 * almath.TO_RAD, 80 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
-positionRCelebration4 = [-34 * almath.TO_RAD, 10 * almath.TO_RAD, 65 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
-positionRCelebration5 = [-50 * almath.TO_RAD, -60 * almath.TO_RAD, -2 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
+positionRCelebration3 = [0, 10, 80, 0, 0]
+positionRCelebration4 = [-34, 10, 65, 0, 0]
+positionRCelebration5 = [-50, -60, -2, 0, 0]
 
 # for right arm, use left arm positions with right arm:
 #    multiply: ShoulderRoll, ElbowRow, WristYaw and ElbowYaw by (-1) (everything except ShoulderPitch)

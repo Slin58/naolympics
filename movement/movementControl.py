@@ -278,12 +278,12 @@ def celebrate1(robotIP, port):
     tts.say("Juhu, ich habe gewonnen! LOL!")
 
     for i in range(0, 3):
-        motionProxy.setAngles(armPosition.positionL, [i * 5 for i in armPosition.positionLCelebration1], 0.2)
-        motionProxy.setAngles(armPosition.positionR,  [i * 5 for i in armPosition.positionLCelebration1], 0.2)
+        motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration1], 0.2)
+        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionLCelebration1], 0.2)
 
         time.sleep(1)
-        motionProxy.setAngles(armPosition.positionL,  [i * 5 for i in armPosition.positionLCelebration2], 0.2)
-        motionProxy.setAngles(armPosition.positionR,  [i * 5 for i in armPosition.positionLCelebration2], 0.2)
+        motionProxy.setAngles(armPosition.positionL,  [i * almath.TO_RAD for i in armPosition.positionLCelebration2], 0.2)
+        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionLCelebration2], 0.2)
 
         time.sleep(1)
 
@@ -308,11 +308,11 @@ def celebrate2(robotIP, port):
     motionProxy.angleInterpolationWithSpeed("HeadPitch", 15.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
 
-    motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration3, 0.2)
+    motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration3], 0.2)
     time.sleep(0.8)
-    motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration4, 0.2)
+    motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration4], 0.2)
 
-    motionProxy.setAngles(armPosition.positionR, armPosition.positionRCelebration5, 0.2)
+    motionProxy.setAngles(armPosition.positionR, [i * almath.TO_RAD for i in armPosition.positionRCelebration5], 0.2)
     time.sleep(2)
 
     startPosition(robotIP, port)
