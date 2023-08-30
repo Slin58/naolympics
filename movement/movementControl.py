@@ -63,11 +63,6 @@ def startPositionR(robotIP, port):
 
 def startPosition(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
-    motionProxy.setStiffnesses("LLeg", 1.0)
-    motionProxy.setStiffnesses("RLeg", 1.0)
-    motionProxy.setStiffnesses("Body", 1.0)
-    motionProxy.setStiffnesses("LArm", 1.0)
-    motionProxy.setStiffnesses("RArm", 1.0)
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
@@ -324,7 +319,7 @@ def celebrate2(robotIP, port):
 
 
 if __name__ == "__main__":
-    celebrate1(robotIP="10.30.4.13", port=9559)
+    celebrate2(robotIP="10.30.4.13", port=9559)
     # startPosition(robotIP="10.30.4.13", port=9559)
     # after startup of nao
     # movementControl.disableAutonomousLife(robotIP, PORT)
