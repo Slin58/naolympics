@@ -1,9 +1,30 @@
 # coding=utf-8
 import almath
 
+# Joints	        Motor	    Reduction ratio
+# Head
+# HeadYaw        Type 1	    Type A
+# HeadPitch	    Type 1	    Type B
+# Arms
+# ShoulderPitch	Type 1	    Type A
+# ShoulderRoll	Type 1	    Type B
+# ElbowYaw	    Type 1	    Type A
+# ElbowRoll	    Type 1	    Type B
+# Hands
+# WristYaw	    Type 1	    Type A
+# Hand	        Type 1	    Type A
+# Legs
+# HipYawPitch	Type 2	    Type A
+# HipRoll	    Type 2	    Type A
+# HipPitch	    Type 2	    Type B
+# KneePitch	    Type 2	    Type B
+# AnklePitch	    Type 2	    Type B
+# AnkleRoll	    Type 2	    Type A
+
+
 positionR = ["RShoulderPitch", "RShoulderRoll", "RElbowRoll", "RWristYaw", "RElbowYaw"]
 positionL = ["LShoulderPitch", "LShoulderRoll", "LElbowRoll", "LWristYaw", "LElbowYaw"]
-positionRange = [-119.5 - 119.5, -75, 9 - 15.0, 2 - 85, (0 - 1), -104.3 - 103.9, -119 - 119]
+positionLRange = [-119.5 - 119.5, -75, 9 - 15.0, 2 - 85, (0 - 1), -104.3 - 103.9, -119 - 119]
 # Height, Left/Right, Height2+Depth
 
 # position (without the not clickable edge):
@@ -34,6 +55,8 @@ positionRCelebration3 = [0 * almath.TO_RAD, 10 * almath.TO_RAD, 80 * almath.TO_R
 positionRCelebration4 = [-34 * almath.TO_RAD, 10 * almath.TO_RAD, 65 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
 positionRCelebration5 = [-50 * almath.TO_RAD, -60 * almath.TO_RAD, -2 * almath.TO_RAD, 0 * almath.TO_RAD, 0 * almath.TO_RAD]
 
+# for right arm, use left arm positions with right arm:
+#    multiply: ShoulderRoll, ElbowRow, WristYaw and ElbowYaw by (-1) (everything except ShoulderPitch)
 
 positionLUp = [
     [[], [], [], [], [], [], [], [], []],
@@ -110,25 +133,4 @@ positionLUp[2][0] = [0, 35, -81, 0, 0]
 positionLUp[1][0] = [0, 23, -76, 0, 0]
 positionLUp[0][0] = [0, 10, -67, 0, 0]
 
-# for right arm, use left arm positions with right arm:
-#    multiply: ShoulderRoll, ElbowRow, WristYaw and ElbowYaw by (-1) (everything except ShoulderPitch)
 
-# Joints	        Motor	    Reduction ratio
-# Head
-# HeadYaw        Type 1	    Type A
-# HeadPitch	    Type 1	    Type B
-# Arms
-# ShoulderPitch	Type 1	    Type A
-# ShoulderRoll	Type 1	    Type B
-# ElbowYaw	    Type 1	    Type A
-# ElbowRoll	    Type 1	    Type B
-# Hands
-# WristYaw	    Type 1	    Type A
-# Hand	        Type 1	    Type A
-# Legs
-# HipYawPitch	Type 2	    Type A
-# HipRoll	    Type 2	    Type A
-# HipPitch	    Type 2	    Type B
-# KneePitch	    Type 2	    Type B
-# AnklePitch	    Type 2	    Type B
-# AnkleRoll	    Type 2	    Type A

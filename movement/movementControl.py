@@ -188,7 +188,7 @@ def armMovement(robotIP, port, arm, position, go_back):
     print("done")
 
 
-def getInterpolatedPosition(left, up):     # translate comma amounts for Left and Up to the inbetween point of two
+def getInterpolatedPosition(left, up):     # translate comma amounts for Left and Up to the armPosition for the inbetween point of two or four points
     if left - int(left) == 0 and up - int(up) == 0:
         return armPosition.positionLUp[left][up]
 
@@ -265,9 +265,7 @@ def clickConnectFour(robotIP, port, positionName):
         armMovement(robotIP, port, arm="R", position=getInterpolatedPosition(left=1.6, up=6), go_back=True)
 
 
-def celebrate(robotIP, port):
-    startPosition(robotIP, port)
-
+def celebrate1(robotIP, port):
     motionProxy = ALProxy("ALMotion", robotIP, port)
 
     motionProxy.setStiffnesses("LLeg", 1.0)
@@ -280,12 +278,12 @@ def celebrate(robotIP, port):
     tts.say("Juhu, ich habe gewonnen! LOL!")
 
     for i in range(0, 3):
-        motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration1, 0.2)
-        motionProxy.setAngles(armPosition.positionR, armPosition.positionRCelebration1, 0.2)
+        motionProxy.setAngles(armPosition.positionL, [i * 5 for i in armPosition.positionLCelebration1], 0.2)
+        motionProxy.setAngles(armPosition.positionR,  [i * 5 for i in armPosition.positionLCelebration1], 0.2)
 
         time.sleep(1)
-        motionProxy.setAngles(armPosition.positionL, armPosition.positionLCelebration2, 0.2)
-        motionProxy.setAngles(armPosition.positionR, armPosition.positionRCelebration2, 0.2)
+        motionProxy.setAngles(armPosition.positionL,  [i * 5 for i in armPosition.positionLCelebration2], 0.2)
+        motionProxy.setAngles(armPosition.positionR,  [i * 5 for i in armPosition.positionLCelebration2], 0.2)
 
         time.sleep(1)
 
@@ -293,11 +291,6 @@ def celebrate(robotIP, port):
 
 
 def celebrate2(robotIP, port):
-    startPosition(robotIP, port)
-
-    tts = ALProxy("ALTextToSpeech", robotIP, port)
-    tts.say("Juhu, ich habe gewonnen! LOL!")
-
     motionProxy = ALProxy("ALMotion", robotIP, port)
 
     motionProxy.setStiffnesses("LLeg", 1.0)
@@ -305,6 +298,9 @@ def celebrate2(robotIP, port):
     motionProxy.setStiffnesses("Body", 1.0)
     motionProxy.setStiffnesses("LArm", 1.0)
     motionProxy.setStiffnesses("RArm", 1.0)
+
+    tts = ALProxy("ALTextToSpeech", robotIP, port)
+    tts.say("Juhu, ich habe gewonnen! LOL!")
 
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 30.0 * almath.TO_RAD, 0.2)
@@ -325,7 +321,6 @@ def celebrate2(robotIP, port):
 if __name__ == "__main__":
     celebrate2(robotIP="10.30.4.13", port=9559)
     # startPosition(robotIP="10.30.4.13", port=9559)
-    # celebrate(robotIP="10.30.4.13", port=9559)
     # after startup of nao
     # movementControl.disableAutonomousLife(robotIP, PORT)
     # movementControl.stand(robotIP, PORT)
@@ -337,11 +332,11 @@ if __name__ == "__main__":
 
     # start positions
     # movementControl.startPositionL(robotIP, PORT)
-    #startPositionR("10.30.4.13", 9559)
+    # startPositionR("10.30.4.13", 9559)
 
     # openHand(arm="R")
     # openHand(arm="L")
 
-    #armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=1.7, up=6), arm="L", go_back=True)
+    # armMovement(robotIP="10.30.4.13", port=9559, position=getInterpolatedPosition(left=1.7, up=6), arm="L", go_back=True)
     # clickConnectFour("10.30.4.13", 9559, 6)
     # closeHand(arm="L")
