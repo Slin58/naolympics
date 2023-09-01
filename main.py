@@ -529,10 +529,10 @@ if __name__ == "__main__":
     # after startup of nao
     # calibrate(["start_position"])
     # movementControl.celebrate1(robotIP, PORT)
-    choose_game_by_buttons()
+    # choose_game_by_buttons()
     # play_tictactoe_against_itself(robotIP, PORT)
     # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
     # play_connect_four_against_itself(robotIP, PORT)
-    # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
+    play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
     # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)

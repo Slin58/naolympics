@@ -111,6 +111,7 @@ positionLUp[1][4] = [-20, 21, -70, 0, 0]
 positionLUp[0][4] = [-20, 8, -62, 0, 0]
 
 # height ?? cm
+positionLUp[5][3] = [-15, 58, -72, 0, 0]
 positionLUp[4][3] = [-15, 47, -79, 0, 0]
 positionLUp[3][3] = [-15, 39, -79, 0, 0]
 positionLUp[2][3] = [-15, 30, -77, 0, 0]
@@ -118,6 +119,7 @@ positionLUp[1][3] = [-15, 19, -70, 0, 0]
 positionLUp[0][3] = [-15, 8, -63, 0, 0]
 
 # height ?? cm
+positionLUp[5][2] = [-10, 60, -75, 0, 0]
 positionLUp[4][2] = [-10, 50, -82, 0, 0]
 positionLUp[3][2] = [-10, 42, -82, 0, 0]
 positionLUp[2][2] = [-10, 32, -79, 0, 0]
@@ -125,6 +127,7 @@ positionLUp[1][2] = [-10, 21, -74, 0, 0]
 positionLUp[0][2] = [-10, 9, -66, 0, 0]
 
 # height ?? cm
+positionLUp[5][1] = [-5, 62, -75, 0, 0]
 positionLUp[4][1] = [-5, 51, -83, 0, 0]
 positionLUp[3][1] = [-5, 44, -83, 0, 0]
 positionLUp[2][1] = [-5, 34, -81, 0, 0]

@@ -88,7 +88,6 @@ def openHand(robotIP, port, arm):
         print('wrong arm: "L" or "R" possible')
         return
 
-    # open hand
     motionProxy.openHand(hand_name)
 
     # does the same but without predefined method:
@@ -111,7 +110,6 @@ def closeHand(robotIP, port, arm):
         print('wrong arm: "L" or "R" possible')
         return
 
-    # close hand
     motionProxy.closeHand(hand_name)
 
     # Wait for the hand movement to complete
@@ -156,7 +154,6 @@ def armMovement(robotIP, port, arm, position, go_back):
     time.sleep(0.2)
 
     if arm == "L":
-        # enable arm control
         motionProxy.setStiffnesses("LArm", 1.0)
 
         for i in range(0, 5):
@@ -323,6 +320,7 @@ def celebrate2(robotIP, port):
 
 
 if __name__ == "__main__":
+    #print("test")
     # celebrate2(robotIP="10.30.4.13", port=9559)
     # startPosition(robotIP="10.30.4.13", port=9559)
     # after startup of nao
@@ -331,8 +329,8 @@ if __name__ == "__main__":
 
     # tablet positioning
     # use app Bubble Level (or similar to calibrate z-Angle)
-    # movementControl.tabletPreparationXAngle(robotIP, PORT)
-    # tabletPosition(robotIP="10.30.4.13", port=9559) # y-Angle
+    #tabletPreparationXAngle(robotIP="10.30.4.13", port=9559)
+    tabletPosition(robotIP="10.30.4.13", port=9559) # y-Angle
 
     # start positions
     # movementControl.startPositionL(robotIP, PORT)
