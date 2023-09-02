@@ -63,15 +63,4 @@ class Board extends StatelessWidget {
     );
   }
 
-  static void showWinnerDialogue(BuildContext context, String text) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pop(true);
-          });
-          return AlertDialog(title: Center(child:Text(text)));
-        });
-  }
-
 }

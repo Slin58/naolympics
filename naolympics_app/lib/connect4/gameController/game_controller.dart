@@ -10,7 +10,6 @@ import '../widgets/cell.dart';
 class GameController extends GetxController {
   static final log = Logger("Connect4");
   List<List<int>> board = [];
-  //RxBool _turnYellow = true.obs;
   bool turnYellow = true;
   bool blockTurn = false;
 
@@ -117,7 +116,6 @@ class GameController extends GetxController {
                 : 0;
 
     if (winner != 0) {
-      //todo: Winner Message an anderen Spieler senden
       declareWinner(winner);
     }
   }
@@ -172,7 +170,7 @@ class GameController extends GetxController {
     showDialog(
         context: Get.context!,
         builder: (context) {
-          Future.delayed(const Duration(seconds: 100), () {
+          Future.delayed(const Duration(seconds: 10), () {
             Navigator.of(context).pop(true);
             buildBoard();
           });

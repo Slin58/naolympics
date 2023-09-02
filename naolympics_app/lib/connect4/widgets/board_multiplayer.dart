@@ -13,8 +13,7 @@ class BoardMultiplayer extends StatelessWidget {
   final GameController gameController = Get.find<GameController>();
   static final log = Logger((BoardMultiplayer).toString());
 
-  List<BoardColumn> _buildBoardMultiplayer() {  //weiß nicht ob das einmal oder bei jeder Aenderung aufgerufen wird; falls bei jeder Aenderung muss die liste
-    //woanders genau einmal erstellt werden
+  List<BoardColumn> _buildBoardMultiplayer() {
     gameController.turnYellow = MultiplayerState.isHosting() ? true : false;
     int currentColNumber = 0;
 
@@ -31,6 +30,8 @@ class BoardMultiplayer extends StatelessWidget {
   Future<void> startListening() async {
    // Completer<List<List<int>>> completer = Completer<List<List<int>>>();
     StreamSubscription<String>? subscription = null;
+    final GameController gameController = Get.find<GameController>();
+
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
       List<List<int>> receivedBoard = json.decode(data).map<List<int>>((dynamic innerList) {
         return (innerList as List<dynamic>).cast<int>().toList();
@@ -51,10 +52,14 @@ class BoardMultiplayer extends StatelessWidget {
       gameController.update();
       log.info("finished listening for new Board from oter player");
 
-      //completer.complete(receivedBoard);
+        subscription?.cancel();
+
+        //completer.complete(receivedBoard);
+
     },
         onError: (error) {
           log.info("Error while trying to listen for Board Update");
+          subscription?.cancel();
           //completer.completeError(error);
         }, onDone: () {
           //TODO: On stop Connection close stream subscription and set MultiplayerState.connection to null
