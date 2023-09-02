@@ -113,7 +113,9 @@ class ConnectionService {
       _hostLog("finished handling connection to client");
     });
 
-    return completer.future.timeout(timeoutDuration).whenComplete(() => subscription.cancel());
+    return completer.future.timeout(timeoutDuration, onTimeout: () {
+      subscription.cancel();
+    }).whenComplete(() => subscription.cancel());
   }
 
   static Future<List<String>> getDevices() async {

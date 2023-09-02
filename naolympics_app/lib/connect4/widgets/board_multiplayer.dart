@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
-import '../../gameController/game_controller.dart';
+import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
 class BoardMultiplayer extends StatelessWidget {
@@ -14,7 +14,7 @@ class BoardMultiplayer extends StatelessWidget {
   static final log = Logger((BoardMultiplayer).toString());
 
   List<BoardColumn> _buildBoardMultiplayer() {  //weiß nicht ob das einmal oder bei jeder Aenderung aufgerufen wird; falls bei jeder Aenderung muss die liste
-                                                //woanders genau einmal erstellt werden
+    //woanders genau einmal erstellt werden
     gameController.turnYellow = MultiplayerState.isHosting() ? true : false;
     int currentColNumber = 0;
 
@@ -22,14 +22,14 @@ class BoardMultiplayer extends StatelessWidget {
 
     return gameController.board   //Liste hier das erste mal static erstellen
         .map((boardColumn) => BoardColumn(
-              chipsInColumn: boardColumn,
-              columnNumber: currentColNumber++,
-            ))
+      chipsInColumn: boardColumn,
+      columnNumber: currentColNumber++,
+    ))
         .toList();
   }
 
   Future<void> startListening() async {
-    Completer<List<List<int>>> completer = Completer<List<List<int>>>();
+   // Completer<List<List<int>>> completer = Completer<List<List<int>>>();
     StreamSubscription<String>? subscription = null;
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
       List<List<int>> receivedBoard = json.decode(data).map<List<int>>((dynamic innerList) {
@@ -39,19 +39,28 @@ class BoardMultiplayer extends StatelessWidget {
 
       gameController.turnYellow = !gameController.turnYellow;
       gameController.blockTurn = false;
+      int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
+
+      var oldboard = gameController.board;
+      log.info("Old board: $oldboard");
+      log.info("New board: $receivedBoard");
+
+      log.info("newMoveInColumn: $newMoveInColumn");
       gameController.board = receivedBoard;
+      if(newMoveInColumn != -1) gameController.checkForWinner(newMoveInColumn);
       gameController.update();
       log.info("finished listening for new Board from oter player");
 
-      completer.complete(receivedBoard);
+      //completer.complete(receivedBoard);
     },
-    onError: (error) {
-      log.info("Error while trying to listen for Board Update");
-      completer.completeError(error);
-    }, onDone: () {
-      subscription!.cancel();
-      log.info("Done method of startListening triggered: Probably not intentional lmao");
-    });
+        onError: (error) {
+          log.info("Error while trying to listen for Board Update");
+          //completer.completeError(error);
+        }, onDone: () {
+          //TODO: On stop Connection close stream subscription and set MultiplayerState.connection to null
+          subscription!.cancel();
+          log.info("Done method of startListening triggered: Probably not intentional lmao");
+        });
   }
 
 
@@ -63,7 +72,7 @@ class BoardMultiplayer extends StatelessWidget {
         Container(
           margin: EdgeInsets.symmetric(horizontal: 100),
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-    decoration: BoxDecoration(
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(50),
               topRight: Radius.circular(50),
@@ -80,22 +89,22 @@ class BoardMultiplayer extends StatelessWidget {
               )
             ],
           ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GetBuilder<GameController>(
-                      builder: (GetxController gameController) => Row(
-                        children: _buildBoardMultiplayer(),
-                      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GetBuilder<GameController>(
+                    builder: (GetxController gameController) => Row(
+                      children: _buildBoardMultiplayer(),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );

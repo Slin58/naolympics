@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import '../../gameController/game_controller.dart';
-import '../widgets/board.dart';
+import '../gameController/game_controller.dart';
+import '../widgets/board_multiplayer.dart';
 
-class Connect4Screen extends StatelessWidget {
+class Connect4ScreenMultiplayer extends StatelessWidget {
   final GameController gameController = Get.put(GameController());
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class Connect4Screen extends StatelessWidget {
                       gameController.turnYellow ? Colors.yellow : Colors.red),
             )),
       ),
-      body: Board(),
+      body: BoardMultiplayer(),
     );
   }
 }

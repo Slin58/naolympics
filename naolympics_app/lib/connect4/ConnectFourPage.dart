@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:naolympics_app/connect4/screens/game_screens/connect_4_screen.dart';
-import 'package:naolympics_app/connect4/screens/game_screens/connect_4_screen_multiplayer.dart';
 import '../services/multiplayer_state.dart';
-import 'core/bindings/ControllerBinding.dart';
+import 'bindings/ControllerBinding.dart';
+import 'game_screens/connect_4_screen.dart';
+import 'game_screens/connect_4_screen_multiplayer.dart';
 
 void main() {
   runApp(const ConnectFourPage());
