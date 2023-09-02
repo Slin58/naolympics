@@ -13,6 +13,12 @@ class Connect4ScreenMultiplayer extends StatelessWidget {
       backgroundColor: Colors.blueGrey,
       appBar: AppBar(
         backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back), // Use any icon you prefer
+          onPressed: () {
+            Navigator.of(context).pop(); // Pop the current route to go back
+          },
+        ),
         title: Obx(() => Text(
               gameController.turnYellow
                   ? "Player 1 (yellow)"
