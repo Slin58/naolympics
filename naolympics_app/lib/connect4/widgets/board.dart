@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../gameController/game_controller.dart';
+import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
 class Board extends StatelessWidget {
@@ -62,4 +62,16 @@ class Board extends StatelessWidget {
       ],
     );
   }
+
+  static void showWinnerDialogue(BuildContext context, String text) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.of(context).pop(true);
+          });
+          return AlertDialog(title: Center(child:Text(text)));
+        });
+  }
+
 }

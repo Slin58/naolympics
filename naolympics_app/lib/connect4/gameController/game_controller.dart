@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import '../../services/multiplayer_state.dart';
-import '../screens/widgets/cell.dart';
 import 'dart:convert';
+import 'package:collection/collection.dart';
+import '../widgets/cell.dart';
 
 class GameController extends GetxController {
   static final log = Logger("Connect4");
@@ -13,7 +14,7 @@ class GameController extends GetxController {
   bool turnYellow = true;
   bool blockTurn = false;
 
-  void _buildBoard() {
+  void buildBoard() {
     this.board = [
       List.filled(6, 0),
       List.filled(6, 0),
@@ -29,17 +30,17 @@ class GameController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _buildBoard();
+    buildBoard();
   }
 
-  Future<List<List<int>>?>getBoardFromOtherPlayer() {
+  Future<List<List<int>>?> getBoardFromOtherPlayer() {
     final completer = Completer<List<List<int>>?>();
-    StreamSubscription<String> subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+    StreamSubscription<String> subscription =
+        MultiplayerState.connection!.broadcastStream.listen((data) {
       List<List<int>> receivedBoard = jsonDecode(data);
 
       log.info("Server received '$data' and parsed it to '$receivedBoard'");
       completer.complete(receivedBoard);
-
     }, onError: (error) {
       log.info('Error: $error');
       completer.completeError(error);
@@ -52,83 +53,83 @@ class GameController extends GetxController {
   }
 
   Future<void> playColumnMultiplayer(int columnNumber) async {
-    int winner = 0;
+    final int playerNumber = turnYellow ? 1 : 2;
 
-      //board = (await getBoardFromOtherPlayer())!;
-      //update();
-       //turnYellow am Ende wieder wechseln solange bis neues Board empfangen wird
-      final int playerNumber = turnYellow ? 1 : 2;
+    if (board[columnNumber].contains(0)) {
+      final int row = board[columnNumber].indexWhere((cell) => cell == 0);
+      board[columnNumber][row] = playerNumber;
+      update();
 
-      if (board[columnNumber].contains(0)) {
-        final int row = board[columnNumber].indexWhere((cell) => cell == 0);
-        board[columnNumber][row] = playerNumber;
-        update();
+      checkForWinner(columnNumber);
 
-        int winner = checkForWinner(columnNumber);
-
-        if (winner != 0) {  //todo: Winner Message an anderen Spieler senden
-          declareWinner(winner);
-        }
-
-        if (checkForFullBoard() == 1) {
-          int fB = checkForFullBoard();
-          print("FullBoard: $fB");
-          showFullBoardDialog();
-        }
-        blockTurn = true;
-
-        turnYellow = !turnYellow;
-        MultiplayerState.connection!.write(json.encode(board));
+      if (checkForFullBoard() == 1) {
+        int fB = checkForFullBoard();
+        print("FullBoard: $fB");
+        showFullBoardDialog();
       }
-      else {
-        Get.snackbar("Not available", "This column is full already",
-            snackPosition: SnackPosition.BOTTOM);
-      }
+      blockTurn = true;
 
+      turnYellow = !turnYellow;
+      MultiplayerState.connection!.write(json.encode(board));
+    } else {
+      Get.snackbar("Not available", "This column is full already",
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   Future<void> playColumnLocal(int columnNumber) async {
-
     final int playerNumber = turnYellow ? 1 : 2;
-      if (board[columnNumber].contains(0)) {
-        final int row = board[columnNumber].indexWhere((cell) => cell == 0);
-        board[columnNumber][row] = playerNumber;
-        turnYellow = !turnYellow;
-        update();
+    if (board[columnNumber].contains(0)) {
+      final int row = board[columnNumber].indexWhere((cell) => cell == 0);
+      board[columnNumber][row] = playerNumber;
+      update();
 
-        int winner = checkForWinner(columnNumber);
+      checkForWinner(columnNumber);
 
-        if (winner != 0) {
-          turnYellow = true;
-          declareWinner(winner);
-        }
-
-        if (checkForFullBoard() == 1) {
-          int fB = checkForFullBoard();
-          print("FullBoard: $fB");
-          showFullBoardDialog();
-        }
-        blockTurn = true;
-        blockTurn = await Future.delayed(const Duration(seconds: 2), () => false);
+      turnYellow = !turnYellow;
+      if (checkForFullBoard() == 1) {
+        int fB = checkForFullBoard();
+        print("FullBoard: $fB");
+        showFullBoardDialog();
       }
-      else {
-        Get.snackbar("Not available", "This column is full already",
-            snackPosition: SnackPosition.BOTTOM);
-      }
+      blockTurn = true;
+      blockTurn = await Future.delayed(const Duration(seconds: 2), () => false);
+    } else {
+      Get.snackbar("Not available", "This column is full already",
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
-  int checkForWinner(int columnNumber) {
+  void checkForWinner(int columnNumber) {
     int horizontalWinCond = checkForHorizontalWin(columnNumber);
     int verticalWinCond = checkForVerticalWin(columnNumber);
     int diagonalWinCond = checkDiagonalWinCond(columnNumber);
     print("Horizontal Winner: $horizontalWinCond");
     print("Vertical Winner: $verticalWinCond");
 
-    return (horizontalWinCond != 0)
+    int winner = (horizontalWinCond != 0)
         ? horizontalWinCond
-        : (verticalWinCond != 0) ? verticalWinCond : (diagonalWinCond != 0)
-        ? diagonalWinCond
-        : 0;
+        : (verticalWinCond != 0)
+            ? verticalWinCond
+            : (diagonalWinCond != 0)
+                ? diagonalWinCond
+                : 0;
+
+    if (winner != 0) {
+      //todo: Winner Message an anderen Spieler senden
+      declareWinner(winner);
+    }
+  }
+
+  int getIndexOfNewElementOfList(
+      List<List<int>> previousBoard, List<List<int>> newBoard) {
+    Function eq = const ListEquality().equals;
+    for (int i = 0; i < previousBoard.length; i++) {
+      if (!eq(previousBoard[i], newBoard[i])) {
+        return newBoard.indexOf(newBoard[i]);
+      }
+    }
+    return -1;
   }
 
   void showFullBoardDialog() {
@@ -140,20 +141,20 @@ class GameController extends GetxController {
         key: dialogKey,
         title: Text('Draw'),
         content: Obx(
-              () => buttonVisible.value
+          () => buttonVisible.value
               ? TextButton(
-            onPressed: () {
-              _buildBoard();
-              buttonVisible.value = false;
-              Get.back(id: dialogKey.currentContext!.hashCode);
-            },
-            child: Text('OK'),
-          )
+                  onPressed: () {
+                    buildBoard();
+                    buttonVisible.value = false;
+                    Get.back(id: dialogKey.currentContext!.hashCode);
+                  },
+                  child: Text('OK'),
+                )
               : SizedBox(),
         ),
       ),
     );
-      }
+  }
 
   int checkForFullBoard() {
     for (List<int> elem in board) {
@@ -167,11 +168,33 @@ class GameController extends GetxController {
   }
 
   void declareWinner(int winner) {
-    Get.defaultDialog(
-        title: winner == 1 ? 'Player 1 (yellow) won' : 'Player 2 (red) won',
-        content: Cell(
-          currCellState: winner == 1 ? CellState.YELLOW : CellState.RED,
-        )).then((value) => _buildBoard());
+    showDialog(
+        context: Get.context!,
+        builder: (context) {
+          Future.delayed(const Duration(seconds: 6), () {
+            Navigator.of(context).pop(true);
+            buildBoard();
+          });
+          return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    20.0),
+              ),
+              title: Text(
+                winner == 1 ? 'Player 1 (yellow) won' : 'Player 2 (red) won',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SizedBox(
+                  height: 90,
+                  child: Center(
+                      child: Cell(
+                          currCellState: winner == 1
+                              ? CellState.YELLOW
+                              : CellState.RED))));
+        });
   }
 
   int checkForVerticalWin(int columnNumber) {
@@ -189,29 +212,25 @@ class GameController extends GetxController {
     int consecutiveReds = 0;
 
     for (var i = 0; i < list.length; i++) {
-      if(consecutiveYellows >= 4 || consecutiveReds >= 4) {
+      if (consecutiveYellows >= 4 || consecutiveReds >= 4) {
         break;
       }
       if (list[i] == 1) {
         consecutiveYellows++;
         consecutiveReds = 0;
-      }
-      else if (list[i] == 2) {
+      } else if (list[i] == 2) {
         consecutiveReds++;
         consecutiveYellows = 0;
-      }
-      else {
+      } else {
         consecutiveReds = 0;
         consecutiveYellows = 0;
       }
     }
-    if(consecutiveYellows >= 4) {
+    if (consecutiveYellows >= 4) {
       return 1;
-    }
-    else if(consecutiveReds >= 4) {
+    } else if (consecutiveReds >= 4) {
       return 2;
-    }
-    else {
+    } else {
       return 0;
     }
   }
@@ -219,7 +238,8 @@ class GameController extends GetxController {
   List<int> getRowAsList(int columnNumber) {
     List<int> colm = board[columnNumber].reversed.toList();
     print("Column: $colm");
-    int rowIndex = (board[columnNumber].length - 1) - board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
+    int rowIndex = (board[columnNumber].length - 1) -
+        board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
     List<int> rowEntries = [];
     board.forEach((column) => rowEntries.add(column[rowIndex]));
     print("row: $rowEntries");
@@ -229,23 +249,30 @@ class GameController extends GetxController {
 
   int checkDiagonalWinCond(int columnNumber) {
     int columnMax = 6; //max indices of the lists representing the field
-    int rowMax = 5;    //max indices of the lists representing the field
-    int rowIndex = (board[columnNumber].length - 1) - board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
+    int rowMax = 5; //max indices of the lists representing the field
+    int rowIndex = (board[columnNumber].length - 1) -
+        board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
 
-    List<int> upwardsDiagonal = getUpwardsDiagonalAsList(columnNumber, rowIndex, columnMax, rowMax);
-    List<int> downwardsDiagonal = getDownwardsDiagonalAsList(columnNumber, rowIndex, columnMax, rowMax);
+    List<int> upwardsDiagonal =
+        getUpwardsDiagonalAsList(columnNumber, rowIndex, columnMax, rowMax);
+    List<int> downwardsDiagonal =
+        getDownwardsDiagonalAsList(columnNumber, rowIndex, columnMax, rowMax);
 
-    return checkForConsecutiveNumber(upwardsDiagonal) != 0 ? checkForConsecutiveNumber(upwardsDiagonal) : checkForConsecutiveNumber(downwardsDiagonal);
+    return checkForConsecutiveNumber(upwardsDiagonal) != 0
+        ? checkForConsecutiveNumber(upwardsDiagonal)
+        : checkForConsecutiveNumber(downwardsDiagonal);
   }
 
-  List<int> getDownwardsDiagonalAsList(int columnNumber, int rowIndex, int columnMax, int rowMax) {
+  List<int> getDownwardsDiagonalAsList(
+      int columnNumber, int rowIndex, int columnMax, int rowMax) {
     List<int> downwardsDiagonal = [board[columnNumber][rowIndex]];
     int colCounter = columnNumber;
     int rowCounter = rowIndex;
 
     colCounter = columnNumber;
-    rowCounter = rowIndex ;
-    while(colCounter > 0 && rowCounter < rowMax) {            //links oben
+    rowCounter = rowIndex;
+    while (colCounter > 0 && rowCounter < rowMax) {
+      //links oben
       colCounter--;
       rowCounter++;
       List<int> curColumn = board[colCounter];
@@ -253,8 +280,9 @@ class GameController extends GetxController {
     }
 
     colCounter = columnNumber;
-    rowCounter = rowIndex ;
-    while(colCounter < columnMax && rowCounter > 0) {            //rechts unten
+    rowCounter = rowIndex;
+    while (colCounter < columnMax && rowCounter > 0) {
+      //rechts unten
       colCounter++;
       rowCounter--;
       List<int> curColumn = board[colCounter];
@@ -266,12 +294,14 @@ class GameController extends GetxController {
     return downwardsDiagonal;
   }
 
-    List<int> getUpwardsDiagonalAsList(int columnNumber, int rowIndex, int columnMax, int rowMax) {
+  List<int> getUpwardsDiagonalAsList(
+      int columnNumber, int rowIndex, int columnMax, int rowMax) {
     List<int> upwardsDiagonal = [board[columnNumber][rowIndex]];
 
     int colCounter = columnNumber;
     int rowCounter = rowIndex;
-    while(colCounter < columnMax && rowCounter < rowMax) {  //rechts oben
+    while (colCounter < columnMax && rowCounter < rowMax) {
+      //rechts oben
       colCounter++;
       rowCounter++;
       List<int> curColumn = board[colCounter];
@@ -279,8 +309,9 @@ class GameController extends GetxController {
     }
 
     colCounter = columnNumber;
-    rowCounter = rowIndex ;
-    while(colCounter > 0 && rowCounter > 0) {               //links unten
+    rowCounter = rowIndex;
+    while (colCounter > 0 && rowCounter > 0) {
+      //links unten
       colCounter--;
       rowCounter--;
       List<int> curColumn = board[colCounter];
@@ -291,6 +322,4 @@ class GameController extends GetxController {
 
     return upwardsDiagonal;
   }
-
-
 }
