@@ -41,6 +41,7 @@ class GameController extends GetxController {
 
       log.info("Server received '$data' and parsed it to '$receivedBoard'");
       completer.complete(receivedBoard);
+
     }, onError: (error) {
       log.info('Error: $error');
       completer.completeError(error);
@@ -171,7 +172,7 @@ class GameController extends GetxController {
     showDialog(
         context: Get.context!,
         builder: (context) {
-          Future.delayed(const Duration(seconds: 6), () {
+          Future.delayed(const Duration(seconds: 100), () {
             Navigator.of(context).pop(true);
             buildBoard();
           });
@@ -322,4 +323,6 @@ class GameController extends GetxController {
 
     return upwardsDiagonal;
   }
+
+
 }
