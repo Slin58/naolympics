@@ -1,18 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/network/JSON/data_types.dart';
-import 'package:naolympics_app/services/routing/route_aware_widget.dart';
-import 'package:naolympics_app/utils/enum_utils.dart';
+import 'package:naolympics_app/services/routing/client_routing_service.dart';
+import 'package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart';
 import 'package:naolympics_app/utils/ui_utils.dart';
 
 import '../../services/network/connection_service.dart';
 import '../../services/server.dart';
-import '../services/network/json/json_objects/navigation_data.dart';
 import '../services/network/socket_manager.dart';
 
 class FindPlayerPage extends StatefulWidget {
@@ -157,40 +154,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
     } else {
-      MultiplayerState.connection = socketManager;
-      MultiplayerState.history.add(ip);
-
-      Completer<String> completer = Completer();
-
-      socketManager.broadcastStream.listen((event) {
-        _handleClientRouting(event, context);
-      }, onError: (error) {
-        log.severe("Error while receiving routing instructions", error);
-        completer.completeError(error);
-      }, onDone: () {
-        log.info("Done routing.");
-      });
-    }
-  }
-
-  static _handleClientRouting(String jsonData, BuildContext context) {
-    try {
-      NavigationData navData = NavigationData.fromJson(json.decode(jsonData));
-
-      //if (navData.data == DataType.navigation) {
-      if (EnumUtils.enumIsEqual(navData.data, DataType.navigation)) {
-        Navigator.pushNamed(context, navData.route);
-      } else {
-        log.shout("irgendwas ist massiv falsch... $navData");
-        log.shout(
-            "empfange: ${navData.dataType} is ${navData.dataType.runtimeType}");
-        log.shout(
-            "gewollt: ${DataType.navigation} is ${DataType.navigation.runtimeType}");
-        log.shout(
-            "entschluss: ${DataType.navigation.index == navData.dataType.index}");
-      }
-    } on Error catch (e) {
-      log.severe("Issue while trying to push", e, e.stackTrace);
+      ClientRoutingService(socketManager, context).handleRouting();
     }
   }
 }

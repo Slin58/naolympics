@@ -27,12 +27,12 @@ class SocketManager {
     socket.listen((data) {
       String message = String.fromCharCodes(data);
       streamController.add(message);
-      log.info("The following was just received : $message");
+      log.finest("The following was just received : $message");
     });
   }
 
   void write(String object) {
-    log.info("Now writing to ${socket.remoteAddress.address}");
+    log.finest("Now writing to ${socket.remoteAddress.address}");
     socket.write(object);
     socket.flush();
   }
