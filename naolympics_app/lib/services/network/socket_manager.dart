@@ -31,9 +31,13 @@ class SocketManager {
     });
   }
 
-  void write(String object) {
+  Future<void> write(String object) async {
     log.finest("Now writing to ${socket.remoteAddress.address}");
     socket.write(object);
-    socket.flush();
+    await socket.flush();
+  }
+
+  void closeConnection() async {
+    await socket.close();
   }
 }

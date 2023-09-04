@@ -61,8 +61,8 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   static Future<void> _sendNavigationDataToClient(
       String route, NavigationType navigationType) async {
     final jsonData = NavigationData(route, navigationType).toJson();
-    await Future.delayed(const Duration(milliseconds: 100));
-    MultiplayerState.connection!.write(json.encode(jsonData));
+    //await Future.delayed(const Duration(milliseconds: 100));
+    await MultiplayerState.connection!.write(json.encode(jsonData));
   }
 
   @override
