@@ -6,7 +6,7 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
     for row in range(0, 7):
         priority[row] = get_priorities(field, row, signOwn, signOpponent, signEmpty, 0.1, mistake_factor)
 
-    maxPriority = -99
+    maxPriority = -10000
     bestRow = 3
     for row in range(0, 7):
         if priority[row] > maxPriority:
