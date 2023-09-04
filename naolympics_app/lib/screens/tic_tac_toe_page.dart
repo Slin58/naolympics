@@ -59,11 +59,9 @@ class TicTacToeState extends State<TicTacToePage> {
                                   ticTacToe.makeMove(row, col);
                               if (winner != TicTacToeWinner.ongoing) {
                                 showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return showWinner(winner);
-                                  },
-                                );
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        _showWinner(winner, context));
                               }
                             });
                           },
@@ -93,7 +91,7 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  AlertDialog showWinner(TicTacToeWinner winner) {
+  AlertDialog _showWinner(TicTacToeWinner winner, BuildContext context) {
     const double iconSize = 40;
     const double buttonWidth = 130;
     Icon winnerIcon;
