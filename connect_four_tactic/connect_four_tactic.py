@@ -6,7 +6,7 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
     for row in range(0, 7):
         priority[row] = get_priorities(field, row, signOwn, signOpponent, signEmpty, 0.1, mistake_factor)
 
-    maxPriority = -99
+    maxPriority = -10000
     bestRow = 3
     for row in range(0, 7):
         if priority[row] > maxPriority:
@@ -56,8 +56,6 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
                                   prioritiesDiagonal2_above_opponent[0], prioritiesDiagonal2_above_opponent[1])
     print(prioritiesRow, prioritiesColumn, prioritiesDiagonal1, prioritiesDiagonal2),
     print(max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1])),
-    otherPriorities = prioritiesRow[0] + prioritiesRow[1] + prioritiesColumn[0] + prioritiesColumn[1] + prioritiesDiagonal1[0] + prioritiesDiagonal1[1] + prioritiesDiagonal2[0] + prioritiesDiagonal2[1]
-    # the main priority is the one which is most import for example already 3 in a row. The others are taken in with the factorForOtherPriorities
     max_of_offense = max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0])
     max_of_defense = max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1])
     if max_of_offense == 3000:
@@ -82,10 +80,6 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
         return max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1]) \
             + (factorForOtherPriorities * (prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1])) \
             - (0.5 * priority_above_opponent)
-
-    return max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1]) \
-        + (factorForOtherPriorities * otherPriorities) \
-        - (0.5 * priority_above_opponent)
 
 
 def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mistake_factor):
