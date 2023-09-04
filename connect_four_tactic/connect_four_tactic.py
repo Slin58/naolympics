@@ -28,8 +28,8 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
     i = get_position(field, -1, j, signEmpty)
 
     if i <= -1:
-        print "-99 no field left"
-        return -99
+        print "-9999 no field left"
+        return -9999
 
     prioritiesRow = get_priority(field, i, j, 0, 1, signOwn, signOpponent, signEmpty, mistake_factor)
     prioritiesColumn = get_priority(field, i, j, 1, 0, signOwn, signOpponent, signEmpty, mistake_factor)
@@ -57,18 +57,26 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
     max_of_offense = max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0])
     max_of_defense = max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1])
     if max_of_offense > max_of_defense:
-        print("offense")
+        print("offense"),
+        print(max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0]) \
+            + (factorForOtherPriorities * (prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0])) \
+            - (0.5 * priority_above_opponent))
         return max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0]) \
-            + (factorForOtherPriorities * prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0]) \
+            + (factorForOtherPriorities * (prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0])) \
             - (0.5 * priority_above_opponent)
 
     else:
-        print("defense")
+        print("defense"),
+        print(max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1]) \
+            + (factorForOtherPriorities * (prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1])) \
+            - (0.5 * priority_above_opponent))
         return max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1]) \
-            + (factorForOtherPriorities * prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1]) \
+            + (factorForOtherPriorities * (prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1])) \
             - (0.5 * priority_above_opponent)
 
-    return max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1]) + (factorForOtherPriorities * otherPriorities) - (0.5 * priority_above_opponent)
+    return max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1]) \
+        + (factorForOtherPriorities * otherPriorities) \
+        - (0.5 * priority_above_opponent)
 
 
 def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mistake_factor):

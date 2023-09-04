@@ -31,8 +31,10 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
         # if placed in a corner: Play middle
         if field[0][0] == signOpponent or field[0][2] == signOpponent or field[2][0] == signOpponent or field[2][2] == signOpponent:
             if difficulty == 'h':
+                print("play random corner")
                 return getRandomEmptyCorner(field, signEmpty), False
             if difficulty == 'i':
+                print("play middle")
                 return 4, False
 
         return getRandomEmptyCorner(field, signEmpty), False
@@ -324,6 +326,7 @@ def getNumberFromCoord(i, j):
         return 6 + j
     print("error: no fitting field found")
     return None
+
 
 def get_field_after_move(field, result, ownSign):
     field_after_move = field
