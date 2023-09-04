@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:naolympics_app/connect4/ConnectFourPage.dart';
+import 'package:logging/logging.dart';
+import 'package:naolympics_app/screens/home_page.dart';
 import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
+import '../../connect4/ConnectFourPage.dart';
+import '../../services/routing/route_aware_widget.dart';
 
 class GameSelectionPage extends StatefulWidget {
   const GameSelectionPage({super.key});
@@ -10,12 +14,27 @@ class GameSelectionPage extends StatefulWidget {
 }
 
 class GameSelectionState extends State<GameSelectionPage> {
+  static final log = Logger((GameSelectionPage).toString());
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final marginSize = screenWidth * 0.1;
 
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+          MultiplayerState.closeConnection();
+          var connection = MultiplayerState.connection;
+          log.info("Triggered WillPopScope and close connection. Multiplayerstate.connection is: $connection");
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RouteAwareWidget(
+                      (HomePage).toString(),
+                      child: const HomePage())));
+            return false;
+          },
+    child: Scaffold(
       appBar: AppBar(
           title: Text(
             "Naolympics",
@@ -28,6 +47,7 @@ class GameSelectionState extends State<GameSelectionPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: getNavButtons(context, marginSize)),
       ),
+    )
     );
   }
 

@@ -52,7 +52,7 @@ class BoardMultiplayer extends StatelessWidget {
       gameController.update();
       log.info("finished listening for new Board from oter player");
 
-        subscription?.cancel();
+      subscription?.cancel();
 
         //completer.complete(receivedBoard);
 
@@ -64,7 +64,7 @@ class BoardMultiplayer extends StatelessWidget {
         }, onDone: () {
           //TODO: On stop Connection close stream subscription and set MultiplayerState.connection to null
           subscription!.cancel();
-          log.info("Done method of startListening triggered: Probably not intentional lmao");
+          log.info("Done method of startListening triggered");
         });
   }
 
@@ -114,4 +114,5 @@ class BoardMultiplayer extends StatelessWidget {
       ],
     );
   }
+
 }

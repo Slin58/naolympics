@@ -80,6 +80,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   Future<void> _startServer() async {
+    MultiplayerState.connection = null;
     setState(() {
       isHosting = true;
     });
@@ -108,6 +109,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
 
   void _stopServer() {
     setState(() {
+      MultiplayerState.connection = null;
       isHosting = false;
       server.stop();
     });
@@ -137,6 +139,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
                   return ListTile(
                     title: Text(item),
                     onTap: () async {
+                      isHosting = false;
                       _handleHostConnection(item, context);
                     },
                   );
@@ -152,6 +155,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   static _handleHostConnection(String ip, BuildContext context) async {
+    MultiplayerState.connection = null;
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
     if (socketManager == null) {

@@ -8,7 +8,7 @@ import 'package:collection/collection.dart';
 import '../widgets/cell.dart';
 
 class GameController extends GetxController {
-  static final log = Logger("Connect4");
+  static final log = Logger((GameController).toString());
   List<List<int>> board = [];
   bool turnYellow = true;
   bool blockTurn = false;
@@ -55,6 +55,8 @@ class GameController extends GetxController {
   Future<void> playColumnMultiplayer(int columnNumber) async {
     final int playerNumber = turnYellow ? 1 : 2;
 
+    log.info("Move made by playColumnMultiplayer");
+
     if (board[columnNumber].contains(0)) {
       final int row = board[columnNumber].indexWhere((cell) => cell == 0);
       board[columnNumber][row] = playerNumber;
@@ -68,7 +70,6 @@ class GameController extends GetxController {
         showFullBoardDialog();
       }
       blockTurn = true;
-
       turnYellow = !turnYellow;
       MultiplayerState.connection!.write(json.encode(board));
     } else {
@@ -79,6 +80,8 @@ class GameController extends GetxController {
 
   Future<void> playColumnLocal(int columnNumber) async {
     final int playerNumber = turnYellow ? 1 : 2;
+    log.info("Move made by playColumnLocal");
+
     if (board[columnNumber].contains(0)) {
       final int row = board[columnNumber].indexWhere((cell) => cell == 0);
       board[columnNumber][row] = playerNumber;
@@ -168,16 +171,18 @@ class GameController extends GetxController {
 
   void declareWinner(int winner) {
     showDialog(
-        context: Get.context!,
-        builder: (context) {
-          Future.delayed(const Duration(seconds: 10), () {
-            Navigator.of(context).pop(true);
-            buildBoard();
-          });
-          return AlertDialog(
+      context: Get.context!,
+      builder: (context) {
+        Future.delayed(const Duration(seconds: 6), () {
+          Navigator.of(context).pop(true);
+          buildBoard();
+        });
+
+        return Stack(
+          children: [
+            AlertDialog(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                    20.0),
+                borderRadius: BorderRadius.circular(20.0),
               ),
               title: Text(
                 winner == 1 ? 'Player 1 (yellow) won' : 'Player 2 (red) won',
@@ -187,13 +192,25 @@ class GameController extends GetxController {
                 ),
               ),
               content: SizedBox(
-                  height: 90,
-                  child: Center(
-                      child: Cell(
-                          currCellState: winner == 1
-                              ? CellState.YELLOW
-                              : CellState.RED))));
-        });
+                height: 90,
+                child: Center(
+                  child: Cell(
+                    currCellState: winner == 1 ? CellState.YELLOW : CellState.RED,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop(true);
+                buildBoard();
+              },
+              behavior: HitTestBehavior.opaque,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   int checkForVerticalWin(int columnNumber) {
