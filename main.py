@@ -1,5 +1,7 @@
 # coding=utf-8
 import time
+
+import cv2
 from naoqi import ALProxy
 import movement.movementControl
 from vision import vision
@@ -70,8 +72,7 @@ def choose_game_by_voice():  # returns "tictactoe" or "4 gewinnt" depending on w
 
 
 def get_random_nao_name():
-    names = ["Julius", "Antonia", "Emil", "Martha", "Theodor", "Rosina", "Franz", "Adelheid", "Egon", "Elsa", "Hermann", "Cäcilie", "Oskar", "Karoline", "Rudolph", "Theresa", "Ferdinand", "Henriette", "Konrad", "Albertine", "Ludovica", "Leopold", "Henrietta", "Rosa", "Amalie", "Eduard", "Sophia", "Eberhard", "Johanna", "Kuno", "Veronika", "Clemens", "Eleonora", "Wilhelmina", "Eugenie", "Valentin", "Regina","Emma", "Fritz", "Johann", "Sophie", "Wilhelm", "Ida", "Heinrich", "Agnes", "Ludwig", "Elisabeth", "Friederike", "Paul", "Barbara", "Max", "Clara", "Gustav", "Katharina", "Otto", "Louise", "Eduard", "Anna", "Rudolf", "Gertrud", "Georg", "Maria", "Friedrich", "Mathilde", "Hans", "Margarethe", "Albert", "Augusta", "Richard", "Helena", "Walter", "Charlotte"]
-    print(len(names))
+    names = ["Julius","Dieter", "Norbert", "Hugo", "Antonia", "Emil", "Martha", "Theodor", "Rosina", "Franz", "Adelheid", "Egon", "Elsa", "Hermann", "Cäcilie", "Oskar", "Karoline", "Rudolph", "Theresa", "Ferdinand", "Henriette", "Konrad", "Albertine", "Ludovica", "Leopold", "Henrietta", "Rosa", "Amalie", "Eduard", "Sophia", "Eberhard", "Johanna", "Kuno", "Veronika", "Clemens", "Eleonora", "Wilhelmina", "Eugenie", "Valentin", "Regina","Emma", "Fritz", "Johann", "Sophie", "Wilhelm", "Ida", "Heinrich", "Agnes", "Ludwig", "Elisabeth", "Friederike", "Paul", "Barbara", "Max", "Clara", "Gustav", "Katharina", "Otto", "Louise", "Eduard", "Anna", "Rudolf", "Gertrud", "Georg", "Maria", "Friedrich", "Mathilde", "Hans", "Margarethe", "Albert", "Augusta", "Richard", "Helena", "Walter", "Charlotte"]
     return names[random.randint(0, len(names) - 1)]
 
 def get_difficulty_text(difficulty):
@@ -85,7 +86,7 @@ def get_difficulty_text(difficulty):
         return "Schwierigkeitsstufe unmöglich. Ich werde dich vernichten"
 
 
-def get_difficulty(difficulty, is_tictactoe=True):
+def get_difficulty(difficulty, is_tictactoe):
     if is_tictactoe:
         if difficulty == 1:
             return "e"
@@ -177,16 +178,16 @@ def choose_game_by_buttons():
                             tts.say("Okay, ich spiele gegen dich TicTacTo mit" + get_difficulty_text(
                                 difficulty) + ". Gutes Spiel!")
                             if nao_begins:
-                                play_tictactoe_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty))
+                                play_tictactoe_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=True))
                             else:
-                                play_tictactoe_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty))
+                                play_tictactoe_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=True))
                         elif connect4_mode:
                             tts.say("Okay, ich spiele gegen dich Vier gewinnt mit" + get_difficulty_text(
                                 difficulty) + ". Gutes Spiel!")
                             if nao_begins:
-                                play_connect_four_against_opponent_player1(robotIP, PORT, difficulty, is_tictactoe=False)
+                                play_connect_four_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=False))
                             else:
-                                play_connect_four_against_opponent_player2(robotIP, PORT, difficulty, is_tictactoe=False)
+                                play_connect_four_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=False))
                         connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(connect4_mode,
                                                                                                        difficulty,
                                                                                                        nao_begins,
@@ -250,7 +251,7 @@ def play_tictactoe_against_itself(robotIP, PORT):
     circle_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img, debug=[], minRadius=65, maxRadius=85, acc_thresh=15,
+        field = vision.detect_tictactoe_state(img, debug=[], minRadius=75, maxRadius=85, acc_thresh=15,
                                               canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
                                               gaussian_kernel_size=9)  # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
         field_none_counter = 0
@@ -258,7 +259,7 @@ def play_tictactoe_against_itself(robotIP, PORT):
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img, minRadius=65, maxRadius=85, acc_thresh=15,
+            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=85, acc_thresh=15,
                                                   canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
                                                   gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
@@ -285,7 +286,7 @@ def play_connect_four_against_itself(robotIP, PORT):
     yellow_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
+        field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                  circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                  erode_iterations=1, gaussian_kernel_size=13)
         field_none_counter = 0
@@ -293,7 +294,7 @@ def play_connect_four_against_itself(robotIP, PORT):
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
+            field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                      circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
@@ -305,7 +306,6 @@ def play_connect_four_against_itself(robotIP, PORT):
         else:
             result, winning = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-',
                                                            mistake_factor=0)
-        print(field)
         yellow_turn = not yellow_turn
 
         movementControl.clickConnectFour(robotIP, PORT, result)
@@ -340,12 +340,9 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
             time.sleep(0.2)
             continue
 
-        print(field)
-
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
         result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
                                                    difficulty=difficulty)
-        field_after_move = field
         print(result)
 
         field_after_move = tictactoeTactic.get_field_after_move(field, result, 'O')
@@ -386,12 +383,9 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
             time.sleep(0.2)
             continue
 
-        print(field)
-
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
         result, winning = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-',
                                                    difficulty=difficulty)
-        field_after_move = field
         print(result)
 
         field_after_move = tictactoeTactic.get_field_after_move(field, result, 'X')
@@ -408,7 +402,7 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
     field_after_move = []
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
+        field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                  circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                  erode_iterations=1, gaussian_kernel_size=13)
         field_none_counter = 0
@@ -416,7 +410,7 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10,
+            field = vision.detect_connect_four_state(img,debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                      circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
@@ -426,8 +420,6 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             time.sleep(0.2)
             continue
         else:
-            print("field", field)
-            print("field_after_move", field_after_move)
             print("comparison not successful")
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
         result, winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
@@ -455,7 +447,7 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
          ['-', '-', '-', '-', '-', '-', '-']]
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, debug=[], minRadius=40, maxRadius=55, acc_thresh=10,
+        field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                  circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                  erode_iterations=1, gaussian_kernel_size=13)
         field_none_counter = 0
@@ -463,7 +455,7 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             field_none_counter += 1
             time.sleep(0.5)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img, minRadius=40, maxRadius=55, acc_thresh=10,
+            field = vision.detect_connect_four_state(img,debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                      circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
@@ -473,8 +465,6 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             time.sleep(0.2)
             continue
         else:
-            print("field", field)
-            print("field_after_move", field_after_move)
             print("comparison not successful")
 
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
@@ -527,12 +517,42 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
 if __name__ == "__main__":
     # after startup of nao
-    # calibrate(["start_position"])
-    # movementControl.celebrate1(robotIP, PORT)
-    # choose_game_by_buttons()
+    # calibrate(["y_angle", "vision_check", "start_position"])
+    choose_game_by_buttons()
+    # field_after_move = \
+    #     [['-', '-', '-', '-', 'R', 'Y', '-'],
+    #      ['Y', 'R', '-', 'R', 'Y', 'R', 'R'],
+    #      ['Y', 'R', 'Y', 'R', 'Y', 'Y', 'Y'],
+    #      ['R', 'Y', 'Y', 'R', 'R', 'Y', 'Y'],
+    #      ['Y', 'R', 'R', 'Y', 'R', 'Y', 'R'],
+    #      ['Y', 'R', 'R', 'Y', 'Y', 'R', 'R']]
+    # wrong_count = 0
+    # fail = vision.get_image_from_nao(robotIP, PORT)
+    # field = vision.detect_connect_four_state(fail, debug=[1,2,3,4,5,6,7], minRadius=55, maxRadius=65)
+    # if field == field_after_move:
+    #     print("huge success")
+    # for i in range(100):
+    #     fail = vision.get_image_from_nao(robotIP, PORT)
+    #     field = vision.detect_connect_four_state(fail, debug=[])
+    #     if field != field_after_move:
+    #         print(i)
+    #         for row in field:
+    #             print(row)
+    #         wrong_count += 1
+    # print(wrong_count)
     # play_tictactoe_against_itself(robotIP, PORT)
     # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
     # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
     # play_connect_four_against_itself(robotIP, PORT)
-    play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
+    # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
     # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)
+
+
+
+    # false_count = 0
+    # for i in range(1000):
+    #     new_field = vision.detect_connect_four_state(fail)
+    #     if new_field != field:
+    #         false_count +=1
+    # print(float(false_count)/1000)#
+    # result: 0.0 ??

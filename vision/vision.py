@@ -53,21 +53,21 @@ def detect_game_board(img, debug=[]):
 
 
 def get_pixel_color(pixel, white_lower_thresh):
-    red_lower = np.array([0, 0, 50], np.uint8)
-    red_upper = np.array([80, 80, 255], np.uint8)
+    red_lower = np.array([0, 0, 10], np.uint8)
+    red_upper = np.array([100, 100, 255], np.uint8)
 
     white_lower = np.array([white_lower_thresh, white_lower_thresh, white_lower_thresh], np.uint8)
     white_upper = np.array([255, 255, 255], np.uint8)
 
-    yellow_lower = np.array([0, 100, 100], np.uint8)
+    yellow_lower = np.array([0, 100, 50], np.uint8)
     yellow_upper = np.array([100, 255, 255], np.uint8)
 
     if cv2.inRange(pixel, red_lower, red_upper).all():
         return "R"
-    elif cv2.inRange(pixel, white_lower, white_upper).all():
-        return "-"
     elif cv2.inRange(pixel, yellow_lower, yellow_upper).all():
         return "Y"
+    elif cv2.inRange(pixel, white_lower, white_upper).all():
+        return "-"
     else:
         return "F"
 
@@ -111,24 +111,30 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                 for j, pt in enumerate(row):
                     circle_count += 1
                     a, b, r = pt[0], pt[1], pt[2]
-                    gamestate_detected = get_pixel_color(img[b][a], white_thresh)
+                    circle_img = np.zeros((img.shape[0], img.shape[1]),
+                                          np.uint8)
+                    cv2.circle(circle_img, (a, b), r, (255, 255, 255),
+                               -1)
+                    avg_rgb = np.array(cv2.mean(img, mask=circle_img)[0:3]).astype(np.uint8)
+                    gamestate_detected = get_pixel_color(avg_rgb, white_thresh)
                     white_thresh_adjusted = white_thresh
                     while gamestate_detected == "F" and white_thresh_adjusted >= 0:
                         white_thresh_adjusted -= 10
-                        gamestate_detected = get_pixel_color(img[b][a], white_thresh_adjusted)
+                        gamestate_detected = get_pixel_color(avg_rgb, white_thresh_adjusted)
                     gamestate[i][j] = gamestate_detected
                     cv2.putText(img, str(circle_count), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
                                 color=(250, 0, 0),
                                 thickness=2)
 
                     cv2.circle(img, (a, b), r, (250, 0, 0), 5)
-            print("Gamestate:")
-            for line in gamestate:
-                linetxt = ""
-                for cel in line:
-                    linetxt = linetxt + "|" + cel
-                print(linetxt)
             if 6 in debug:
+                print("Gamestate:")
+                for line in gamestate:
+                    linetxt = ""
+                    for cel in line:
+                        linetxt = linetxt + "|" + cel
+                    print(linetxt)
+            if 7 in debug:
                 imgRes = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
                 cv2.imshow("Processed image", imgRes)
                 cv2.waitKey(0)
