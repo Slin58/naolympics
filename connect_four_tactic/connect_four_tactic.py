@@ -12,12 +12,16 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
         if priority[row] > maxPriority:
             maxPriority = priority[row]
             bestRow = row
-    if priority[bestRow] >= 3000 - 100:
+        elif priority[row] == maxPriority:
+            r = random.randint(0, 1)
+            if r == 0:
+                bestRow = row
+    if priority[bestRow] >= 3000:
         print("------------")
         print("winning move")
         print("------------")
         return bestRow, True
-    elif priority[bestRow] >= 2000 - 100:
+    elif priority[bestRow] >= 2000:
         print("defend")
         return bestRow, False
     print("result:", bestRow, priority[bestRow])
@@ -56,7 +60,12 @@ def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPri
     # the main priority is the one which is most import for example already 3 in a row. The others are taken in with the factorForOtherPriorities
     max_of_offense = max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0])
     max_of_defense = max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1])
-    if max_of_offense > max_of_defense:
+    if max_of_offense == 3000:
+        print("winning"),
+        print(3000)
+        return max_of_offense
+
+    elif max_of_offense > max_of_defense:
         print("offense"),
         print(max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0]) \
             + (factorForOtherPriorities * (prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0])) \
@@ -208,9 +217,9 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     priorityWin = priorityWin + random.randint(0, mistake_factor)
     priorityDefend = priorityDefend + random.randint(0, mistake_factor)
     if winningMove >= 3:
-        return [priorityWin+3000, priorityDefend]
+        return [3000, priorityDefend]
     if defendMove >= 3:
-        return [priorityWin, priorityDefend+2000]
+        return [priorityWin, 2000]
 
     return [priorityWin, priorityDefend]
 
