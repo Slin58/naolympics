@@ -112,9 +112,10 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                     circle_count += 1
                     a, b, r = pt[0], pt[1], pt[2]
                     gamestate_detected = get_pixel_color(img[b][a], white_thresh)
-                    while gamestate_detected == "F" and white_thresh >= 0:
-                        white_thresh -= 10
-                        gamestate_detected = get_pixel_color(img[b][a], white_thresh)
+                    white_thresh_adjusted = white_thresh
+                    while gamestate_detected == "F" and white_thresh_adjusted >= 0:
+                        white_thresh_adjusted -= 10
+                        gamestate_detected = get_pixel_color(img[b][a], white_thresh_adjusted)
                     gamestate[i][j] = gamestate_detected
                     cv2.putText(img, str(circle_count), (a, b), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
                                 color=(250, 0, 0),
