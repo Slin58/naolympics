@@ -40,7 +40,6 @@ class Server {
         print('Error: $error');
       },
       onDone: () {
-        print('Connection closed by client');
         socket.destroy();
       },
     );

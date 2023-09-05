@@ -6,7 +6,7 @@ class RoutingUtils {
   static WillPopScope handlePopScope(BuildContext context, Scaffold child) {
     return WillPopScope(
         onWillPop: () async {
-          if(MultiplayerState.isClient()) {
+          if (MultiplayerState.isClient()) {
             UIUtils.showTemporaryAlert(context, "You are not host");
             return false;
           }

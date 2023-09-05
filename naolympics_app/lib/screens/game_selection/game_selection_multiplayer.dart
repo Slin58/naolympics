@@ -63,7 +63,7 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
   }
 
   @override
-  void Function() getOnPressedForNavButton(BuildContext context, route) {
+  VoidCallback getOnPressedForNavButton(BuildContext context, route) {
     return () {
       if (MultiplayerState.isHosting()) {
         Navigator.push(context, MaterialPageRoute(builder: (context) => route));

@@ -1,28 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'connection_establishment.dart';
+part of 'game_end_data.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ConnectionEstablishment _$ConnectionEstablishmentFromJson(
-        Map<String, dynamic> json) =>
-    ConnectionEstablishment(
-      $enumDecode(_$ConnectionStatusEnumMap, json['connectionStatus']),
+GameEndData _$GameEndDataFromJson(Map<String, dynamic> json) => GameEndData(
+      json['reset'] as bool,
+      json['goBack'] as bool,
     )..dataType = $enumDecode(_$DataTypeEnumMap, json['dataType']);
 
-Map<String, dynamic> _$ConnectionEstablishmentToJson(
-        ConnectionEstablishment instance) =>
+Map<String, dynamic> _$GameEndDataToJson(GameEndData instance) =>
     <String, dynamic>{
       'dataType': _$DataTypeEnumMap[instance.dataType]!,
-      'connectionStatus': _$ConnectionStatusEnumMap[instance.connectionStatus]!,
+      'reset': instance.reset,
+      'goBack': instance.goBack,
     };
-
-const _$ConnectionStatusEnumMap = {
-  ConnectionStatus.connecting: 'connecting',
-  ConnectionStatus.connectionSuccessful: 'connectionSuccessful',
-};
 
 const _$DataTypeEnumMap = {
   DataType.connectionEstablishment: 'connectionEstablishment',

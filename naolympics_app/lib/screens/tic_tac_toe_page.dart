@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
+import 'package:naolympics_app/utils/routing_utls.dart';
 
 import '../services/gamemodes/tictactoe/tictactoe_local.dart';
 import '../utils/ui_utils.dart';
@@ -22,17 +23,34 @@ class TicTacToeState extends State<TicTacToePage> {
     if (MultiplayerState.connection == null) {
       ticTacToe = TicTacToeLocal();
     } else {
-      ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!.socket);
+      ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!, setState);
+      MultiplayerState.clientRoutingService?.pauseNavigator();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Tic Tac Toe'),
-        ),
-        body: _buildTicTacToeField());
+    return RoutingUtils.handlePopScope(
+        context,
+        Scaffold(
+            appBar: AppBar(
+              title: const Text('Tic Tac Toe'),
+              actions: [_displayCurrentTurn()],
+            ),
+            body: _buildTicTacToeField()));
+  }
+
+  _displayCurrentTurn() {
+    const double size = 20;
+    Icon icon = ticTacToe.currentTurn == TicTacToeFieldValues.o
+        ? getCircleIcon(size)
+        : getCrossIcon(size);
+
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      const Text("Current Turn:"),
+      const SizedBox(width: 8.0),
+      icon
+    ]);
   }
 
   Widget _buildTicTacToeField() {
@@ -53,17 +71,16 @@ class TicTacToeState extends State<TicTacToePage> {
                   children: [
                     for (int col = 0; col < 3; col++)
                       GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              TicTacToeWinner winner =
-                                  ticTacToe.makeMove(row, col);
-                              if (winner != TicTacToeWinner.ongoing) {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        _showWinner(winner, context));
-                              }
-                            });
+                          onTap: () async {
+                            TicTacToeWinner winner =
+                                await ticTacToe.move(row, col);
+                            setState(() {});
+                            if (winner != TicTacToeWinner.ongoing) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext localContext) =>
+                                      _showWinner(winner, localContext));
+                            }
                           },
                           child: _buildTicTacToeCell(row, col, fieldSize)),
                   ],
@@ -91,7 +108,7 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  AlertDialog _showWinner(TicTacToeWinner winner, BuildContext context) {
+  AlertDialog _showWinner(TicTacToeWinner winner, BuildContext localContext) {
     const double iconSize = 40;
     const double buttonWidth = 130;
     Icon winnerIcon;
@@ -115,13 +132,17 @@ class TicTacToeState extends State<TicTacToePage> {
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
         UIUtils.getBorderedTextButton(() {
-          Navigator.pop(context);
+          if(MultiplayerState.isHosting()) {
+            (ticTacToe as TicTacToeMultiplayer).handleGoBack();
+          }
+
+          Navigator.pop(localContext);
           Navigator.pop(context);
         }, Icons.arrow_back, 'Go Back', Theme.of(context).primaryColor,
             buttonWidth),
-        const SizedBox(width: buttonWidth / 4),
+        const SizedBox(width: buttonWidth / 100000),
         UIUtils.getBorderedTextButton(() {
-          Navigator.pop(context);
+          Navigator.pop(localContext);
           setState(() {
             ticTacToe.init();
           });
