@@ -1,7 +1,10 @@
+import 'package:naolympics_app/services/routing/client_routing_service.dart';
+
 import 'network/socket_manager.dart';
 
 class MultiplayerState {
   static SocketManager? connection;
+  static ClientRoutingService? clientRoutingService;
   static List<String> history = [];
   static bool _hosting = false;
 

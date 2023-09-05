@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/network/json/json_objects/navigation_data.dart';
@@ -60,9 +58,8 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   static Future<void> _sendNavigationDataToClient(
       String route, NavigationType navigationType) async {
-    final jsonData = NavigationData(route, navigationType).toJson();
-    //await Future.delayed(const Duration(milliseconds: 100));
-    await MultiplayerState.connection!.write(json.encode(jsonData));
+    await MultiplayerState.connection!
+        .writeJsonData(NavigationData(route, navigationType));
   }
 
   @override

@@ -1,23 +1,21 @@
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/gamemodes/gamemode.dart';
 
-
 abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> _playField;
-  TicTacToeFieldValues _currentTurn;
+  TicTacToeFieldValues currentTurn;
   static final log = Logger((TicTacToe).toString());
 
-  TicTacToe()
+  TicTacToe({this.currentTurn = TicTacToeFieldValues.o})
       : _playField =
-            List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty)),
-        _currentTurn = TicTacToeFieldValues.o;
+            List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty));
 
   @override
   void init() {
     log.info('Reset TicTacToe play field.');
     _playField =
         List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty));
-    _currentTurn = TicTacToeFieldValues.o;
+    currentTurn = TicTacToeFieldValues.o;
   }
 
   @override
@@ -25,10 +23,10 @@ abstract class TicTacToe implements GameMode {
 
   TicTacToeWinner makeMove(int row, int col) {
     if (_playField[row][col] == TicTacToeFieldValues.empty) {
-      log.info('Making move for Player $_currentTurn');
+      log.info('Making move for Player $currentTurn');
 
-      _playField[row][col] = _currentTurn;
-      TicTacToeWinner winner = _checkWinner(row, col);
+      _playField[row][col] = currentTurn;
+      TicTacToeWinner winner = checkWinner(row, col);
       _switchTurn();
 
       return winner;
@@ -36,7 +34,7 @@ abstract class TicTacToe implements GameMode {
     return TicTacToeWinner.ongoing;
   }
 
-  TicTacToeWinner _checkWinner(int row, int col) {
+  TicTacToeWinner checkWinner(int row, int col) {
     TicTacToeFieldValues currentSymbol = _playField[row][col];
     bool won = false;
     bool isBoardFull = true;
@@ -94,14 +92,12 @@ abstract class TicTacToe implements GameMode {
   }
 
   void _switchTurn() {
-    _currentTurn = _currentTurn == TicTacToeFieldValues.o
+    currentTurn = currentTurn == TicTacToeFieldValues.o
         ? TicTacToeFieldValues.x
         : TicTacToeFieldValues.o;
   }
 
   List<List<TicTacToeFieldValues>> get playField => _playField;
-
-  TicTacToeFieldValues get currentTurn => _currentTurn;
 }
 
 enum TicTacToeFieldValues { x, o, empty }

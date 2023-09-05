@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
@@ -7,34 +6,42 @@ import 'package:naolympics_app/services/network/socket_manager.dart';
 
 import '../multiplayer_state.dart';
 import '../network/json/data_types.dart';
+import '../network/json/json_data.dart';
 import '../network/json/json_objects/navigation_data.dart';
 
 class ClientRoutingService {
-  final SocketManager socketManager;
-  final BuildContext context;
+  final StreamSubscription<String> _routeHanding;
 
   static final log = Logger((ClientRoutingService).toString());
 
-  ClientRoutingService(this.socketManager, this.context);
+  ClientRoutingService(socketManager, context)
+      : _routeHanding = _setRouteHandling(socketManager, context);
 
-  Future<void> handleRouting() async {
-    MultiplayerState.connection = socketManager;
+  static StreamSubscription<String> _setRouteHandling(
+      SocketManager socketManager, BuildContext context) {
+    return socketManager.broadcastStream.listen(
+        (event) => _handlingIncomingRouteData(event, context),
+        onError: (error) =>
+            log.severe("Error while receiving routing instructions", error),
+        onDone: () => log.info("Done routing."));
+  }
 
-    Completer<String> completer = Completer();
-    socketManager.broadcastStream.listen((event) {
-      _handlingIncomingRouteData(event, context);
-    }, onError: (error) {
-      log.severe("Error while receiving routing instructions", error);
-      completer.completeError(error);
-    }, onDone: () {
-      log.info("Done routing.");
-    });
+  void pauseNavigator() {
+    _routeHanding.pause();
+  }
+
+  void resumeNavigator() {
+    _routeHanding.resume();
+  }
+
+  bool isNavigatorPaused() {
+    return _routeHanding.isPaused;
   }
 
   static void _handlingIncomingRouteData(
       String jsonData, BuildContext context) {
     try {
-      NavigationData navData = NavigationData.fromJson(json.decode(jsonData));
+      final navData = JsonData.fromJsonString(jsonData) as NavigationData;
 
       if (navData.data == DataType.navigation) {
         final remoteIp = MultiplayerState.getRemoteAddress();
@@ -73,15 +80,14 @@ class ClientRoutingService {
       log.severe(
           "Issue while trying to handle client routing", e, e.stackTrace);
     }
-
   }
 
   static void _logIncomingRouteData(NavigationType type, String? remoteIp,
       {String? route}) {
     if (route == null) {
-      log.info("Received '$type' from $remoteIp");
+      log.fine("Received '$type' from $remoteIp");
     } else {
-      log.info("Received '$type' to $route from $remoteIp");
+      log.fine("Received '$type' to $route from $remoteIp");
     }
   }
 }

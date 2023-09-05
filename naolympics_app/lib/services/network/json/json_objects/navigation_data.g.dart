@@ -29,6 +29,7 @@ const _$NavigationTypeEnumMap = {
 const _$DataTypeEnumMap = {
   DataType.connectionEstablishment: 'connectionEstablishment',
   DataType.navigation: 'navigation',
+  DataType.gameEndData: 'gameEndData',
   DataType.ticTacToe: 'ticTacToe',
   DataType.connect4: 'connect4',
 };

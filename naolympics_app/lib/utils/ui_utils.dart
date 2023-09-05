@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UIUtils {
-  static Container getBorderedTextButton(void Function() onPressed,
+  static Container getBorderedTextButton(VoidCallback onPressed,
       IconData iconData, String text, Color color, double width) {
     return Container(
         decoration: BoxDecoration(
@@ -16,7 +16,7 @@ class UIUtils {
             text,
             style: TextStyle(
               color: color,
-              fontSize: 18.0,
+              fontSize: 15.0,
             ),
           ),
         ));

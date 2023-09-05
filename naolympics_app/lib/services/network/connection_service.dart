@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/network/json/json_objects/connection_establishment.dart';
 import 'package:naolympics_app/services/network/socket_manager.dart';
 
+import 'json/json_data.dart';
 import 'network_analyzer.dart';
 
 class ConnectionService {
@@ -41,13 +41,15 @@ class ConnectionService {
   static Future<ConnectionStatus> _handleServerConnection(
       SocketManager socketManager) async {
     _clientLog("Sending connection message.");
-    final data = ConnectionEstablishment(ConnectionStatus.connecting).toJson();
-    socketManager.write(json.encode(data));
+    await socketManager
+        .writeJsonData(ConnectionEstablishment(ConnectionStatus.connecting));
     final completer = Completer<ConnectionStatus>();
 
-    StreamSubscription<String> subscription = socketManager.broadcastStream.listen((data) {
-      _clientLog("Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
-      final jsonData = ConnectionEstablishment.fromJson(json.decode(data));
+    StreamSubscription<String> subscription =
+        socketManager.broadcastStream.listen((data) {
+      _clientLog(
+          "Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
+      final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
       ConnectionStatus? value = jsonData.connectionStatus;
       _clientLog("Client received '$data' and parsed it to '$value'");
       if (value == ConnectionStatus.connectionSuccessful) {
@@ -61,7 +63,9 @@ class ConnectionService {
       return;
     });
 
-    return completer.future.timeout(timeoutDuration).whenComplete(() => subscription.cancel());
+    return completer.future
+        .timeout(timeoutDuration)
+        .whenComplete(() => subscription.cancel());
   }
 
   static Future<SocketManager?> createHost() async {
@@ -93,16 +97,16 @@ class ConnectionService {
       SocketManager socketManager) async {
     final completer = Completer<SocketManager?>();
     StreamSubscription<String> subscription =
-        socketManager.broadcastStream.listen((data) {
-      final jsonData = ConnectionEstablishment.fromJson(json.decode(data));
+        socketManager.broadcastStream.listen((data) async {
+      final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
       ConnectionStatus? value = jsonData.connectionStatus;
       _hostLog("Server received '$data' and parsed it to '$value'");
 
       if (value == ConnectionStatus.connecting) {
         _hostLog(
             "Sending success message to ${socketManager.socket.remoteAddress.address}");
-        final successJson = ConnectionEstablishment(ConnectionStatus.connectionSuccessful);
-        socketManager.write(json.encode(successJson));
+        await socketManager.writeJsonData(
+            ConnectionEstablishment(ConnectionStatus.connectionSuccessful));
         completer.complete(socketManager);
         _hostLog("finished handling connection to client");
       }
@@ -113,9 +117,9 @@ class ConnectionService {
       _hostLog("finished handling connection to client");
     });
 
-    return completer.future.timeout(timeoutDuration, onTimeout: () {
-      subscription.cancel();
-    }).whenComplete(() => subscription.cancel());
+    return completer.future
+        .timeout(timeoutDuration)
+        .whenComplete(() => subscription.cancel());
   }
 
   static Future<List<String>> getDevices() async {
@@ -224,9 +228,6 @@ enum ConnectionStatus {
 
   static ConnectionStatus? bytesToConnectionStatus(String message) {
     try {
-      print(message);
-      //print(bytes[0]);
-
       ConnectionStatus connectionStatus =
           ConnectionStatus.values.firstWhere((e) => e.toString() == message);
       return connectionStatus;

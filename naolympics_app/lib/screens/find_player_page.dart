@@ -21,6 +21,7 @@ class FindPlayerPage extends StatefulWidget {
 
 class FindPlayerPageState extends State<FindPlayerPage> {
   static final log = Logger((FindPlayerPageState).toString());
+  List<String> foundHost = [];
   bool isHosting = false;
   bool wifi = true;
   late Server server;
@@ -39,6 +40,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
         appBar: AppBar(
           title: const Text("Find Players"),
         ),
+
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [
@@ -59,7 +61,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   FloatingActionButton _toggleHostButton() {
-    void Function() action;
+    VoidCallback action;
     IconData icon;
 
     if (!isHosting) {
@@ -121,9 +123,9 @@ class FindPlayerPageState extends State<FindPlayerPage> {
         future: _showDevices(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Show a loading indicator
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}'); // Show an error message
+            return Text('Error: ${snapshot.error}');
           } else if (snapshot.hasData && snapshot.data != null) {
             final List<String> listData = snapshot.requireData;
             if (listData.isNotEmpty) {
@@ -158,7 +160,8 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
     } else {
-      ClientRoutingService(socketManager, context).handleRouting();
+     MultiplayerState.connection = socketManager;
+     MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
     }
   }
 }

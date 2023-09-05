@@ -85,7 +85,7 @@ class GameSelectionState extends State<GameSelectionPage> {
     );
   }
 
-  void Function() getOnPressedForNavButton(BuildContext context, route) {
+  VoidCallback getOnPressedForNavButton(BuildContext context, route) {
     return () {
       Navigator.push(context, MaterialPageRoute(builder: (context) => route));
     };
