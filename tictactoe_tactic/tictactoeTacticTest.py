@@ -1,8 +1,10 @@
 # coding=utf-8
-import tictactoeTactic
+import time
+
+import tictactoe_tactic
 
 
-def setPointo(field, place):
+def set_point_o(field, place):
     counter = 0
     for i in range(0, len(field)):
         for j in range(0, len(field)):
@@ -13,12 +15,12 @@ def setPointo(field, place):
     return field
 
 
-def setPointo2(field, i, j):
+def set_point_o2(field, i, j):
     field[i][j] = 'o'
     return field
 
 
-def setPointx(field, place):
+def set_point_x(field, place):
     counter = 0
     for i in range(0, len(field)):
         for j in range(0, len(field)):
@@ -29,21 +31,21 @@ def setPointx(field, place):
     return field
 
 
-def setPointx2(field, i, j):
+def set_point_x2(field, i, j):
     field[i][j] = 'x'
     return field
 
 
-def ausgabe(field):
+def print_game_state(field):
     for i in range(0, len(field)):
         for j in range(0, len(field)):
             print (field[i][j]),
         print ("\n")
 
 
-def playerStarts():
+def player_starts():
     field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
-    ausgabe(field)
+    print_game_state(field)
 
     while True:
 
@@ -52,39 +54,39 @@ def playerStarts():
         while field[x][y] != '_':
             x = input("FeldX: ")
             y = input("FeldY: ")
-        field = setPointx2(field, x, y)
+        field = set_point_x2(field, x, y)
 
-        ausgabe(field)
+        print_game_state(field)
 
-        result, winning_move = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
+        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
         print(result)
-        field = setPointo(field, result)
-        ausgabe(field)
+        field = set_point_o(field, result)
+        print_game_state(field)
 
 
-def robotStarts():
+def robot_starts():
     field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
-    ausgabe(field)
+    print_game_state(field)
 
     while True:
-        result, winning_move = tictactoeTactic.nextMove(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
+        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
         print(result)
-        field = setPointo(field, result)
-        ausgabe(field)
+        field = set_point_o(field, result)
+        print_game_state(field)
 
         x = input("FeldX: ")
         y = input("FeldY: ")
         while field[x][y] != '_':
             x = input("FeldX: ")
             y = input("FeldY: ")
-        field = setPointx2(field, x, y)
+        field = set_point_x2(field, x, y)
 
-        ausgabe(field)
+        print_game_state(field)
 
 
 if __name__ == "__main__":
-    playerStarts()
-    #robotStarts()
+    #playerStarts()
+    robot_starts()
 
 # benötigter Input:
 # drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners

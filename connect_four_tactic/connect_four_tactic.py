@@ -1,7 +1,7 @@
 import random
 
 
-def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
+def next_move(field, signOwn, signOpponent, signEmpty, mistake_factor):
     priority = [0, 0, 0, 0, 0, 0, 0]
     for row in range(0, 7):
         priority[row] = get_priorities(field, row, signOwn, signOpponent, signEmpty, 0.1, mistake_factor)
@@ -24,6 +24,9 @@ def nextMove(field, signOwn, signOpponent, signEmpty, mistake_factor):
     elif priority[bestRow] >= 2000:
         print("defend")
         return bestRow, False
+    elif priority[bestRow] == -9999:
+        print("no field left")
+        return None
     print("result:", bestRow, priority[bestRow])
     return bestRow, False
 
@@ -218,17 +221,17 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
     return [priorityWin, priorityDefend]
 
 
-def setPointY(field, i, j):
+def set_point_y(field, i, j):
     if i < 5 and field[i + 1][j] == '-':
-        return setPointY(field, i + 1, j)
+        return set_point_y(field, i + 1, j)
     else:
         field[i][j] = 'Y'
         return field
 
 
-def setPointR(field, i, j):
+def set_point_r(field, i, j):
     if i < 5 and field[i + 1][j] == '-':
-        return setPointR(field, i + 1, j)
+        return set_point_r(field, i + 1, j)
     else:
         field[i][j] = 'R'
         return field

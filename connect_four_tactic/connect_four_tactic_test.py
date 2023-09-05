@@ -9,29 +9,29 @@ import connect_four_tactic
 
 # if none of this happens play: https://www.4-gewinnt.de/sehr_schwer.html#getyourown
 
-field = [['_', '_', '_', '_', '_', '_', '_'],
-         ['_', '_', '_', '_', '_', '_', '_'],
-         ['_', '_', '_', '_', '_', '_', '_'],
-         ['_', '_', '_', '_', '_', '_', '_'],
-         ['_', '_', '_', '_', '_', '_', '_'],
-         ['_', '_', '_', '_', '_', '_', '_']]
+field = [['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-']]
 
 
-def setPointx(i, j):
-    if i < 5 and field[i + 1][j] == '_':
-        setPointx(i + 1, j)
+def set_point_x(i, j):
+    if i < 5 and field[i + 1][j] == '-':
+        set_point_x(i + 1, j)
     else:
         field[i][j] = 'x'
 
 
-def setPointo(i, j):
-    if i < 5 and field[i + 1][j] == '_':
-        setPointo(i + 1, j)
+def set_point_o(i, j):
+    if i < 5 and field[i + 1][j] == '-':
+        set_point_o(i + 1, j)
     else:
         field[i][j] = 'o'
 
 
-def ausgabe():
+def print_game_state():
     for i in range(0, len(field[0])):
         print(i),
     print("")
@@ -45,7 +45,7 @@ def ausgabe():
 
 
 if __name__ == "__main__":
-    ausgabe()
+    print_game_state()
 
     while True:
 
@@ -53,21 +53,21 @@ if __name__ == "__main__":
         #while field[0][y] != '_':
         #    y = input("Reihe: ")
 
-        y, winning_move = connect_four_tactic.nextMove(field, 'x', 'o', '_', mistake_factor=0)
+        y, winning_move = connect_four_tactic.next_move(field, 'x', 'o', '-', mistake_factor=0)
         print(y)
-        setPointx(-1, y)
-        ausgabe()
+        set_point_x(-1, y)
+        print_game_state()
 
         #time.sleep(2)
 
         y = input("Reihe: ")
-        while field[0][y] != '_':
+        while field[0][y] != '-':
             y = input("Reihe: ")
 
-        #y, winning_move = connect_four_tactic.nextMove(field, 'o', 'x', '_', mistake_factor=0)
+        #y, winning_move = connect_four_tactic.nextMove(field, 'o', 'x', '-', mistake_factor=0)
 
-        setPointo(-1, y)
-        ausgabe()
+        set_point_o(-1, y)
+        print_game_state()
 
         time.sleep(2)
 

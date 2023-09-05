@@ -5,7 +5,7 @@ import cv2
 from naoqi import ALProxy
 import movement.movementControl
 from vision import vision
-from tictactoe_tactic import tictactoeTactic
+from tictactoe_tactic import tictactoe_tactic
 from connect_four_tactic import connect_four_tactic
 from movement import movementControl
 import random
@@ -266,11 +266,11 @@ def play_tictactoe_against_itself(robotIP, PORT):
                 print("Game over")
                 return
         if circle_turn:
-            result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
-                                                       difficulty='i')
+            result, winning = tictactoe_tactic.next_move(field, signOwn='O', signOpponent='X', signEmpty='-',
+                                                         difficulty='i')
         else:
-            result, winning = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-',
-                                                       difficulty='h')
+            result, winning = tictactoe_tactic.next_move(field, signOwn='X', signOpponent='O', signEmpty='-',
+                                                         difficulty='h')
         circle_turn = not circle_turn
         print(field)
         movementControl.clickTicTacToe(robotIP, PORT, result)
@@ -301,11 +301,11 @@ def play_connect_four_against_itself(robotIP, PORT):
                 print("Game over")
                 return
         if yellow_turn:
-            result, winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
-                                                           mistake_factor=0)
+            result, winning = connect_four_tactic.next_move(field, signOwn='Y', signOpponent='R', signEmpty='-',
+                                                            mistake_factor=0)
         else:
-            result, winning = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-',
-                                                           mistake_factor=0)
+            result, winning = connect_four_tactic.next_move(field, signOwn='R', signOpponent='Y', signEmpty='-',
+                                                            mistake_factor=0)
         yellow_turn = not yellow_turn
 
         movementControl.clickConnectFour(robotIP, PORT, result)
@@ -341,11 +341,11 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
             continue
 
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = tictactoeTactic.nextMove(field, signOwn='O', signOpponent='X', signEmpty='-',
-                                                   difficulty=difficulty)
+        result, winning = tictactoe_tactic.next_move(field, signOwn='O', signOpponent='X', signEmpty='-',
+                                                     difficulty=difficulty)
         print(result)
 
-        field_after_move = tictactoeTactic.get_field_after_move(field, result, 'O')
+        field_after_move = tictactoe_tactic.get_field_after_move(field, result, 'O')
 
         movementControl.clickTicTacToe(robotIP, PORT, result)
         if winning:
@@ -384,11 +384,11 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
             continue
 
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = tictactoeTactic.nextMove(field, signOwn='X', signOpponent='O', signEmpty='-',
-                                                   difficulty=difficulty)
+        result, winning = tictactoe_tactic.next_move(field, signOwn='X', signOpponent='O', signEmpty='-',
+                                                     difficulty=difficulty)
         print(result)
 
-        field_after_move = tictactoeTactic.get_field_after_move(field, result, 'X')
+        field_after_move = tictactoe_tactic.get_field_after_move(field, result, 'X')
         movementControl.clickTicTacToe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
@@ -422,10 +422,10 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
         else:
             print("comparison not successful")
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = connect_four_tactic.nextMove(field, signOwn='Y', signOpponent='R', signEmpty='-',
-                                                       mistake_factor=mistake_factor)
+        result, winning = connect_four_tactic.next_move(field, signOwn='Y', signOpponent='R', signEmpty='-',
+                                                        mistake_factor=mistake_factor)
         field_after_move = field
-        field_after_move = connect_four_tactic.setPointY(field_after_move, -1, result)
+        field_after_move = connect_four_tactic.set_point_y(field_after_move, -1, result)
         print(result)
 
         movementControl.clickConnectFour(robotIP, PORT, result)
@@ -468,10 +468,10 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             print("comparison not successful")
 
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = connect_four_tactic.nextMove(field, signOwn='R', signOpponent='Y', signEmpty='-',
-                                                       mistake_factor=mistake_factor)
+        result, winning = connect_four_tactic.next_move(field, signOwn='R', signOpponent='Y', signEmpty='-',
+                                                        mistake_factor=mistake_factor)
         field_after_move = field
-        field_after_move = connect_four_tactic.setPointR(field_after_move, -1, result)
+        field_after_move = connect_four_tactic.set_point_r(field_after_move, -1, result)
         print(result)
 
         movementControl.clickConnectFour(robotIP, PORT, result)

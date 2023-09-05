@@ -6,6 +6,10 @@ import time
 import armPosition
 
 
+robotIP = "10.30.4.31"
+PORT = 9559
+
+
 def crouch(robotIP, port):
     postureProxy = ALProxy("ALRobotPosture", robotIP, port)
     postureProxy.goToPosture("Crouch", 1.0)
@@ -320,17 +324,18 @@ def celebrate2(robotIP, port):
 
 
 if __name__ == "__main__":
-    #print("test")
+    # print("test")
     # celebrate2(robotIP="10.30.4.13", port=9559)
     # startPosition(robotIP="10.30.4.13", port=9559)
     # after startup of nao
     # movementControl.disableAutonomousLife(robotIP, PORT)
-    # movementControl.stand(robotIP, PORT)
+    stand(robotIP, PORT)
 
     # tablet positioning
     # use app Bubble Level (or similar to calibrate z-Angle)
     #tabletPreparationXAngle(robotIP="10.30.4.13", port=9559)
-    tabletPosition(robotIP="10.30.4.13", port=9559) # y-Angle
+    #tabletPosition(robotIP="10.30.4.13", port=9559) # y-Angle
+    #crouch(robotIP="10.30.4.31", port=9559)
 
     # start positions
     # movementControl.startPositionL(robotIP, PORT)

@@ -6,7 +6,7 @@ import random
 # -> than for every amountOfEmptyFields it is decided depending on how difficult the game should be which move is done
 
 # difficulties: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
-def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
+def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
     amountEmpty = 0
     for i in range(0, len(field)):
         for j in range(0, len(field[i])):
@@ -16,28 +16,28 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
     if amountEmpty == 9:
         if difficulty == 'i':
             print("play in random corner")
-            return getRandomEmptyCorner(field, signEmpty), False
+            return get_random_empty_corner(field, signEmpty), False
         elif difficulty == 'h':
             print("play middle")
             return 4, False
         elif difficulty == 'm' or difficulty == 'e':
             print("play in random edge")
-            return getRandomEmptyEdge(field, signEmpty), False
+            return get_random_empty_edge(field, signEmpty), False
 
     if amountEmpty == 8:
         if difficulty == 'e' or difficulty == 'm':
-            return getRandomEmptyEdge(field, signEmpty), False
+            return get_random_empty_edge(field, signEmpty), False
 
         # if placed in a corner: Play middle
         if field[0][0] == signOpponent or field[0][2] == signOpponent or field[2][0] == signOpponent or field[2][2] == signOpponent:
             if difficulty == 'h':
                 print("play random corner")
-                return getRandomEmptyCorner(field, signEmpty), False
+                return get_random_empty_corner(field, signEmpty), False
             if difficulty == 'i':
                 print("play middle")
                 return 4, False
 
-        return getRandomEmptyCorner(field, signEmpty), False
+        return get_random_empty_corner(field, signEmpty), False
 
     if amountEmpty == 0:
         print("error: No empty field left")
@@ -48,12 +48,12 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
 
     if amountEmpty == 7:
         if difficulty == 'e':
-            return getRandomEmptyEdge(field, signEmpty), False
+            return get_random_empty_edge(field, signEmpty), False
         if difficulty == 'm':
             for i in range(0, len(amountsOwn)):
                 if amountsOwn[i] == 1 and amountsOpponent[i] == 0:
                     print("set mark next to other mark")
-                    return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)], False
+                    return get_empty_places_in(field, i, signEmpty)[random.randint(0, 1)], False
 
         # if placed in a corner + middle: Play opposing corner
         if field[1][1] != signEmpty:
@@ -74,7 +74,7 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
         for i in range(6, 8):
             if amountsOwn[i] == 1 and amountsOpponent[i] == 1:
                 print("play in random empty corner")
-                return getRandomEmptyCorner(field, signEmpty), False
+                return get_random_empty_corner(field, signEmpty), False
 
         # if Ecke + andereEcke -> gegenüberliegende Ecke                    entspricht Row/Column hat sign bei beidem
         if (field[0][0] != signEmpty or field[2][2] != signEmpty) and (
@@ -99,7 +99,7 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
                     for j in range(0, len(amountsOwn)):
                         if amountsOwn[j] == 1 and amountsOpponent[j] == 0:
                             print("set mark next to other mark")
-                            return getEmptyPlacesIn(field, j, signEmpty)[random.randint(0, 1)], False
+                            return get_empty_places_in(field, j, signEmpty)[random.randint(0, 1)], False
 
         # if Ecke + nichtanliegende Kante -> gegenüberliegende Ecke         entspricht nirgends hat sign bei beidem
         if field[0][0] != signEmpty:
@@ -116,21 +116,21 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
             return 0, False
 
         print("Random Empty Corner")
-        return getRandomEmptyCorner(field, signEmpty), False
+        return get_random_empty_corner(field, signEmpty), False
 
     # check rows
     # check if wining move possible
     for i in range(0, len(amountsOwn)):
         if amountsOwn[i] == 2 and amountsOpponent[i] == 0:
             print("winning move")
-            return getEmptyPlacesIn(field, i, signEmpty)[0], True
+            return get_empty_places_in(field, i, signEmpty)[0], True
 
     # check if you have to defend
     if difficulty == 'i' or difficulty == 'h' or difficulty == 'm':
         for i in range(0, len(amountsOwn)):
             if amountsOpponent[i] == 2 and amountsOwn[i] == 0:
                 print("defend")
-                return getEmptyPlacesIn(field, i, signEmpty)[0], False
+                return get_empty_places_in(field, i, signEmpty)[0], False
 
     # set mark where ever you can generate two pairs of two (Zwickmuehle) |
     # see rows with columns, rows with diagonals, columns with diagonals
@@ -140,22 +140,22 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
                 for k in range(6, 8):
                     if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[j] == 1 and \
                             amountsOpponent[j] == 0:
-                        for place1 in getEmptyPlacesIn(field, i, signEmpty):
-                            for place2 in getEmptyPlacesIn(field, j, signEmpty):
+                        for place1 in get_empty_places_in(field, i, signEmpty):
+                            for place2 in get_empty_places_in(field, j, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
                                     return place1, False
                     if amountsOwn[i] == 1 and amountsOpponent[i] == 0 and amountsOwn[k] == 1 and \
                             amountsOpponent[k] == 0:
-                        for place1 in getEmptyPlacesIn(field, i, signEmpty):
-                            for place2 in getEmptyPlacesIn(field, k, signEmpty):
+                        for place1 in get_empty_places_in(field, i, signEmpty):
+                            for place2 in get_empty_places_in(field, k, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
                                     return place1, False
                     if amountsOwn[j] == 1 and amountsOpponent[j] == 0 and amountsOwn[k] == 1 and \
                             amountsOpponent[k] == 0:
-                        for place1 in getEmptyPlacesIn(field, j, signEmpty):
-                            for place2 in getEmptyPlacesIn(field, k, signEmpty):
+                        for place1 in get_empty_places_in(field, j, signEmpty):
+                            for place2 in get_empty_places_in(field, k, signEmpty):
                                 if place1 == place2:
                                     print("Zwickmühle")
                                     return place1, False
@@ -164,27 +164,27 @@ def nextMove(field, signOwn, signOpponent, signEmpty, difficulty):
     for i in range(0, len(amountsOwn)):
         if amountsOwn[i] == 1 and amountsOpponent[i] == 0:
             print("set mark next to other mark")
-            return getEmptyPlacesIn(field, i, signEmpty)[random.randint(0, 1)], False
+            return get_empty_places_in(field, i, signEmpty)[random.randint(0, 1)], False
 
     # set mark randomly
     print("mark was set randomly")
-    return getRandomEmptyPlace(field, signEmpty), False
+    return get_random_empty_place(field, signEmpty), False
 
 
 def amounts(field, sign):
     result = [0] * 8
-    result[0] = amountRow(field, 0, sign)  # sign1FirstRow
-    result[1] = amountRow(field, 1, sign)  # sign1SecondRow
-    result[2] = amountRow(field, 2, sign)  # sign1ThirdRow
-    result[3] = amountColumn(field, 0, sign)  # sign1FirstColumn
-    result[4] = amountColumn(field, 1, sign)  # sign1SecondColumn
-    result[5] = amountColumn(field, 2, sign)  # sign1ThirdColumn
-    result[6] = amountDiagonal1(field, sign)  # sign1FirstDiagonal
-    result[7] = amountDiagonal2(field, sign)  # sign1SecondDiagonal
+    result[0] = amount_row(field, 0, sign)  # sign1FirstRow
+    result[1] = amount_row(field, 1, sign)  # sign1SecondRow
+    result[2] = amount_row(field, 2, sign)  # sign1ThirdRow
+    result[3] = amount_column(field, 0, sign)  # sign1FirstColumn
+    result[4] = amount_column(field, 1, sign)  # sign1SecondColumn
+    result[5] = amount_column(field, 2, sign)  # sign1ThirdColumn
+    result[6] = amount_diagonal1(field, sign)  # sign1FirstDiagonal
+    result[7] = amount_diagonal2(field, sign)  # sign1SecondDiagonal
     return result
 
 
-def amountRow(field, row, sign):
+def amount_row(field, row, sign):
     amount = 0
     for i in range(0, len(field[row])):
         if field[row][i] == sign:
@@ -193,7 +193,7 @@ def amountRow(field, row, sign):
     return amount
 
 
-def amountColumn(field, column, sign):
+def amount_column(field, column, sign):
     amount = 0
     for i in range(0, len(field[column])):
         if field[i][column] == sign:
@@ -202,7 +202,7 @@ def amountColumn(field, column, sign):
     return amount
 
 
-def amountDiagonal1(field, sign):
+def amount_diagonal1(field, sign):
     amount = 0
     if field[0][0] == sign:
         amount += 1
@@ -214,7 +214,7 @@ def amountDiagonal1(field, sign):
     return amount
 
 
-def amountDiagonal2(field, sign):
+def amount_diagonal2(field, sign):
     amount = 0
     if field[0][2] == sign:
         amount += 1
@@ -226,7 +226,7 @@ def amountDiagonal2(field, sign):
     return amount
 
 
-def getRandomEmptyEdge(field, signEmpty):
+def get_random_empty_edge(field, signEmpty):
     rand = random.choice([1, 3, 5, 7])
     i = 0
     j = 0
@@ -247,10 +247,10 @@ def getRandomEmptyEdge(field, signEmpty):
     if field[i][j] == signEmpty:
         return rand
 
-    return getRandomEmptyEdge(field, signEmpty)
+    return get_random_empty_edge(field, signEmpty)
 
 
-def getRandomEmptyCorner(field, signEmpty):
+def get_random_empty_corner(field, signEmpty):
     rand = random.choice([0, 2, 6, 8, 4])  # left_upper, right_upper, left_down, right_down, middle
     i = 0
     j = 0
@@ -274,50 +274,50 @@ def getRandomEmptyCorner(field, signEmpty):
     if field[i][j] == signEmpty:
         return rand
 
-    return getRandomEmptyCorner(field, signEmpty)
+    return get_random_empty_corner(field, signEmpty)
 
 
-def getRandomEmptyPlace(field, signEmpty):
+def get_random_empty_place(field, signEmpty):
     i = random.randint(0, 2)
     j = random.randint(0, 2)
 
     if field[i][j] == signEmpty:
-        result = getNumberFromCoord(i, j)
+        result = get_number_from_coord(i, j)
         return result
 
-    return getRandomEmptyPlace(field, signEmpty)  # randomPlaceWasntEmpty
+    return get_random_empty_place(field, signEmpty)  # randomPlaceWasntEmpty
 
 
-def getEmptyPlacesIn(field, i, signEmpty):
+def get_empty_places_in(field, i, signEmpty):
     result = list()
     if i in (0, 1, 2):
         for j in range(0, 3):
             if field[i][j] == signEmpty:
-                result.append(getNumberFromCoord(i, j))
+                result.append(get_number_from_coord(i, j))
 
     if i in (3, 4, 5):
         for j in range(0, 3):
             if field[j][i - 3] == signEmpty:
-                result.append(getNumberFromCoord(j, i - 3))
+                result.append(get_number_from_coord(j, i - 3))
     if i == 6:
         if field[0][0] == signEmpty:
-            result.append(getNumberFromCoord(0, 0))
+            result.append(get_number_from_coord(0, 0))
         if field[1][1] == signEmpty:
-            result.append(getNumberFromCoord(1, 1))
+            result.append(get_number_from_coord(1, 1))
         if field[2][2] == signEmpty:
-            result.append(getNumberFromCoord(2, 2))
+            result.append(get_number_from_coord(2, 2))
     if i == 7:
         if field[0][2] == signEmpty:
-            result.append(getNumberFromCoord(0, 2))
+            result.append(get_number_from_coord(0, 2))
         if field[1][1] == signEmpty:
-            result.append(getNumberFromCoord(1, 1))
+            result.append(get_number_from_coord(1, 1))
         if field[2][0] == signEmpty:
-            result.append(getNumberFromCoord(2, 0))
+            result.append(get_number_from_coord(2, 0))
 
     return result
 
 
-def getNumberFromCoord(i, j):
+def get_number_from_coord(i, j):
     if i == 0:
         return 0 + j
     if i == 1:
