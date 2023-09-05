@@ -11,9 +11,8 @@ class TicTacToeData extends JsonData {
   final int row;
   final int column;
   final TicTacToeFieldValues fieldValue;
-  final bool reset;
 
-  TicTacToeData(this.row, this.column, this.fieldValue, {this.reset = false})
+  TicTacToeData(this.row, this.column, this.fieldValue)
       : super(DataType.ticTacToe);
 
   factory TicTacToeData.fromJson(Map<String, dynamic> json) =>

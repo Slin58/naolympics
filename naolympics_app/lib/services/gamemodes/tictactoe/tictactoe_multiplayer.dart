@@ -28,6 +28,24 @@ class TicTacToeMultiplayer extends TicTacToe {
     _gameSubscription = _setGameSubscription(socketManager);
   }
 
+  @override
+  void init() {
+    super.init();
+    _sendReset();
+  }
+
+  @override
+  Future<TicTacToeWinner> move(int row, int col) async {
+    if (currentTurn == playerSymbol &&
+        super.playField[row][col] == TicTacToeFieldValues.empty) {
+      TicTacToeWinner winner = makeMove(row, col);
+
+      _sendMove(row, col);
+      return winner;
+    }
+    return TicTacToeWinner.ongoing;
+  }
+
   StreamSubscription<String> _setGameSubscription(SocketManager socketManager) {
     return socketManager.broadcastStream.listen((data) {
       final ticTacToeData = JsonData.fromJsonString(data);
@@ -72,14 +90,8 @@ class TicTacToeMultiplayer extends TicTacToe {
     _sendGoBack();
   }
 
-  void _cancelGameSubscription(){
+  void _cancelGameSubscription() {
     _gameSubscription.cancel();
-  }
-
-  @override
-  void init() {
-    super.init();
-    _sendReset();
   }
 
   Future<void> _sendReset() async {
@@ -94,23 +106,8 @@ class TicTacToeMultiplayer extends TicTacToe {
     await socketManager.writeJsonData(gameEndData);
   }
 
-
-  @override
-  Future<TicTacToeWinner> move(int row, int col) async {
-    if (currentTurn == playerSymbol &&
-        super.playField[row][col] == TicTacToeFieldValues.empty) {
-      TicTacToeWinner winner = makeMove(row, col);
-
-      _sendMove(row, col);
-      return winner;
-    }
-    return TicTacToeWinner.ongoing;
-  }
-
-  Future<void> _sendMove(int row, int col, {bool? reset}) async {
-    reset = reset ?? false;
-    final ticTacToeData =
-        TicTacToeData(row, col, super.currentTurn, reset: reset);
+  Future<void> _sendMove(int row, int col) async {
+    final ticTacToeData = TicTacToeData(row, col, super.currentTurn);
     log.fine(
         "Sending move $ticTacToeData to ${MultiplayerState.getRemoteAddress()}");
     await socketManager.writeJsonData(ticTacToeData);

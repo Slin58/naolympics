@@ -11,7 +11,6 @@ TicTacToeData _$TicTacToeDataFromJson(Map<String, dynamic> json) =>
       json['row'] as int,
       json['column'] as int,
       $enumDecode(_$TicTacToeFieldValuesEnumMap, json['fieldValue']),
-      reset: json['reset'] as bool? ?? false,
     )..dataType = $enumDecode(_$DataTypeEnumMap, json['dataType']);
 
 Map<String, dynamic> _$TicTacToeDataToJson(TicTacToeData instance) =>
@@ -20,7 +19,6 @@ Map<String, dynamic> _$TicTacToeDataToJson(TicTacToeData instance) =>
       'row': instance.row,
       'column': instance.column,
       'fieldValue': _$TicTacToeFieldValuesEnumMap[instance.fieldValue]!,
-      'reset': instance.reset,
     };
 
 const _$TicTacToeFieldValuesEnumMap = {
