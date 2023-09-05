@@ -15,6 +15,7 @@ class MultiplayerState {
   }
 
   static void closeConnection() {
+    connection?.closeConnection();
     connection = null;
   }
 

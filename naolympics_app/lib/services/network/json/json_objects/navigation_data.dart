@@ -8,11 +8,12 @@ part 'navigation_data.g.dart';
 @JsonSerializable()
 class NavigationData extends JsonData {
   final String route;
+  final NavigationType navigationType;
 
-  NavigationData(this.route) : super(DataType.navigation);
+  NavigationData(this.route, this.navigationType) : super(DataType.navigation);
 
-  factory NavigationData.fromJson(Map<String, dynamic> json) =>
-      _$NavigationDataFromJson(json);
+    factory NavigationData.fromJson(Map<String, dynamic> json) =>
+        _$NavigationDataFromJson(json);
 
   DataType get data => super.dataType;
 
@@ -21,9 +22,18 @@ class NavigationData extends JsonData {
 
   @override
   String toString() {
-    return """NavigationData{
+    return """
+    NavigationData{
          dataType: ${super.dataType}
          route: $route}'
-        }""";
+    }
+    """;
   }
+}
+
+enum NavigationType {
+  push,
+  pop,
+  dispose,
+  closeConnection
 }

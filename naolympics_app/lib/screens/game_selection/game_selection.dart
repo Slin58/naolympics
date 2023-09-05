@@ -4,7 +4,7 @@ import 'package:naolympics_app/screens/home_page.dart';
 import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
 import '../../connect4/ConnectFourPage.dart';
-import '../../services/routing/route_aware_widget.dart';
+import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 
 class GameSelectionPage extends StatefulWidget {
   const GameSelectionPage({super.key});

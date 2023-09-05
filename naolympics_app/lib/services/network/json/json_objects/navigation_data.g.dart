@@ -9,13 +9,22 @@ part of 'navigation_data.dart';
 NavigationData _$NavigationDataFromJson(Map<String, dynamic> json) =>
     NavigationData(
       json['route'] as String,
+      $enumDecode(_$NavigationTypeEnumMap, json['navigationType']),
     )..dataType = $enumDecode(_$DataTypeEnumMap, json['dataType']);
 
 Map<String, dynamic> _$NavigationDataToJson(NavigationData instance) =>
     <String, dynamic>{
       'dataType': _$DataTypeEnumMap[instance.dataType]!,
       'route': instance.route,
+      'navigationType': _$NavigationTypeEnumMap[instance.navigationType]!,
     };
+
+const _$NavigationTypeEnumMap = {
+  NavigationType.push: 'push',
+  NavigationType.pop: 'pop',
+  NavigationType.dispose: 'dispose',
+  NavigationType.closeConnection: 'closeConnection',
+};
 
 const _$DataTypeEnumMap = {
   DataType.connectionEstablishment: 'connectionEstablishment',

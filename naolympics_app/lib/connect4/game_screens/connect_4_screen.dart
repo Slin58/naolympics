@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import '../../screens/game_selection/game_selection.dart';
-import '../../services/routing/route_aware_widget.dart';
+import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import '../widgets/board.dart';
 
 class Connect4Screen extends StatelessWidget {
   final GameController gameController = Get.put(GameController());
   static final log = Logger((Connect4Screen).toString());
+
+  Connect4Screen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../../screens/game_selection/game_selection_multiplayer.dart';
-import '../../services/routing/route_aware_widget.dart';
+import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import '../widgets/board_multiplayer.dart';
 
