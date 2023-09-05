@@ -83,13 +83,13 @@ class TicTacToeMultiplayer extends TicTacToe {
   }
 
   Future<void> _sendReset() async {
-    final gameEndData = GameEndData(true, false);
+    final gameEndData = GameEndData.getReset();
     log.fine("Sending move reset to ${MultiplayerState.getRemoteAddress()}");
     await socketManager.writeJsonData(gameEndData);
   }
 
   Future<void> _sendGoBack() async {
-    final gameEndData = GameEndData(false, true);
+    final gameEndData = GameEndData.getGoBack();
     log.fine("Sending move goBack to ${MultiplayerState.getRemoteAddress()}");
     await socketManager.writeJsonData(gameEndData);
   }

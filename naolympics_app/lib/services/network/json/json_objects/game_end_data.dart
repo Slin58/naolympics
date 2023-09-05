@@ -7,11 +7,21 @@ part 'game_end_data.g.dart';
 
 @JsonSerializable()
 class GameEndData extends JsonData {
-  bool reset;
-  bool goBack;
+  final bool reset;
+  final bool goBack;
 
   GameEndData(this.reset, this.goBack)
       : super(DataType.gameEndData);
+
+  GameEndData.getReset()
+      : reset = true,
+        goBack = false,
+        super(DataType.gameEndData);
+
+  GameEndData.getGoBack()
+      : reset = false,
+        goBack = true,
+        super(DataType.gameEndData);
 
   factory GameEndData.fromJson(Map<String, dynamic> json) =>
       _$GameEndDataFromJson(json);
