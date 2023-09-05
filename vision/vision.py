@@ -28,6 +28,7 @@ def get_image_from_nao(ip, port):
 
 def record_image_from_nao(path, ip, port):
     recorded = get_image_from_nao(ip, port)
+    recorded = cv2.cvtColor(recorded, cv2.COLOR_BGR2RGB)
     cv2.imwrite(path, recorded)
 
 
@@ -139,6 +140,7 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
                 cv2.imshow("Processed image", imgRes)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
+
             return gamestate
         else:
             print("Field not detected correctly")
@@ -148,6 +150,7 @@ def detect_tictactoe_state(img, debug=[], tile_offset=20, minRadius=40, maxRadiu
                            contour_area_thresh=500, gaussian_kernel_size=7, canny_lower_thresh=0, canny_upper_thresh=70,
                            dilate_iterations=2, erode_iterations=1):
     gamestate = [["-", "-", "-"], ["-", "-", "-"], ["-", "-", "-"]]
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     edge_img, outer_contours, inner_contours = find_board_contours(img, debug, contour_area_thresh=contour_area_thresh,
                                                                    gaussian_kernel_size=gaussian_kernel_size,
                                                                    canny_lower_thresh=canny_lower_thresh,

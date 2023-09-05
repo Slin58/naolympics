@@ -336,7 +336,7 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
-        if field == field_after_move:
+        if field == field_after_move or field is None:
             time.sleep(0.2)
             continue
 
@@ -379,7 +379,7 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
                 print("Game over")
                 return
 
-        if field == field_after_move:
+        if field == field_after_move or field is None:
             time.sleep(0.2)
             continue
 
@@ -416,7 +416,7 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
-        if field == field_after_move:
+        if field == field_after_move or field is None:
             time.sleep(0.2)
             continue
         else:
@@ -461,7 +461,7 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
-        if field == field_after_move:
+        if field == field_after_move or field is None:
             time.sleep(0.2)
             continue
         else:
@@ -517,42 +517,6 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
 if __name__ == "__main__":
     # after startup of nao
-    # calibrate(["y_angle", "vision_check", "start_position"])
+    # calibrate(["disable_autonomous", "y_angle", "vision_check", "start_position"])
     choose_game_by_buttons()
-    # field_after_move = \
-    #     [['-', '-', '-', '-', 'R', 'Y', '-'],
-    #      ['Y', 'R', '-', 'R', 'Y', 'R', 'R'],
-    #      ['Y', 'R', 'Y', 'R', 'Y', 'Y', 'Y'],
-    #      ['R', 'Y', 'Y', 'R', 'R', 'Y', 'Y'],
-    #      ['Y', 'R', 'R', 'Y', 'R', 'Y', 'R'],
-    #      ['Y', 'R', 'R', 'Y', 'Y', 'R', 'R']]
-    # wrong_count = 0
-    # fail = vision.get_image_from_nao(robotIP, PORT)
-    # field = vision.detect_connect_four_state(fail, debug=[1,2,3,4,5,6,7], minRadius=55, maxRadius=65)
-    # if field == field_after_move:
-    #     print("huge success")
-    # for i in range(100):
-    #     fail = vision.get_image_from_nao(robotIP, PORT)
-    #     field = vision.detect_connect_four_state(fail, debug=[])
-    #     if field != field_after_move:
-    #         print(i)
-    #         for row in field:
-    #             print(row)
-    #         wrong_count += 1
-    # print(wrong_count)
-    # play_tictactoe_against_itself(robotIP, PORT)
-    # play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='h')
-    # play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty='h')
-    # play_connect_four_against_itself(robotIP, PORT)
-    # play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor = 1)
-    # play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor = 1)
-
-
-
-    # false_count = 0
-    # for i in range(1000):
-    #     new_field = vision.detect_connect_four_state(fail)
-    #     if new_field != field:
-    #         false_count +=1
-    # print(float(false_count)/1000)#
-    # result: 0.0 ??
+    # vision.record_image_from_nao("connect4_doku3.png", robotIP, PORT)
