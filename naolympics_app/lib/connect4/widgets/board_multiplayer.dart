@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
+import '../../screens/game_selection/game_selection.dart';
+import '../../screens/game_selection/game_selection_multiplayer.dart';
+import '../../screens/home_page.dart';
+import '../../services/network/json/json_objects/navigation_data.dart';
+import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
@@ -28,40 +33,72 @@ class BoardMultiplayer extends StatelessWidget {
 
   Future<void> startListening() async {
    // Completer<List<List<int>>> completer = Completer<List<List<int>>>();
-    StreamSubscription<String>? subscription = null;
+    StreamSubscription<String>? subscription;
     final GameController gameController = Get.find<GameController>();
-
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+      NavigationData? jsonAsNavData = tryToReadNavDataFromJson(data);
+
+      log.info("Your route retard: ${jsonAsNavData?.route}");
 
       if(json.decode(data) == "New Game") {
+        Navigator.of(Get.context!).pop(true);
         gameController.buildBoard();
       }
-        List<List<int>> receivedBoard = json.decode(data).map<List<int>>((
-            dynamic innerList) {
-          return (innerList as List<dynamic>).cast<int>().toList();
-        }).toList();
-        log.info(
-            "In startListening(): received '$data' and parsed it to '$receivedBoard'");
+      else if(jsonAsNavData?.route == "Homepage") {
+        Navigator.push(
+            Get.context!,
+            MaterialPageRoute(
+                builder: (context) => RouteAwareWidget(
+                    ( (MultiplayerState.connection != null) ? GameSelectionPageMultiplayer : GameSelectionPage).toString(),
+                    child: ((MultiplayerState.connection != null) ? const GameSelectionPageMultiplayer() : const GameSelectionPage()))));
+      }
 
-        gameController.turnYellow = !gameController.turnYellow;
-        gameController.blockTurn = false;
-        int newMoveInColumn = gameController.getIndexOfNewElementOfList(
-            gameController.board, receivedBoard);
+      else {
+        try {
+        }
+        on Error {
+          if (jsonAsNavData ==
+              NavigationData("stop", NavigationType.closeConnection)) {
+            MultiplayerState.closeConnection();
+            Navigator.pushAndRemoveUntil(
+                Get.context!,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      RouteAwareWidget(
+                        (HomePage).toString(),
+                        child: const HomePage(),),), (route) => false);
+          }
+          else {
+            List<List<int>> receivedBoard = json.decode(data).map<List<int>>((
+                dynamic innerList) {
+              return (innerList as List<dynamic>).cast<int>().toList();
+            }).toList();
+            log.info(
+                "In startListening(): received '$data' and parsed it to '$receivedBoard'");
 
-        var oldboard = gameController.board;
-        log.info("Old board: $oldboard");
-        log.info("New board: $receivedBoard");
+            gameController.turnYellow = !gameController.turnYellow;
+            gameController.blockTurn = false;
+            int newMoveInColumn = gameController.getIndexOfNewElementOfList(
+                gameController.board, receivedBoard);
 
-        log.info("newMoveInColumn: $newMoveInColumn");
-        gameController.board = receivedBoard;
-        if (newMoveInColumn != -1) gameController.checkForWinner(
-            newMoveInColumn);
-        gameController.update();
-        log.info("finished listening for new Board from oter player");
+            var oldboard = gameController.board;
+            log.info("Old board: $oldboard");
+            log.info("New board: $receivedBoard");
 
-        subscription?.cancel();
+            log.info("newMoveInColumn: $newMoveInColumn");
+            gameController.board = receivedBoard;
+            if (newMoveInColumn != -1) {
+              gameController.checkForWinner(
+                  newMoveInColumn);
+            }
+            gameController.update();
+            log.info("finished listening for new Board from oter player");
 
-        //completer.complete(receivedBoard);
+            subscription?.cancel();
+          }
+          //completer.complete(receivedBoard);
+        }
+      }
 
     },
         onError: (error) {
@@ -74,6 +111,17 @@ class BoardMultiplayer extends StatelessWidget {
           log.info("Done method of startListening triggered");
         });
   }
+
+  NavigationData? tryToReadNavDataFromJson(String data) {
+    try {
+      NavigationData? jsonAsNavData = NavigationData.fromJson(json.decode(data));
+      return jsonAsNavData;
+    }
+    on Error {
+      return null;
+    }
+  }
+
 
 
   @override

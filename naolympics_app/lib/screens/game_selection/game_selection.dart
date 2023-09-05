@@ -26,12 +26,12 @@ class GameSelectionState extends State<GameSelectionPage> {
           MultiplayerState.closeConnection();
           var connection = MultiplayerState.connection;
           log.info("Triggered WillPopScope and close connection. Multiplayerstate.connection is: $connection");
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
                   builder: (context) => RouteAwareWidget(
                       (HomePage).toString(),
-                      child: const HomePage())));
+                      child: const HomePage(),),), (route) => false);
             return false;
           },
     child: Scaffold(

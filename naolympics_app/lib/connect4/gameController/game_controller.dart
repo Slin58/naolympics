@@ -2,9 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
+import '../../screens/game_selection/game_selection.dart';
+import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../services/multiplayer_state.dart';
 import 'dart:convert';
 import 'package:collection/collection.dart';
+import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../widgets/cell.dart';
 
 class GameController extends GetxController {
@@ -95,7 +98,7 @@ class GameController extends GetxController {
         showFullBoardDialog();
       }
       blockTurn = true;
-      blockTurn = await Future.delayed(const Duration(seconds: 2), () => false);
+      blockTurn = await Future.delayed(const Duration(seconds: 1), () => false);
     } else {
       Get.snackbar("Not available", "This column is full already",
           snackPosition: SnackPosition.BOTTOM);
@@ -171,45 +174,65 @@ class GameController extends GetxController {
   void declareWinner(int winner) {
     showDialog(
       context: Get.context!,
+      barrierDismissible: false,
       builder: (context) {
-        Future.delayed(const Duration(seconds: 6), () {
-          Navigator.of(context).pop(true);
-          buildBoard();
-        });
-
-        return Stack(
-          children: [
-            AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              title: Text(
-                winner == 1 ? 'Player 1 (yellow) won' : 'Player 2 (red) won',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: SizedBox(
-                height: 90,
-                child: Center(
-                  child: Cell(
-                    currCellState: winner == 1 ? CellState.YELLOW : CellState.RED,
-                  ),
-                ),
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: Text(
+            winner == 1 ? 'Player 1 (yellow) won' : 'Player 2 (red) won',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SizedBox(
+            height: 90,
+            child: Center(
+              child: Cell(
+                currCellState: winner == 1 ? CellState.YELLOW : CellState.RED,
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop(true);
-                buildBoard();
-              },
-              behavior: HitTestBehavior.opaque,
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                   // if(MultiplayerState.connection != null) MultiplayerState.connection!.write(json.encode("New Game"));
+                    buildBoard();
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Replay'),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    buildBoard();
+                   // if(MultiplayerState.connection != null) MultiplayerState.connection!.write(json.encode("Back To Game Selection"));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RouteAwareWidget(
+                                ( (MultiplayerState.connection != null) ? GameSelectionPageMultiplayer : GameSelectionPage).toString(),
+                                child: ((MultiplayerState.connection != null) ? const GameSelectionPageMultiplayer() : const GameSelectionPage()))));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Go Back'),
+                  ),                ),
+              ],
             ),
           ],
         );
       },
     );
+
+
   }
 
   int checkForVerticalWin(int columnNumber) {
