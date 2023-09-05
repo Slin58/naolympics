@@ -54,7 +54,6 @@ class GameController extends GetxController {
 
   Future<void> playColumnMultiplayer(int columnNumber) async {
     final int playerNumber = turnYellow ? 1 : 2;
-
     log.info("Move made by playColumnMultiplayer");
 
     if (board[columnNumber].contains(0)) {

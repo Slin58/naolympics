@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +18,7 @@ class BoardMultiplayer extends StatelessWidget {
 
     startListening();
 
-    return gameController.board   //Liste hier das erste mal static erstellen
+    return gameController.board
         .map((boardColumn) => BoardColumn(
       chipsInColumn: boardColumn,
       columnNumber: currentColNumber++,
@@ -33,26 +32,34 @@ class BoardMultiplayer extends StatelessWidget {
     final GameController gameController = Get.find<GameController>();
 
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-      List<List<int>> receivedBoard = json.decode(data).map<List<int>>((dynamic innerList) {
-        return (innerList as List<dynamic>).cast<int>().toList();
-      }).toList();
-      log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
 
-      gameController.turnYellow = !gameController.turnYellow;
-      gameController.blockTurn = false;
-      int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
+      if(json.decode(data) == "New Game") {
+        gameController.buildBoard();
+      }
+        List<List<int>> receivedBoard = json.decode(data).map<List<int>>((
+            dynamic innerList) {
+          return (innerList as List<dynamic>).cast<int>().toList();
+        }).toList();
+        log.info(
+            "In startListening(): received '$data' and parsed it to '$receivedBoard'");
 
-      var oldboard = gameController.board;
-      log.info("Old board: $oldboard");
-      log.info("New board: $receivedBoard");
+        gameController.turnYellow = !gameController.turnYellow;
+        gameController.blockTurn = false;
+        int newMoveInColumn = gameController.getIndexOfNewElementOfList(
+            gameController.board, receivedBoard);
 
-      log.info("newMoveInColumn: $newMoveInColumn");
-      gameController.board = receivedBoard;
-      if(newMoveInColumn != -1) gameController.checkForWinner(newMoveInColumn);
-      gameController.update();
-      log.info("finished listening for new Board from oter player");
+        var oldboard = gameController.board;
+        log.info("Old board: $oldboard");
+        log.info("New board: $receivedBoard");
 
-      subscription?.cancel();
+        log.info("newMoveInColumn: $newMoveInColumn");
+        gameController.board = receivedBoard;
+        if (newMoveInColumn != -1) gameController.checkForWinner(
+            newMoveInColumn);
+        gameController.update();
+        log.info("finished listening for new Board from oter player");
+
+        subscription?.cancel();
 
         //completer.complete(receivedBoard);
 
