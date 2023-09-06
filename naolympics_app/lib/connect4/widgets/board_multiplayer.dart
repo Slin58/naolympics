@@ -5,21 +5,31 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
-import '../../screens/game_selection/game_selection.dart';
-import '../../screens/game_selection/game_selection_multiplayer.dart';
+import 'package:naolympics_app/services/network/json/json_data.dart';
+import 'package:naolympics_app/services/network/json/json_objects/game_end_data.dart';
 import '../../screens/home_page.dart';
+import '../../services/network/json/json_objects/connect4_data.dart';
 import '../../services/network/json/json_objects/navigation_data.dart';
 import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
-class BoardMultiplayer extends StatelessWidget {
+class BoardMultiplayerPage extends StatefulWidget {
+  const BoardMultiplayerPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => BoardMultiplayerState();
+}
+
+class BoardMultiplayerState extends State<BoardMultiplayerPage> {
   final GameController gameController = Get.find<GameController>();
-  static final log = Logger((BoardMultiplayer).toString());
+  static final log = Logger((BoardMultiplayerState).toString());
 
   List<BoardColumn> _buildBoardMultiplayer() {
     gameController.turnYellow = MultiplayerState.isHosting() ? true : false;
     int currentColNumber = 0;
+
+    if(MultiplayerState.isClient()) MultiplayerState.clientRoutingService?.pauseNavigator();
 
     startListening();
 
@@ -36,29 +46,24 @@ class BoardMultiplayer extends StatelessWidget {
     StreamSubscription<String>? subscription;
     final GameController gameController = Get.find<GameController>();
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-      NavigationData? jsonAsNavData = tryToReadNavDataFromJson(data);
 
-      log.info("Your route retard: ${jsonAsNavData?.route}");
+      JsonData jsonData = JsonData.fromJsonString(data);
 
-      if(json.decode(data) == "New Game") {
-        Navigator.of(Get.context!).pop(true);
+      if(jsonData is GameEndData && MultiplayerState.isClient()) {
+        if(jsonData.goBack) MultiplayerState.clientRoutingService?.resumeNavigator();
+        //Navigator.of(context).pop(true);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  RouteAwareWidget(
+                    (BoardMultiplayerPage).toString(),
+                    child: const BoardMultiplayerPage(),),), (route) => false);
+
         gameController.buildBoard();
       }
-      else if(jsonAsNavData?.route == "Homepage") {
-        Navigator.push(
-            Get.context!,
-            MaterialPageRoute(
-                builder: (context) => RouteAwareWidget(
-                    ( (MultiplayerState.connection != null) ? GameSelectionPageMultiplayer : GameSelectionPage).toString(),
-                    child: ((MultiplayerState.connection != null) ? const GameSelectionPageMultiplayer() : const GameSelectionPage()))));
-      }
-
-      else {
-        try {
-        }
-        on Error {
-          if (jsonAsNavData ==
-              NavigationData("stop", NavigationType.closeConnection)) {
+      else if (jsonData is NavigationData) {
+       if(jsonData == NavigationData("stop", NavigationType.closeConnection)) {
             MultiplayerState.closeConnection();
             Navigator.pushAndRemoveUntil(
                 Get.context!,
@@ -68,18 +73,14 @@ class BoardMultiplayer extends StatelessWidget {
                         (HomePage).toString(),
                         child: const HomePage(),),), (route) => false);
           }
+    }
           else {
-            List<List<int>> receivedBoard = json.decode(data).map<List<int>>((
-                dynamic innerList) {
-              return (innerList as List<dynamic>).cast<int>().toList();
-            }).toList();
-            log.info(
-                "In startListening(): received '$data' and parsed it to '$receivedBoard'");
+            List<List<int>> receivedBoard = (jsonData as Connect4Data).board;
+            log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
 
             gameController.turnYellow = !gameController.turnYellow;
             gameController.blockTurn = false;
-            int newMoveInColumn = gameController.getIndexOfNewElementOfList(
-                gameController.board, receivedBoard);
+            int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
 
             var oldboard = gameController.board;
             log.info("Old board: $oldboard");
@@ -87,42 +88,26 @@ class BoardMultiplayer extends StatelessWidget {
 
             log.info("newMoveInColumn: $newMoveInColumn");
             gameController.board = receivedBoard;
+            int winner = 0;
             if (newMoveInColumn != -1) {
-              gameController.checkForWinner(
-                  newMoveInColumn);
+              winner = gameController.checkForWinner(newMoveInColumn);
             }
             gameController.update();
             log.info("finished listening for new Board from oter player");
 
-            subscription?.cancel();
+            if(winner != 0) subscription?.cancel();
           }
           //completer.complete(receivedBoard);
-        }
-      }
-
     },
         onError: (error) {
           log.info("Error while trying to listen for Board Update");
           subscription?.cancel();
           //completer.completeError(error);
         }, onDone: () {
-          //TODO: On stop Connection close stream subscription and set MultiplayerState.connection to null
           subscription!.cancel();
           log.info("Done method of startListening triggered");
         });
   }
-
-  NavigationData? tryToReadNavDataFromJson(String data) {
-    try {
-      NavigationData? jsonAsNavData = NavigationData.fromJson(json.decode(data));
-      return jsonAsNavData;
-    }
-    on Error {
-      return null;
-    }
-  }
-
-
 
   @override
   Widget build(BuildContext context) {

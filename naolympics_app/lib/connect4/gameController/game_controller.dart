@@ -2,11 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/services/network/json/json_objects/connect4_data.dart';
+import 'package:naolympics_app/utils/ui_utils.dart';
 import '../../screens/game_selection/game_selection.dart';
 import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../services/multiplayer_state.dart';
 import 'dart:convert';
 import 'package:collection/collection.dart';
+import '../../services/network/json/json_objects/game_end_data.dart';
 import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../widgets/cell.dart';
 
@@ -64,7 +67,11 @@ class GameController extends GetxController {
       board[columnNumber][row] = playerNumber;
       update();
 
-      checkForWinner(columnNumber);
+      Function onClose;
+
+      checkForWinner(columnNumber, () {
+        // This callback function can be used to close the dialog or perform any other actions
+      });
 
       if (checkForFullBoard() == 1) {
         int fB = checkForFullBoard();
@@ -73,7 +80,7 @@ class GameController extends GetxController {
       }
       blockTurn = true;
       turnYellow = !turnYellow;
-      MultiplayerState.connection!.write(json.encode(board));
+      MultiplayerState.connection!.writeJsonData(Connect4Data(board));
     } else {
       Get.snackbar("Not available", "This column is full already",
           snackPosition: SnackPosition.BOTTOM);
@@ -105,7 +112,7 @@ class GameController extends GetxController {
     }
   }
 
-  void checkForWinner(int columnNumber) {
+  int checkForWinner(int columnNumber, Function()? onClose) {
     int horizontalWinCond = checkForHorizontalWin(columnNumber);
     int verticalWinCond = checkForVerticalWin(columnNumber);
     int diagonalWinCond = checkDiagonalWinCond(columnNumber);
@@ -121,8 +128,9 @@ class GameController extends GetxController {
                 : 0;
 
     if (winner != 0) {
-      declareWinner(winner);
+      declareWinner(winner, onClose);
     }
+    return winner;
   }
 
   int getIndexOfNewElementOfList(
@@ -171,8 +179,10 @@ class GameController extends GetxController {
     return 1;
   }
 
-  void declareWinner(int winner) {
-    showDialog(
+  Future<void> declareWinner(int winner, Function()? onClose) async {
+    Function()? onClose;
+
+    final result = await showDialog(
       context: Get.context!,
       barrierDismissible: false,
       builder: (context) {
@@ -201,27 +211,37 @@ class GameController extends GetxController {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(true);
-                   // if(MultiplayerState.connection != null) MultiplayerState.connection!.write(json.encode("New Game"));
-                    buildBoard();
+                    if(MultiplayerState.isClient()) {
+                      UIUtils.showTemporaryAlert(context, "Wait for the host");
+                    }
+                    else {
+                      MultiplayerState.connection!.writeJsonData(GameEndData(true, false));
+                      Navigator.of(context).pop(true);
+                      buildBoard();
+                    }
                   },
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text('Replay'),
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    buildBoard();
-                   // if(MultiplayerState.connection != null) MultiplayerState.connection!.write(json.encode("Back To Game Selection"));
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RouteAwareWidget(
-                                ( (MultiplayerState.connection != null) ? GameSelectionPageMultiplayer : GameSelectionPage).toString(),
-                                child: ((MultiplayerState.connection != null) ? const GameSelectionPageMultiplayer() : const GameSelectionPage()))));
+                  onPressed: () async {
+        if(MultiplayerState.isClient()) {
+        UIUtils.showTemporaryAlert(context, "Wait for the host");
+        }
+        else {
+        buildBoard();
+        await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
+        Navigator.push(
+        context,
+        MaterialPageRoute(
+        builder: (context) => RouteAwareWidget(
+        ( (MultiplayerState.connection != null) ? GameSelectionPageMultiplayer : GameSelectionPage).toString(),
+        child: ((MultiplayerState.connection != null) ? const GameSelectionPageMultiplayer() : const GameSelectionPage()))));
+        }
                   },
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text('Go Back'),
                   ),                ),
@@ -232,6 +252,9 @@ class GameController extends GetxController {
       },
     );
 
+    if (onClose != null) {
+      onClose();
+    }
 
   }
 

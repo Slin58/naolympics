@@ -45,7 +45,7 @@ class Connect4ScreenMultiplayer extends StatelessWidget {
                       gameController.turnYellow ? Colors.yellow : Colors.red),
             )),
       ),
-      body: BoardMultiplayer(),
+      body: BoardMultiplayerPage(),
     ));
   }
 }
