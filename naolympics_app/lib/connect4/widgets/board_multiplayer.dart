@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
 import 'package:naolympics_app/services/network/json/json_data.dart';
 import 'package:naolympics_app/services/network/json/json_objects/game_end_data.dart';
+import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../screens/home_page.dart';
 import '../../services/network/json/json_objects/connect4_data.dart';
 import '../../services/network/json/json_objects/navigation_data.dart';
@@ -14,19 +15,11 @@ import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
-class BoardMultiplayerPage extends StatefulWidget {
-  const BoardMultiplayerPage({super.key});
-
-  @override
-  State<StatefulWidget> createState() => BoardMultiplayerState();
-}
-
-class BoardMultiplayerState extends State<BoardMultiplayerPage> {
+class BoardMultiplayer extends StatelessWidget {
   final GameController gameController = Get.find<GameController>();
-  static final log = Logger((BoardMultiplayerState).toString());
+  static final log = Logger((BoardMultiplayer).toString());
 
   List<BoardColumn> _buildBoardMultiplayer() {
-    gameController.turnYellow = MultiplayerState.isHosting() ? true : false;
     int currentColNumber = 0;
 
     if(MultiplayerState.isClient()) MultiplayerState.clientRoutingService?.pauseNavigator();
@@ -42,45 +35,51 @@ class BoardMultiplayerState extends State<BoardMultiplayerPage> {
   }
 
   Future<void> startListening() async {
-   // Completer<List<List<int>>> completer = Completer<List<List<int>>>();
     StreamSubscription<String>? subscription;
     final GameController gameController = Get.find<GameController>();
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
 
+      log.info("turnyellow: ${gameController.turnYellow}");
+      log.info("!turnyellow: ${!gameController.turnYellow}");
+
+      gameController.blockTurn = false;
+
       JsonData jsonData = JsonData.fromJsonString(data);
 
-      if(jsonData is GameEndData && MultiplayerState.isClient()) {
-        if(jsonData.goBack) MultiplayerState.clientRoutingService?.resumeNavigator();
-        //Navigator.of(context).pop(true);
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  RouteAwareWidget(
-                    (BoardMultiplayerPage).toString(),
-                    child: const BoardMultiplayerPage(),),), (route) => false);
-
+       if(jsonData is GameEndData && MultiplayerState.isClient()) {
         gameController.buildBoard();
+        subscription!.cancel();
       }
+
       else if (jsonData is NavigationData) {
-       if(jsonData == NavigationData("stop", NavigationType.closeConnection)) {
-            MultiplayerState.closeConnection();
-            Navigator.pushAndRemoveUntil(
+       //if(jsonData == NavigationData("stop", NavigationType.closeConnection)) {
+         MultiplayerState.clientRoutingService?.resumeNavigator();
+         /*MultiplayerState.closeConnection();
+            Navigator.pushAndRemoveUntil( //mal versuchen durch push zu ersetzen
                 Get.context!,
                 MaterialPageRoute(
                   builder: (context) =>
                       RouteAwareWidget(
                         (HomePage).toString(),
-                        child: const HomePage(),),), (route) => false);
-          }
+                        child: const HomePage(),),), (route) => false); */
+          //}
     }
-          else {
-            List<List<int>> receivedBoard = (jsonData as Connect4Data).board;
+          else if(jsonData is Connect4Data) {
+            List<List<int>> receivedBoard = jsonData.board;
             log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
 
-            gameController.turnYellow = !gameController.turnYellow;
-            gameController.blockTurn = false;
+           /* log.info("turnyellow: ${gameController.turnYellow}");
+            log.info("!turnyellow: ${!gameController.turnYellow}");
+
+            gameController.blockTurn = false; */
             int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
+
+            //TODO: WHY THE FUCK IS ONLY THE CLIENT PLAYER TITLE BEING UPDATED???? THAT MAKES NO FUCKING SENDE?????!!!!!
+
+            gameController.setTurnYellow();
+            gameController.update();
+            log.info("new turn yellow: ${gameController.turnYellow}");
+
 
             var oldboard = gameController.board;
             log.info("Old board: $oldboard");
@@ -88,30 +87,55 @@ class BoardMultiplayerState extends State<BoardMultiplayerPage> {
 
             log.info("newMoveInColumn: $newMoveInColumn");
             gameController.board = receivedBoard;
-            int winner = 0;
             if (newMoveInColumn != -1) {
-              winner = gameController.checkForWinner(newMoveInColumn);
+              gameController.checkForWinner(newMoveInColumn);
             }
             gameController.update();
-            log.info("finished listening for new Board from oter player");
-
-            if(winner != 0) subscription?.cancel();
+            log.info("finished listening for new Board from other player");
           }
-          //completer.complete(receivedBoard);
+          else {
+            log.info("Unknown Datatype received: $jsonData");
+       }
     },
         onError: (error) {
           log.info("Error while trying to listen for Board Update");
+          MultiplayerState.clientRoutingService?.resumeNavigator();
           subscription?.cancel();
           //completer.completeError(error);
         }, onDone: () {
-          subscription!.cancel();
+          MultiplayerState.clientRoutingService?.resumeNavigator();
           log.info("Done method of startListening triggered");
+          subscription!.cancel();
         });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Scaffold(
+      backgroundColor: Colors.blueGrey,
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RouteAwareWidget(
+                        (GameSelectionPageMultiplayer).toString(),
+                        child: const GameSelectionPageMultiplayer())));
+          },
+        ),
+        title: Obx(() => Text(
+          gameController.turnYellow
+              ? "Player 1 (yellow)"
+              : "Player 2 (red)",
+          style: TextStyle(
+            color: gameController.turnYellow ? Colors.yellow : Colors.red,
+          ),
+        )),
+      ),
+    body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
@@ -142,7 +166,7 @@ class BoardMultiplayerState extends State<BoardMultiplayerPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GetBuilder<GameController>(
-                    builder: (GetxController gameController) => Row(
+                    builder: (gameController) => Row(
                       children: _buildBoardMultiplayer(),
                     ),
                   ),
@@ -152,7 +176,7 @@ class BoardMultiplayerState extends State<BoardMultiplayerPage> {
           ),
         ),
       ],
-    );
+    ));
   }
 
 }

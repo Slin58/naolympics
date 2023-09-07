@@ -16,19 +16,19 @@ class ConnectFourPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var con = MultiplayerState.connection;
+    /*var con = MultiplayerState.connection;
     log.info("In ConnectFourPage: Multiplayerstate.Connection is: $con");
 
-    final initialRoute = con != null ? '/multiplayer' : '/singleplayer';
+    final initialRoute = con != null ? '/multiplayer' : '/singleplayer'; */
 
     return GetMaterialApp(
       initialBinding: ControllerBinding(),
-      initialRoute: initialRoute,
+      initialRoute: "/",
       getPages: [
         (MultiplayerState.connection != null) ?
-          GetPage(name: '/multiplayer', page: () => Connect4ScreenMultiplayer())
+          GetPage(name: '/', page: () => Connect4ScreenMultiplayer())
         :
-          GetPage(name: '/singleplayer', page: () => Connect4Screen()),
+          GetPage(name: '/', page: () => Connect4Screen()),
       ],
     );
   }

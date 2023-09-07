@@ -23,7 +23,11 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
   @override
   List<Widget> getAppBarAction(BuildContext context) {
     return [
-      SizedBox(
+      WillPopScope(
+    onWillPop: () async {
+    return false;
+    },
+    child: SizedBox(
         child: TextButton.icon(
           icon: const Icon(
             Icons.stop_outlined,
@@ -42,6 +46,7 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
               Navigator.popUntil(context, (route) => !Navigator.canPop(context));
           },
         ),
+      )
       )
     ];
   }

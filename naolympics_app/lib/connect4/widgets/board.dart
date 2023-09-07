@@ -50,7 +50,7 @@ class Board extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     GetBuilder<GameController>(
-                      builder: (GetxController gameController) => Row(
+                      builder: (gameController) => Row(
                         children: _buildBoard(),
                       ),
                     ),

@@ -8,7 +8,9 @@ import '../gameController/game_controller.dart';
 import '../widgets/board_multiplayer.dart';
 
 class Connect4ScreenMultiplayer extends StatelessWidget {
-  final GameController gameController = Get.put(GameController());
+  final GameController gameController = Get.find<GameController>();
+
+  Connect4ScreenMultiplayer({super.key});
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -21,31 +23,6 @@ class Connect4ScreenMultiplayer extends StatelessWidget {
         child: const GameSelectionPageMultiplayer())));
         return false;
     },
-          child: Scaffold(
-      backgroundColor: Colors.blueGrey,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => RouteAwareWidget(
-                        (GameSelectionPageMultiplayer).toString(),
-                        child: const GameSelectionPageMultiplayer())));
-            },
-        ),
-        title: Obx(() => Text(
-              gameController.turnYellow
-                  ? "Player 1 (yellow)"
-                  : "Player 2 (red)",
-              style: TextStyle(
-                  color:
-                      gameController.turnYellow ? Colors.yellow : Colors.red),
-            )),
-      ),
-      body: BoardMultiplayerPage(),
-    ));
+          child: BoardMultiplayer());
   }
 }

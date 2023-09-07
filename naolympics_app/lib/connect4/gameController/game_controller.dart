@@ -9,6 +9,7 @@ import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../services/multiplayer_state.dart';
 import 'dart:convert';
 import 'package:collection/collection.dart';
+import '../../services/network/json/json_data.dart';
 import '../../services/network/json/json_objects/game_end_data.dart';
 import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../widgets/cell.dart';
@@ -16,8 +17,14 @@ import '../widgets/cell.dart';
 class GameController extends GetxController {
   static final log = Logger((GameController).toString());
   List<List<int>> board = [];
-  bool turnYellow = true;
+  RxBool _turnYellow = true.obs;
+  bool get turnYellow => _turnYellow.value;
   bool blockTurn = false;
+
+  void setTurnYellow() {
+    _turnYellow.value = !_turnYellow.value;
+    update();
+  }
 
   void buildBoard() {
     this.board = [
@@ -46,7 +53,6 @@ class GameController extends GetxController {
 
       log.info("Server received '$data' and parsed it to '$receivedBoard'");
       completer.complete(receivedBoard);
-
     }, onError: (error) {
       log.info('Error: $error');
       completer.completeError(error);
@@ -67,11 +73,7 @@ class GameController extends GetxController {
       board[columnNumber][row] = playerNumber;
       update();
 
-      Function onClose;
-
-      checkForWinner(columnNumber, () {
-        // This callback function can be used to close the dialog or perform any other actions
-      });
+      checkForWinner(columnNumber);
 
       if (checkForFullBoard() == 1) {
         int fB = checkForFullBoard();
@@ -79,7 +81,7 @@ class GameController extends GetxController {
         showFullBoardDialog();
       }
       blockTurn = true;
-      turnYellow = !turnYellow;
+      _turnYellow.value = !_turnYellow.value;
       MultiplayerState.connection!.writeJsonData(Connect4Data(board));
     } else {
       Get.snackbar("Not available", "This column is full already",
@@ -95,10 +97,8 @@ class GameController extends GetxController {
       final int row = board[columnNumber].indexWhere((cell) => cell == 0);
       board[columnNumber][row] = playerNumber;
       update();
-
       checkForWinner(columnNumber);
-
-      turnYellow = !turnYellow;
+      _turnYellow.value = !_turnYellow.value;
       if (checkForFullBoard() == 1) {
         int fB = checkForFullBoard();
         print("FullBoard: $fB");
@@ -112,7 +112,7 @@ class GameController extends GetxController {
     }
   }
 
-  int checkForWinner(int columnNumber, Function()? onClose) {
+  int checkForWinner(int columnNumber) {
     int horizontalWinCond = checkForHorizontalWin(columnNumber);
     int verticalWinCond = checkForVerticalWin(columnNumber);
     int diagonalWinCond = checkDiagonalWinCond(columnNumber);
@@ -128,7 +128,7 @@ class GameController extends GetxController {
                 : 0;
 
     if (winner != 0) {
-      declareWinner(winner, onClose);
+      declareWinner(winner);
     }
     return winner;
   }
@@ -179,14 +179,17 @@ class GameController extends GetxController {
     return 1;
   }
 
-  Future<void> declareWinner(int winner, Function()? onClose) async {
-    Function()? onClose;
+  BuildContext getContext() {
+    return Get.context!;
+  }
 
-    final result = await showDialog(
-      context: Get.context!,
+  Future<void> declareWinner(int winner) async {
+    BuildContext? diaContext;
+    showDialog(context: Get.context!,
       barrierDismissible: false,
       builder: (context) {
-        return AlertDialog(
+        diaContext = context;
+            return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
@@ -211,11 +214,16 @@ class GameController extends GetxController {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    if(MultiplayerState.isClient()) {
+                    if(MultiplayerState.connection == null) {
+                      Navigator.of(context).pop(true);
+                      buildBoard();
+                    }
+                    else if (MultiplayerState.isClient()) {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
                     }
                     else {
-                      MultiplayerState.connection!.writeJsonData(GameEndData(true, false));
+                      MultiplayerState.connection!
+                          .writeJsonData(GameEndData(true, false));
                       Navigator.of(context).pop(true);
                       buildBoard();
                     }
@@ -227,24 +235,40 @@ class GameController extends GetxController {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-        if(MultiplayerState.isClient()) {
-        UIUtils.showTemporaryAlert(context, "Wait for the host");
-        }
-        else {
-        buildBoard();
-        await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
-        Navigator.push(
-        context,
-        MaterialPageRoute(
-        builder: (context) => RouteAwareWidget(
-        ( (MultiplayerState.connection != null) ? GameSelectionPageMultiplayer : GameSelectionPage).toString(),
-        child: ((MultiplayerState.connection != null) ? const GameSelectionPageMultiplayer() : const GameSelectionPage()))));
-        }
+                    if(MultiplayerState.connection == null) {
+                      Navigator.of(context).pop(true);
+                      buildBoard();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RouteAwareWidget(
+                                  (GameSelectionPage).toString(),
+                                  child: const GameSelectionPage())));
+                    }
+                    else if (MultiplayerState.isClient()) {
+                      UIUtils.showTemporaryAlert(context, "Wait for the host");
+                    } else {
+                      buildBoard();
+                      await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RouteAwareWidget(
+                                  ((MultiplayerState.connection != null)
+                                          ? GameSelectionPageMultiplayer
+                                          : GameSelectionPage)
+                                      .toString(),
+                                  child: ((MultiplayerState.connection != null)
+                                      ? const GameSelectionPageMultiplayer()
+                                      : const GameSelectionPage()))));
+                    }
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text('Go Back'),
-                  ),                ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -252,9 +276,49 @@ class GameController extends GetxController {
       },
     );
 
-    if (onClose != null) {
-      onClose();
+    StreamSubscription<String>? subscription;
+
+    if(MultiplayerState.isClient()) {
+      subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+        JsonData jsonData = JsonData.fromJsonString(data);
+
+        if(jsonData is GameEndData) {
+          if(jsonData.reset) {
+            Navigator.of(diaContext!).pop(true);
+            subscription!.cancel();
+          }
+
+          else if(jsonData.goBack) {
+            Navigator.of(diaContext!).pop(true);
+            log.info("Navigator was resumed");
+            MultiplayerState.clientRoutingService?.resumeNavigator();
+            /*Navigator.push(
+                Get.context!,
+                MaterialPageRoute(
+                    builder: (context) => RouteAwareWidget(
+                        ((MultiplayerState.connection != null)
+                            ? GameSelectionPageMultiplayer
+                            : GameSelectionPage)
+                            .toString(),
+                        child: ((MultiplayerState.connection != null)
+                            ? const GameSelectionPageMultiplayer()
+                            : const GameSelectionPage()))));
+            subscription!.cancel();
+            //Navigator.of(context).pop(true); */
+           /* Navigator.pushAndRemoveUntil(
+                Get.context!,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      RouteAwareWidget(
+                        (BoardMultiplayerPage).toString(),
+                        child: const GameSelectionPageMultiplayer(),),), (route) => false); */
+
+            //gameController.buildBoard();
+          }
+        }
+      });
     }
+
 
   }
 
@@ -383,6 +447,4 @@ class GameController extends GetxController {
 
     return upwardsDiagonal;
   }
-
-
 }
