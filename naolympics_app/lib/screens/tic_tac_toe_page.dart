@@ -43,8 +43,8 @@ class TicTacToeState extends State<TicTacToePage> {
   _displayCurrentTurn() {
     const double size = 20;
     Icon icon = ticTacToe.currentTurn == TicTacToeFieldValues.o
-        ? getCircleIcon(size)
-        : getCrossIcon(size);
+        ? _getCircleIcon(size)
+        : _getCrossIcon(size);
 
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       const Text("Current Turn:"),
@@ -57,7 +57,7 @@ class TicTacToeState extends State<TicTacToePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     final double smallerValue = height < width ? height : width;
-    final double fieldSize = smallerValue * 0.7;
+    final double cellSize = smallerValue * 0.7 / 3;
 
     return Column(
       children: [
@@ -75,6 +75,7 @@ class TicTacToeState extends State<TicTacToePage> {
                             TicTacToeWinner winner =
                                 await ticTacToe.move(row, col);
                             setState(() {});
+                            // move to TicTacToe.dart
                             if (winner != TicTacToeWinner.ongoing) {
                               showDialog(
                                   context: context,
@@ -82,7 +83,7 @@ class TicTacToeState extends State<TicTacToePage> {
                                       _showWinner(winner, localContext));
                             }
                           },
-                          child: _buildTicTacToeCell(row, col, fieldSize)),
+                          child: _buildTicTacToeCell(row, col, cellSize)),
                   ],
                 ),
             ],
@@ -92,10 +93,10 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  Container _buildTicTacToeCell(int row, int col, double fieldSize) {
+  Container _buildTicTacToeCell(int row, int col, double cellSize) {
     return Container(
-      width: fieldSize / 3,
-      height: fieldSize / 3,
+      width: cellSize,
+      height: cellSize,
       decoration: const BoxDecoration(
         border: Border(
           right: BorderSide(color: Colors.black),
@@ -104,7 +105,7 @@ class TicTacToeState extends State<TicTacToePage> {
           top: BorderSide(color: Colors.black),
         ),
       ),
-      child: Center(child: setIcon(row, col)),
+      child: Center(child: _setIcon(row, col, cellSize)),
     );
   }
 
@@ -115,9 +116,9 @@ class TicTacToeState extends State<TicTacToePage> {
     String winnerText = "Winner: ";
 
     if (winner == TicTacToeWinner.o) {
-      winnerIcon = getCircleIcon(iconSize);
+      winnerIcon = _getCircleIcon(iconSize);
     } else if (winner == TicTacToeWinner.x) {
-      winnerIcon = getCrossIcon(iconSize);
+      winnerIcon = _getCrossIcon(iconSize);
     } else {
       winnerIcon =
           const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
@@ -132,7 +133,7 @@ class TicTacToeState extends State<TicTacToePage> {
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
         UIUtils.getBorderedTextButton(() {
-          if(MultiplayerState.isHosting()) {
+          if (MultiplayerState.isHosting()) {
             (ticTacToe as TicTacToeMultiplayer).handleGoBack();
           }
 
@@ -151,24 +152,23 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  Icon? setIcon(int row, int col) {
-    const double iconSize = 120;
+  Icon? _setIcon(int row, int col, double iconSize) {
     TicTacToeFieldValues fieldValue = ticTacToe.playField[row][col];
 
     if (fieldValue == TicTacToeFieldValues.o) {
-      return getCircleIcon(iconSize);
+      return _getCircleIcon(iconSize);
     } else if (fieldValue == TicTacToeFieldValues.x) {
-      return getCrossIcon(iconSize);
+      return _getCrossIcon(iconSize);
     } else {
       return null;
     }
   }
 
-  Icon getCircleIcon(double size) {
+  Icon _getCircleIcon(double size) {
     return Icon(Icons.circle_outlined, size: size, color: Colors.red);
   }
 
-  Icon getCrossIcon(double size) {
+  Icon _getCrossIcon(double size) {
     return Icon(Icons.close, size: size, color: Colors.black);
   }
 }

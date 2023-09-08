@@ -15,9 +15,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Naolympics",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
