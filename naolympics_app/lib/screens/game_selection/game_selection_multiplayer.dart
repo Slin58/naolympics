@@ -10,7 +10,6 @@ import '../connect_four_page.dart';
 import '../tic_tac_toe_page.dart';
 import 'game_selection.dart';
 
-// das ist so anders hirntot, aber juckt absolut null
 class GameSelectionPageMultiplayer extends GameSelectionPage {
   const GameSelectionPageMultiplayer({super.key});
 
@@ -34,11 +33,12 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
             style: TextStyle(color: Colors.white),
           ),
           onPressed: () async {
-              final jsonData = NavigationData("stop", NavigationType.closeConnection).toJson();
-              await MultiplayerState.connection!.write(json.encode(jsonData));
+            final jsonData =
+                NavigationData("stop", NavigationType.closeConnection).toJson();
+            await MultiplayerState.connection!.write(json.encode(jsonData));
 
-              MultiplayerState.closeConnection();
-              Navigator.popUntil(context, (route) => !Navigator.canPop(context));
+            MultiplayerState.closeConnection();
+            Navigator.popUntil(context, (route) => !Navigator.canPop(context));
           },
         ),
       )
@@ -46,16 +46,14 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
   }
 
   @override
-  List<Widget> getNavButtons(BuildContext context, double marginSize) {
+  List<Widget> getNavButtons(BuildContext context) {
     return [
-      createNavButton(
-          "Connect Four",
+      getTicTacToeImageButton(
           context,
           RouteAwareWidget((ConnectFourPage).toString(),
               child: const ConnectFourPage())),
-      SizedBox(height: marginSize, width: marginSize),
-      createNavButton(
-          "Tic Tac Toe",
+      //SizedBox(height: marginSize, width: marginSize),
+      getConnectFourImageButton(
           context,
           RouteAwareWidget((TicTacToePage).toString(),
               child: const TicTacToePage()))
