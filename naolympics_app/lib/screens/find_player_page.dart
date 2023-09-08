@@ -40,10 +40,10 @@ class FindPlayerPageState extends State<FindPlayerPage> {
         appBar: AppBar(
           title: const Text("Find Players"),
         ),
-
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [
+            const SizedBox(height: 10), // fix for clipping into appbar
             Visibility(
               visible: wifi && !isHosting,
               child: _ipListElement(),
@@ -85,9 +85,8 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     ConnectionService.createHost()
         .then((value) => _handleClientConnection(value))
         .timeout(const Duration(minutes: 1),
-            onTimeout: () => () {
-                  UIUtils.showTemporaryAlert(context, "Connection timed out.");
-                });
+            onTimeout: () =>
+                UIUtils.showTemporaryAlert(context, "Connection timed out."));
   }
 
   _handleClientConnection(SocketManager? value) {
@@ -113,7 +112,19 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   Future<List<String>> _showDevices() async {
-    return isHosting ? [] : await ConnectionService.getDevices();
+    List<String> result = [];
+    if (!isHosting) {
+      final startTime = DateTime.now();
+
+      while (DateTime.now().difference(startTime).inSeconds < 10) {
+        final list = await ConnectionService.getDevices();
+        if (list.isNotEmpty) {
+          result = list;
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   FutureBuilder<List<String>> _ipListElement() {
@@ -142,7 +153,11 @@ class FindPlayerPageState extends State<FindPlayerPage> {
                 },
               );
             } else {
-              return const Text("No other players found");
+              return UIUtils.getBorderedTextButton(() {
+                setState(() {
+
+                });}
+              , Icons.refresh, "Search again", Colors.grey, 250);
             }
           } else {
             return const Text('No data available.');
@@ -156,8 +171,9 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
     } else {
-     MultiplayerState.connection = socketManager;
-     MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
+      MultiplayerState.connection = socketManager;
+      MultiplayerState.clientRoutingService =
+          ClientRoutingService(socketManager, context);
     }
   }
 }
