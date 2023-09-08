@@ -12,8 +12,8 @@ class NavigationData extends JsonData {
 
   NavigationData(this.route, this.navigationType) : super(DataType.navigation);
 
-    factory NavigationData.fromJson(Map<String, dynamic> json) =>
-        _$NavigationDataFromJson(json);
+  factory NavigationData.fromJson(Map<String, dynamic> json) =>
+      _$NavigationDataFromJson(json);
 
   DataType get data => super.dataType;
 
@@ -31,9 +31,4 @@ class NavigationData extends JsonData {
   }
 }
 
-enum NavigationType {
-  push,
-  pop,
-  dispose,
-  closeConnection
-}
+enum NavigationType { push, pop, dispose, closeConnection }
