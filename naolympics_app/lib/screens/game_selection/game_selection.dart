@@ -77,14 +77,14 @@ class GameSelectionState extends State<GameSelectionPage> {
       BuildContext context, Widget route, String text, String imagePath) {
     double boxHeight;
     double boxWidth;
-    // TODO BESSERE Möglichkeit finden.
-    const errorMagin = 50;
+    // TODO besseren Weg finden.
+    const errorMargin = 50;
     if (orientation == Orientation.landscape) {
-      boxHeight = height - errorMagin; //error margin
+      boxHeight = height - errorMargin;
       boxWidth = width / 2 - 6;
     } else {
-      boxHeight = height / 2 - errorMagin;
-      boxWidth = width - errorMagin;
+      boxHeight = height / 2 - errorMargin;
+      boxWidth = width - errorMargin;
     }
 
     const double fontSize = 60;
@@ -94,28 +94,6 @@ class GameSelectionState extends State<GameSelectionPage> {
             onTap: getOnPressedForNavButton(context, route),
             child: UIUtils.getSizedBoxWIthImageAndText(
                 boxWidth, boxHeight, imagePath, text, fontSize, "Impact")));
-  }
-
-  TextButton createNavButton(String title, BuildContext context, Widget route) {
-    return TextButton(
-      style: TextButton.styleFrom(
-          foregroundColor: Colors.blue,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            side: const BorderSide(color: Colors.blue),
-          ),
-          padding: const EdgeInsets.all(16.0),
-          backgroundColor: Colors.transparent,
-          fixedSize: const Size.square(150)),
-      onPressed: getOnPressedForNavButton(context, route),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          title,
-          softWrap: false,
-        ),
-      ),
-    );
   }
 
   VoidCallback getOnPressedForNavButton(BuildContext context, route) {

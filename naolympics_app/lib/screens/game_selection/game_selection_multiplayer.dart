@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
 import 'package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart';
@@ -33,9 +31,9 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
             style: TextStyle(color: Colors.white),
           ),
           onPressed: () async {
-            final jsonData =
-                NavigationData("stop", NavigationType.closeConnection).toJson();
-            await MultiplayerState.connection!.write(json.encode(jsonData));
+            final closeConn =
+                NavigationData("stop", NavigationType.closeConnection);
+            await MultiplayerState.connection!.writeJsonData(closeConn);
 
             MultiplayerState.closeConnection();
             Navigator.popUntil(context, (route) => !Navigator.canPop(context));
@@ -44,6 +42,7 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
       )
     ];
   }
+
 
   @override
   List<Widget> getNavButtons(BuildContext context) {
