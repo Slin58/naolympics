@@ -38,8 +38,24 @@ class SocketManager {
     await socket.flush();
   }
 
-  Future<void> writeJsonData(JsonData object) async {
+  Future<void> writeJsonData(JsonData object, {bool? addPreAndSuffix}) async {
+    addPreAndSuffix = addPreAndSuffix == null ? false : true;
+    if(addPreAndSuffix) {
+      await write("-${json.encode(object.toJson())}.");
+    }
    await write(json.encode(object.toJson()));
+  }
+
+  static String? getSubstring(String data, {bool? getEndString}) {
+    int startIndex = data.indexOf("-");
+    int endIndex = data.indexOf(".", startIndex);
+    if (startIndex != -1 && endIndex != -1) {
+      String substring;
+      getEndString = getEndString != null ? true : false;
+      getEndString ? substring = data.substring(endIndex+1) : substring = data.substring(startIndex+1, endIndex);
+      print("extracted substring: $substring");
+      return substring;
+    }
   }
 
   Future<void> closeConnection() async {

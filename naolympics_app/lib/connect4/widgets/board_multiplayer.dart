@@ -52,26 +52,11 @@ class BoardMultiplayer extends StatelessWidget {
       }
 
       else if (jsonData is NavigationData) {
-       //if(jsonData == NavigationData("stop", NavigationType.closeConnection)) {
          MultiplayerState.clientRoutingService?.resumeNavigator();
-         /*MultiplayerState.closeConnection();
-            Navigator.pushAndRemoveUntil( //mal versuchen durch push zu ersetzen
-                Get.context!,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      RouteAwareWidget(
-                        (HomePage).toString(),
-                        child: const HomePage(),),), (route) => false); */
-          //}
     }
           else if(jsonData is Connect4Data) {
             List<List<int>> receivedBoard = jsonData.board;
             log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
-
-           /* log.info("turnyellow: ${gameController.turnYellow}");
-            log.info("!turnyellow: ${!gameController.turnYellow}");
-
-            gameController.blockTurn = false; */
             int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
 
             //TODO: WHY THE FUCK IS ONLY THE CLIENT PLAYER TITLE BEING UPDATED???? THAT MAKES NO FUCKING SENDE?????!!!!!
@@ -79,7 +64,6 @@ class BoardMultiplayer extends StatelessWidget {
             gameController.setTurnYellow();
             gameController.update();
             log.info("new turn yellow: ${gameController.turnYellow}");
-
 
             var oldboard = gameController.board;
             log.info("Old board: $oldboard");

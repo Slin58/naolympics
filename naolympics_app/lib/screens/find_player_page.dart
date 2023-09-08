@@ -154,7 +154,6 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   static _handleHostConnection(String ip, BuildContext context) async {
-    //MultiplayerState.connection = null;
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
     if (socketManager == null) {
@@ -162,6 +161,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     } else {
      MultiplayerState.connection = socketManager;
      MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
+     //MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
     }
   }
 }

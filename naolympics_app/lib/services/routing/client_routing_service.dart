@@ -38,9 +38,11 @@ class ClientRoutingService {
     return _routeHanding.isPaused;
   }
 
-  static void _handlingIncomingRouteData(
-      String jsonData, BuildContext context) {
+  static void _handlingIncomingRouteData(String jsonData, BuildContext context) {
     try {
+      log.info("In _handlingIncomingRouteData with: $jsonData");
+      final substring = SocketManager.getSubstring(jsonData, getEndString: true);
+      jsonData = substring ?? jsonData;
       final navData = JsonData.fromJsonString(jsonData) as NavigationData;
 
       if (navData.data == DataType.navigation) {

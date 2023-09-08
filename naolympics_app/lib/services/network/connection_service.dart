@@ -49,7 +49,10 @@ class ConnectionService {
         socketManager.broadcastStream.listen((data) {
       _clientLog(
           "Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
+      final substring = SocketManager.getSubstring(data);
+      data = substring ?? data;
       final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
+
       ConnectionStatus? value = jsonData.connectionStatus;
       _clientLog("Client received '$data' and parsed it to '$value'");
       if (value == ConnectionStatus.connectionSuccessful) {
@@ -105,8 +108,10 @@ class ConnectionService {
       if (value == ConnectionStatus.connecting) {
         _hostLog(
             "Sending success message to ${socketManager.socket.remoteAddress.address}");
+
         await socketManager.writeJsonData(
-            ConnectionEstablishment(ConnectionStatus.connectionSuccessful));
+            ConnectionEstablishment(ConnectionStatus.connectionSuccessful), addPreAndSuffix: true);
+
         completer.complete(socketManager);
         _hostLog("finished handling connection to client");
       }
@@ -118,7 +123,9 @@ class ConnectionService {
     });
 
     return completer.future
-        .timeout(timeoutDuration)
+        .timeout(timeoutDuration, onTimeout: () {
+      _hostLog("i just fucked the connection somehow");
+    })
         .whenComplete(() => subscription.cancel());
   }
 

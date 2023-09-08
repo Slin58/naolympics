@@ -16,11 +16,6 @@ class ConnectFourPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*var con = MultiplayerState.connection;
-    log.info("In ConnectFourPage: Multiplayerstate.Connection is: $con");
-
-    final initialRoute = con != null ? '/multiplayer' : '/singleplayer'; */
-
     return GetMaterialApp(
       initialBinding: ControllerBinding(),
       initialRoute: "/",

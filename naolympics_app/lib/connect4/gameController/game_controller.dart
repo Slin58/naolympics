@@ -292,28 +292,6 @@ class GameController extends GetxController {
             Navigator.of(diaContext!).pop(true);
             log.info("Navigator was resumed");
             MultiplayerState.clientRoutingService?.resumeNavigator();
-            /*Navigator.push(
-                Get.context!,
-                MaterialPageRoute(
-                    builder: (context) => RouteAwareWidget(
-                        ((MultiplayerState.connection != null)
-                            ? GameSelectionPageMultiplayer
-                            : GameSelectionPage)
-                            .toString(),
-                        child: ((MultiplayerState.connection != null)
-                            ? const GameSelectionPageMultiplayer()
-                            : const GameSelectionPage()))));
-            subscription!.cancel();
-            //Navigator.of(context).pop(true); */
-           /* Navigator.pushAndRemoveUntil(
-                Get.context!,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      RouteAwareWidget(
-                        (BoardMultiplayerPage).toString(),
-                        child: const GameSelectionPageMultiplayer(),),), (route) => false); */
-
-            //gameController.buildBoard();
           }
         }
       });
