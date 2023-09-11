@@ -49,13 +49,13 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
     return [
       getTicTacToeImageButton(
           context,
-          RouteAwareWidget((ConnectFourPage).toString(),
-              child: const ConnectFourPage())),
+          RouteAwareWidget((TicTacToePage).toString(),
+              child: const TicTacToePage())),
       //SizedBox(height: marginSize, width: marginSize),
       getConnectFourImageButton(
           context,
-          RouteAwareWidget((TicTacToePage).toString(),
-              child: const TicTacToePage()))
+          RouteAwareWidget((ConnectFourPage).toString(),
+              child: const ConnectFourPage()))
     ];
   }
 
