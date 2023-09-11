@@ -26,6 +26,7 @@ class TicTacToeMultiplayer extends TicTacToe {
             ? TicTacToeFieldValues.o
             : TicTacToeFieldValues.x {
     _gameSubscription = _setGameSubscription(socketManager);
+    MultiplayerState.clientRoutingService?.pauseNavigator();
   }
 
   @override
@@ -105,8 +106,7 @@ class TicTacToeMultiplayer extends TicTacToe {
 
   Future<void> _sendMove(int row, int col) async {
     final ticTacToeData = TicTacToeData(row, col, super.currentTurn);
-    log.fine(
-        "Sending move $ticTacToeData to ${MultiplayerState.getRemoteAddress()}");
+    log.fine("Sending move '$ticTacToeData' to ${MultiplayerState.getRemoteAddress()}");
     await socketManager.writeJsonData(ticTacToeData);
   }
 }

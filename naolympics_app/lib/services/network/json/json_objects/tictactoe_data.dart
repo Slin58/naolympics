@@ -20,4 +20,9 @@ class TicTacToeData extends JsonData {
 
   @override
   Map<String, dynamic> toJson() => _$TicTacToeDataToJson(this);
+
+  @override
+  String toString() {
+    return 'TicTacToeData{dataType: ${super.dataType}, row: $row, column: $column, fieldValue: $fieldValue}';
+  }
 }

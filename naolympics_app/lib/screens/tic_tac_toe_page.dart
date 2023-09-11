@@ -25,7 +25,6 @@ class TicTacToeState extends State<TicTacToePage> {
       ticTacToe = TicTacToeLocal();
     } else {
       ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!, setState);
-      MultiplayerState.clientRoutingService?.pauseNavigator();
     }
   }
 

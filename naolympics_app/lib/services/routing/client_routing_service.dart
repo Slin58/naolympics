@@ -72,9 +72,6 @@ class ClientRoutingService {
                     "Unknown NavigationType received: $navType"));
             break;
         }
-      } else {
-        log.warning(
-            "Did not receive navigation Data. Instead received data of type '${navData.data}'");
       }
     } on Error catch (e) {
       log.severe(

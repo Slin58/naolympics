@@ -26,7 +26,7 @@ abstract class TicTacToe implements GameMode {
 
   makeMove(int row, int col) {
     if (_playField[row][col] == TicTacToeFieldValues.empty) {
-      log.info('Making move for Player $currentTurn');
+      log.info('Making move for Player ${currentTurn.name}');
 
       _playField[row][col] = currentTurn;
       checkWinner(row, col);
@@ -100,6 +100,6 @@ abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> get playField => _playField;
 }
 
-enum TicTacToeFieldValues { x, o, empty }
+enum TicTacToeFieldValues { x, o, empty}
 
 enum TicTacToeWinner { x, o, draw, ongoing }
