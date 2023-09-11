@@ -35,15 +35,12 @@ class TicTacToeMultiplayer extends TicTacToe {
   }
 
   @override
-  Future<TicTacToeWinner> move(int row, int col) async {
+  Future<void> move(int row, int col) async {
     if (currentTurn == playerSymbol &&
         super.playField[row][col] == TicTacToeFieldValues.empty) {
-      TicTacToeWinner winner = makeMove(row, col);
-
+      makeMove(row, col);
       _sendMove(row, col);
-      return winner;
     }
-    return TicTacToeWinner.ongoing;
   }
 
   StreamSubscription<String> _setGameSubscription(SocketManager socketManager) {
@@ -52,9 +49,9 @@ class TicTacToeMultiplayer extends TicTacToe {
       log.finer("received $data");
       _handleIncomingData(ticTacToeData);
     }, onError: (error) {
-      log.severe("Error while receiving routing instructions", error);
+      log.severe("Error while receiving game data", error);
     }, onDone: () {
-      log.info("Done routing.");
+      log.info("Done handling game data.");
     });
   }
 
@@ -75,7 +72,7 @@ class TicTacToeMultiplayer extends TicTacToe {
 
   void _handleGameEndData(GameEndData data) {
     if (data.reset) {
-      super.init();
+      setState.call(() => super.init());
     }
     if (data.goBack) {
       _cancelGameSubscription();

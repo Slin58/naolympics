@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
 import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
 import 'package:naolympics_app/services/multiplayer_state.dart';
@@ -30,6 +31,8 @@ class TicTacToeState extends State<TicTacToePage> {
 
   @override
   Widget build(BuildContext context) {
+    SchedulerBinding.instance.addPostFrameCallback((_) => _showWinner());
+
     return RoutingUtils.handlePopScope(
         context,
         Scaffold(
@@ -71,19 +74,8 @@ class TicTacToeState extends State<TicTacToePage> {
                   children: [
                     for (int col = 0; col < 3; col++)
                       GestureDetector(
-                          onTap: () async {
-                            TicTacToeWinner winner =
-                                await ticTacToe.move(row, col);
-                            setState(() {});
-                            // move to TicTacToe.dart
-                            if (winner != TicTacToeWinner.ongoing) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext localContext) =>
-                                      _showWinner(winner, localContext));
-                            }
-                          },
-                          child: _buildTicTacToeCell(row, col, cellSize)),
+                          onTap: () => _tapAction(row, col),
+                          child: _buildCell(row, col, cellSize)),
                   ],
                 ),
             ],
@@ -93,7 +85,12 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  Container _buildTicTacToeCell(int row, int col, double cellSize) {
+  Future<void> _tapAction(int row, int col) async {
+    await ticTacToe.move(row, col);
+    setState(() {});
+  }
+
+  Container _buildCell(int row, int col, double cellSize) {
     return Container(
       width: cellSize,
       height: cellSize,
@@ -109,9 +106,18 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  AlertDialog _showWinner(TicTacToeWinner winner, BuildContext localContext) {
+  void _showWinner() {
+    final winner = ticTacToe.winner;
+    if (winner != TicTacToeWinner.ongoing) {
+      showDialog(
+          context: context,
+          builder: (BuildContext alertContext) =>
+              _winnerAlertDialog(winner, alertContext));
+    }
+  }
+
+  AlertDialog _winnerAlertDialog(TicTacToeWinner winner, BuildContext alertContext) {
     const double iconSize = 40;
-    const double buttonWidth = 130;
     Icon winnerIcon;
     String winnerText = "Winner: ";
 
@@ -124,6 +130,9 @@ class TicTacToeState extends State<TicTacToePage> {
           const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
       winnerText = "It's a tie!";
     }
+    const double buttonWidth = 130;
+    final color = Theme.of(context).primaryColor;
+
     return AlertDialog(
       title: Center(
         child: Row(
@@ -132,24 +141,35 @@ class TicTacToeState extends State<TicTacToePage> {
         ),
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
-        UIUtils.getBorderedTextButton(() {
-          if (MultiplayerState.isHosting()) {
-            (ticTacToe as TicTacToeMultiplayer).handleGoBack();
-          }
-
-          Navigator.pop(localContext);
-          Navigator.pop(context);
-        }, Icons.arrow_back, 'Go Back', Theme.of(context).primaryColor,
-            buttonWidth),
+        UIUtils.getBorderedTextButton(() => _setGoBackAction(alertContext), Icons.arrow_back,
+            'Go Back', color, buttonWidth),
         const SizedBox(width: buttonWidth / 100000),
-        UIUtils.getBorderedTextButton(() {
-          Navigator.pop(localContext);
-          setState(() {
-            ticTacToe.init();
-          });
-        }, Icons.refresh, 'Reset', Theme.of(context).primaryColor, buttonWidth),
+        UIUtils.getBorderedTextButton(() => _setResetAction(alertContext),
+            Icons.refresh, 'Reset', color, buttonWidth),
       ]),
     );
+  }
+
+  void _setGoBackAction(BuildContext alertContext) {
+    if(MultiplayerState.isClient()){
+      UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
+    } else {
+      if (MultiplayerState.isHosting()) {
+        (ticTacToe as TicTacToeMultiplayer).handleGoBack();
+      }
+      Navigator.pop(alertContext);
+      Navigator.pop(alertContext);
+      Navigator.pop(context);
+    }
+  }
+
+  void _setResetAction(BuildContext alertContext) {
+    if (MultiplayerState.isClient()) {
+      UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
+    } else {
+      setState(() => ticTacToe.init());
+      Navigator.pop(alertContext);
+    }
   }
 
   Icon? _setIcon(int row, int col, double iconSize) {
@@ -164,11 +184,11 @@ class TicTacToeState extends State<TicTacToePage> {
     }
   }
 
-  Icon _getCircleIcon(double size) {
+  static Icon _getCircleIcon(double size) {
     return Icon(Icons.circle_outlined, size: size, color: Colors.red);
   }
 
-  Icon _getCrossIcon(double size) {
+  static Icon _getCrossIcon(double size) {
     return Icon(Icons.close, size: size, color: Colors.black);
   }
 }
