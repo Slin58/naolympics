@@ -15,86 +15,40 @@ import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
+bool stillListening = false;
+
 class BoardMultiplayer extends StatelessWidget {
-  final GameController gameController = Get.find<GameController>();
+  final GameController gameController = Get.put(GameController());
+
+  //final GameController gameController = Get.find<GameController>();
   static final log = Logger((BoardMultiplayer).toString());
 
   List<BoardColumn> _buildBoardMultiplayer() {
     int currentColNumber = 0;
 
-    if(MultiplayerState.isClient()) MultiplayerState.clientRoutingService?.pauseNavigator();
 
-    startListening();
+    if(!stillListening) gameController.startListening();
 
-    return gameController.board
-        .map((boardColumn) => BoardColumn(
-      chipsInColumn: boardColumn,
-      columnNumber: currentColNumber++,
-    ))
-        .toList();
-  }
-
-  Future<void> startListening() async {
-    StreamSubscription<String>? subscription;
-    final GameController gameController = Get.find<GameController>();
-    subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-
-      log.info("turnyellow: ${gameController.turnYellow}");
-      log.info("!turnyellow: ${!gameController.turnYellow}");
-
-      gameController.blockTurn = false;
-
-      JsonData jsonData = JsonData.fromJsonString(data);
-
-       if(jsonData is GameEndData && MultiplayerState.isClient()) {
-        gameController.buildBoard();
-        subscription!.cancel();
-      }
-
-      else if (jsonData is NavigationData) {
-         MultiplayerState.clientRoutingService?.resumeNavigator();
+     if(MultiplayerState.isClient()) {
+      MultiplayerState.clientRoutingService?.pauseNavigator();
     }
-          else if(jsonData is Connect4Data) {
-            List<List<int>> receivedBoard = jsonData.board;
-            log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
-            int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
 
-            //TODO: WHY THE FUCK IS ONLY THE CLIENT PLAYER TITLE BEING UPDATED???? THAT MAKES NO FUCKING SENDE?????!!!!!
+    //gameController.startListening();
 
-            gameController.setTurnYellow();
-            gameController.update();
-            log.info("new turn yellow: ${gameController.turnYellow}");
 
-            var oldboard = gameController.board;
-            log.info("Old board: $oldboard");
-            log.info("New board: $receivedBoard");
-
-            log.info("newMoveInColumn: $newMoveInColumn");
-            gameController.board = receivedBoard;
-            if (newMoveInColumn != -1) {
-              gameController.checkForWinner(newMoveInColumn);
-            }
-            gameController.update();
-            log.info("finished listening for new Board from other player");
-          }
-          else {
-            log.info("Unknown Datatype received: $jsonData");
-       }
-    },
-        onError: (error) {
-          log.info("Error while trying to listen for Board Update");
-          MultiplayerState.clientRoutingService?.resumeNavigator();
-          subscription?.cancel();
-          //completer.completeError(error);
-        }, onDone: () {
-          MultiplayerState.clientRoutingService?.resumeNavigator();
-          log.info("Done method of startListening triggered");
-          subscription!.cancel();
-        });
-  }
+    //gameController.update();
+      return gameController.board
+          .map((boardColumn) => BoardColumn(
+        chipsInColumn: boardColumn,
+        columnNumber: currentColNumber++,
+      ))
+          .toList();
+    }
 
   @override
   Widget build(BuildContext context) {
+    //gameController.startListening();
+
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       appBar: AppBar(

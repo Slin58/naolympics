@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/network/json/json_data.dart';
+import 'package:naolympics_app/services/routing/client_routing_service.dart';
 
 class SocketManager {
   static final log = Logger((SocketManager).toString());
@@ -33,29 +34,13 @@ class SocketManager {
   }
 
   Future<void> write(String object) async {
-    log.finest("Now writing to ${socket.remoteAddress.address}");
+    log..info("Now writing to ${socket.remoteAddress.address}");
     socket.write(object);
     await socket.flush();
   }
 
-  Future<void> writeJsonData(JsonData object, {bool? addPreAndSuffix}) async {
-    addPreAndSuffix = addPreAndSuffix == null ? false : true;
-    if(addPreAndSuffix) {
-      await write("-${json.encode(object.toJson())}.");
-    }
+  Future<void> writeJsonData(JsonData object) async {
    await write(json.encode(object.toJson()));
-  }
-
-  static String? getSubstring(String data, {bool? getEndString}) {
-    int startIndex = data.indexOf("-");
-    int endIndex = data.indexOf(".", startIndex);
-    if (startIndex != -1 && endIndex != -1) {
-      String substring;
-      getEndString = getEndString != null ? true : false;
-      getEndString ? substring = data.substring(endIndex+1) : substring = data.substring(startIndex+1, endIndex);
-      print("extracted substring: $substring");
-      return substring;
-    }
   }
 
   Future<void> closeConnection() async {

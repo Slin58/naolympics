@@ -14,9 +14,9 @@ class ConnectionService {
   static const String hostPrefix = "[HOST]:";
   static const String clientPrefix = "[CLIENT]:";
 
-  static const Duration timeoutDuration = Duration(seconds: 10);
+  static const Duration timeoutDuration = Duration(milliseconds: 500);
 
-  static const int port = 7470;
+  static int port = 7470;
 
   static Future<SocketManager?> connectToHost(final String ip) async {
     try {
@@ -41,16 +41,13 @@ class ConnectionService {
   static Future<ConnectionStatus> _handleServerConnection(
       SocketManager socketManager) async {
     _clientLog("Sending connection message.");
-    await socketManager
-        .writeJsonData(ConnectionEstablishment(ConnectionStatus.connecting));
+    await socketManager.writeJsonData(ConnectionEstablishment(ConnectionStatus.connecting));
     final completer = Completer<ConnectionStatus>();
 
     StreamSubscription<String> subscription =
         socketManager.broadcastStream.listen((data) {
       _clientLog(
           "Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
-      final substring = SocketManager.getSubstring(data);
-      data = substring ?? data;
       final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
 
       ConnectionStatus? value = jsonData.connectionStatus;
@@ -67,20 +64,20 @@ class ConnectionService {
     });
 
     return completer.future
-        .timeout(timeoutDuration)
+        .timeout(Duration(seconds: 20))
         .whenComplete(() => subscription.cancel());
   }
 
   static Future<SocketManager?> createHost() async {
     _hostLog("Now hosting on port $port.");
     final serverSocket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
+    port++;
     SocketManager? connection;
 
     await for (Socket tempSocket in serverSocket) {
       _hostLog("Incoming connection from ${tempSocket.remoteAddress.address}");
       try {
-        SocketManager socketManager =
-            SocketManager.fromExistingSocket(tempSocket);
+        SocketManager socketManager = SocketManager.fromExistingSocket(tempSocket);
         SocketManager? client = await _handleClientConnections(socketManager);
         if (client != null) {
           _hostLog("exiting connection loop, because of value: $client");
@@ -110,7 +107,7 @@ class ConnectionService {
             "Sending success message to ${socketManager.socket.remoteAddress.address}");
 
         await socketManager.writeJsonData(
-            ConnectionEstablishment(ConnectionStatus.connectionSuccessful), addPreAndSuffix: true);
+            ConnectionEstablishment(ConnectionStatus.connectionSuccessful));
 
         completer.complete(socketManager);
         _hostLog("finished handling connection to client");
@@ -123,7 +120,7 @@ class ConnectionService {
     });
 
     return completer.future
-        .timeout(timeoutDuration, onTimeout: () {
+        .timeout(Duration(seconds: 20), onTimeout: () {
       _hostLog("i just fucked the connection somehow");
     })
         .whenComplete(() => subscription.cancel());

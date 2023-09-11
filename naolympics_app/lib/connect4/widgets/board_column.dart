@@ -32,25 +32,31 @@ class BoardColumn extends StatelessWidget {
       if (MultiplayerState.connection != null)
         playFunction = gameController.playColumnMultiplayer;
 
+      bool moveWasMade = false;
+
       return GestureDetector( //nao specific
           onTap: () {
-            if (!gameController.blockTurn) {
+            if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
+              moveWasMade = true;
             }
           },
           onLongPress: () {
-            if (!gameController.blockTurn) {
+            if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
+              moveWasMade = true;
             }
           },
           onVerticalDragStart: (details) {
-            if (!gameController.blockTurn) {
+            if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
+              moveWasMade = true;
             }
           },
           onHorizontalDragStart: (details) {
-            if (!gameController.blockTurn) {
+            if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
+              moveWasMade = true;
             }
           },
           child: Column(

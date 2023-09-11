@@ -79,7 +79,6 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   Future<void> _startServer() async {
-    //MultiplayerState.connection = null;
     setState(() {
       isHosting = true;
     });
@@ -91,7 +90,8 @@ class FindPlayerPageState extends State<FindPlayerPage> {
                 });
   }
 
-  _handleClientConnection(SocketManager? value) {
+  _handleClientConnection(SocketManager? value) async {
+    await Future.delayed(const Duration(seconds: 1));
     if (value != null) {
       MultiplayerState.setHost(value);
       Navigator.push(
@@ -161,7 +161,6 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     } else {
      MultiplayerState.connection = socketManager;
      MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
-     //MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
     }
   }
 }
