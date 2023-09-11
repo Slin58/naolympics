@@ -49,13 +49,14 @@ class ConnectionService {
       _clientLog("Listening to incoming data from ${_ipString(socketManager)}");
       final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
       ConnectionStatus? value = jsonData.connectionStatus;
-      _clientLog("Received '$data' and parsed it to '$value'", level: Level.FINER);
+      _clientLog("Received '$data' and parsed it to '$value'",
+          level: Level.FINER);
       if (value == ConnectionStatus.connectionSuccessful) {
         completer.complete(value);
       }
     }, onError: (error) {
       _clientLog("Error while trying to receive success message from server");
-      log.severe("",error);
+      log.severe("", error);
       completer.completeError(error);
     }, onDone: () => _clientLog("Finished handling connection to server"));
 
@@ -118,12 +119,12 @@ class ConnectionService {
   }
 
   static String _ipString(socket) {
-    if(socket.runtimeType == Socket) {
+    if (socket is Socket) {
       return socket.remoteAddress.address;
-    } else if( socket.runtimeType == SocketManager) {
+    } else if (socket is SocketManager) {
       return socket.socket.remoteAddress.address;
     } else {
-      throw UnimplementedError("Unknown input");
+      throw UnimplementedError("Unknown input ${socket.runtimeType}");
     }
   }
 
