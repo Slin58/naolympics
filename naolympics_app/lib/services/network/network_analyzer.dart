@@ -9,25 +9,30 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:logging/logging.dart';
+
 /// [NetworkAnalyzer] class returns instances of [NetworkAddress].
 ///
 /// Found ip addresses will have [exists] == true field.
 class NetworkAddress {
   NetworkAddress(this.ip, this.exists);
+
   bool exists;
   String ip;
 }
 
 /// Pings a given subnet (xxx.xxx.xxx) on a given port using [discover] method.
 class NetworkAnalyzer {
+  static final log = Logger((NetworkAnalyzer).toString());
+
   /// Pings a given [subnet] (xxx.xxx.xxx) on a given [port].
   ///
   /// Pings IP:PORT one by one
   static Stream<NetworkAddress> discover(
-      String subnet,
-      int port, {
-        Duration timeout = const Duration(milliseconds: 400),
-      }) async* {
+    String subnet,
+    int port, {
+    Duration timeout = const Duration(milliseconds: 400),
+  }) async* {
     if (port < 1 || port > 65535) {
       throw 'Incorrect port';
     }
@@ -60,10 +65,10 @@ class NetworkAnalyzer {
   ///
   /// Pings IP:PORT all at once
   static Stream<NetworkAddress> discover2(
-      String subnet,
-      int port, {
-        Duration timeout = const Duration(seconds: 5),
-      }) {
+    String subnet,
+    int port, {
+    Duration timeout = const Duration(seconds: 5),
+  }) {
     if (port < 1 || port > 65535) {
       throw 'Incorrect port';
     }
@@ -86,6 +91,8 @@ class NetworkAnalyzer {
         // Check if connection timed out or we got one of predefined errors
         if (e.osError == null || _errorCodes.contains(e.osError?.errorCode)) {
           out.sink.add(NetworkAddress(host, false));
+        } else if (Platform.isWindows && e.osError?.errorCode == 1225) {
+          log.finest("Windows os error when pinging remote machine.");
         } else {
           // Error 23,24: Too many open files in system
           throw e;
@@ -101,9 +108,8 @@ class NetworkAnalyzer {
   }
 
   static Future<Socket> _ping(String host, int port, Duration timeout) {
-    return Socket.connect(host, port, timeout: timeout).then((socket) {
-      return socket;
-    });
+    return Socket.connect(host, port, timeout: timeout)
+        .then((socket) => socket);
   }
 
   // 13: Connection failed (OS Error: Permission denied)

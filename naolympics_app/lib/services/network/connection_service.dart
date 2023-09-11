@@ -14,7 +14,7 @@ class ConnectionService {
   static const String hostPrefix = "[HOST]:";
   static const String clientPrefix = "[CLIENT]:";
 
-  static const Duration timeoutDuration = Duration(seconds: 10);
+  static const Duration timeoutDuration = Duration(seconds: 5);
 
   static const int port = 7470;
 
@@ -25,7 +25,6 @@ class ConnectionService {
       SocketManager connection = SocketManager(socket, ip, port);
 
       var success = await _handleServerConnection(connection);
-      _clientLog("Finished method '_handleServerConnection'");
 
       if (success == ConnectionStatus.connectionSuccessful) {
         return connection;
@@ -47,21 +46,18 @@ class ConnectionService {
 
     StreamSubscription<String> subscription =
         socketManager.broadcastStream.listen((data) {
-      _clientLog(
-          "Trying to listen to incoming data from ${socketManager.socket.remoteAddress.address}");
+      _clientLog("Listening to incoming data from ${_ipString(socketManager)}");
       final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
       ConnectionStatus? value = jsonData.connectionStatus;
-      _clientLog("Client received '$data' and parsed it to '$value'");
+      _clientLog("Received '$data' and parsed it to '$value'", level: Level.FINER);
       if (value == ConnectionStatus.connectionSuccessful) {
         completer.complete(value);
       }
     }, onError: (error) {
       _clientLog("Error while trying to receive success message from server");
+      log.severe("",error);
       completer.completeError(error);
-    }, onDone: () {
-      _clientLog("Finished handling connection to server");
-      return;
-    });
+    }, onDone: () => _clientLog("Finished handling connection to server"));
 
     return completer.future
         .timeout(timeoutDuration)
@@ -74,7 +70,7 @@ class ConnectionService {
     SocketManager? connection;
 
     await for (Socket tempSocket in serverSocket) {
-      _hostLog("Incoming connection from ${tempSocket.remoteAddress.address}");
+      _hostLog("Incoming connection from ${_ipString(tempSocket)}");
       try {
         SocketManager socketManager =
             SocketManager.fromExistingSocket(tempSocket);
@@ -100,11 +96,12 @@ class ConnectionService {
         socketManager.broadcastStream.listen((data) async {
       final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
       ConnectionStatus? value = jsonData.connectionStatus;
-      _hostLog("Server received '$data' and parsed it to '$value'");
+      _hostLog("Server received '$data' and parsed it to '$value'",
+          level: Level.FINER);
 
       if (value == ConnectionStatus.connecting) {
         _hostLog(
-            "Sending success message to ${socketManager.socket.remoteAddress.address}");
+            "Sending success message to ${_ipString(socketManager.socket)}");
         await socketManager.writeJsonData(
             ConnectionEstablishment(ConnectionStatus.connectionSuccessful));
         completer.complete(socketManager);
@@ -113,13 +110,21 @@ class ConnectionService {
     }, onError: (error) {
       _hostLog('Error: $error', level: Level.SEVERE);
       completer.completeError(error);
-    }, onDone: () {
-      _hostLog("finished handling connection to client");
-    });
+    }, onDone: () => _hostLog("finished handling connection to client"));
 
     return completer.future
-        .timeout(timeoutDuration)
+        .timeout(const Duration(milliseconds: 500))
         .whenComplete(() => subscription.cancel());
+  }
+
+  static String _ipString(socket) {
+    if(socket.runtimeType == Socket) {
+      return socket.remoteAddress.address;
+    } else if( socket.runtimeType == SocketManager) {
+      return socket.socket.remoteAddress.address;
+    } else {
+      throw UnimplementedError("Unknown input");
+    }
   }
 
   static Future<List<String>> getDevices() async {
@@ -194,6 +199,9 @@ class ConnectionService {
         break;
       case Level.FINE:
         log.fine("$prefix $message");
+        break;
+      case Level.FINER:
+        log.finer("$prefix $message");
         break;
       default:
         throw UnimplementedError("Log-level $level is not implemented!");
