@@ -158,7 +158,6 @@ class TicTacToeState extends State<TicTacToePage> {
         (ticTacToe as TicTacToeMultiplayer).handleGoBack();
       }
       Navigator.pop(alertContext);
-      Navigator.pop(alertContext);
       Navigator.pop(context);
     }
   }
