@@ -84,9 +84,9 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     });
     ConnectionService.createHost()
         .then((value) => _handleClientConnection(value))
-        .timeout(const Duration(minutes: 1),
+        .timeout(const Duration(minutes: 5),
             onTimeout: () =>
-                UIUtils.showTemporaryAlert(context, "Connection timed out."));
+                UIUtils.showTemporaryAlert(context, "Waited 5 min for connections."));
   }
 
   _handleClientConnection(SocketManager? value) {
@@ -116,7 +116,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     if (!isHosting) {
       final startTime = DateTime.now();
 
-      while (DateTime.now().difference(startTime).inSeconds < 10) {
+      while (DateTime.now().difference(startTime).inSeconds < 30) {
         final list = await ConnectionService.getDevices();
         if (list.isNotEmpty) {
           result = list;
