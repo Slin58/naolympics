@@ -49,26 +49,24 @@ if __name__ == "__main__":
 
     while True:
 
-        #y = input("Reihe: ")
-        #while field[0][y] != '_':
-        #    y = input("Reihe: ")
+        y = input("Reihe: ")
+        while field[0][y] != '-':
+            y = input("Reihe: ")
 
-        y, winning_move = connect_four_tactic.next_move(field, 'x', 'o', '-', mistake_factor=0)
-        print(y)
+        # y, winning_move = connect_four_tactic.next_move(field, 'x', 'o', '-', difficulty='e')
+
         set_point_x(-1, y)
         print_game_state()
 
         #time.sleep(2)
 
-        y = input("Reihe: ")
-        while field[0][y] != '-':
-            y = input("Reihe: ")
+        # y = input("Reihe: ")
+        # while field[0][y] != '-':
+        #     y = input("Reihe: ")
 
-        #y, winning_move = connect_four_tactic.nextMove(field, 'o', 'x', '-', mistake_factor=0)
+        y, winning_move = connect_four_tactic.next_move(field, 'o', 'x', '-', difficulty='e')
 
         set_point_o(-1, y)
         print_game_state()
-
-        time.sleep(2)
 
 

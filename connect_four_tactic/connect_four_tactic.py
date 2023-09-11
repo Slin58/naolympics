@@ -1,10 +1,28 @@
 import random
+import numpy
 
 
-def next_move(field, signOwn, signOpponent, signEmpty, mistake_factor):
+def get_mistake_factor(difficulty):
+    if difficulty == 'e':
+        return 10
+    elif difficulty == 'm':
+        return 5
+    elif difficulty == 'h':
+        return 2
+    elif difficulty == 'i':
+        return 0
+
+
+def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
+    factor_other_priorities = 0.1
+    factor_priority_above = 0.4
+    print "(priority_column = max_priority +", factor_other_priorities, "* influence other priorities -",
+    print factor_priority_above, "* priority_above)"
+
     priority = [0, 0, 0, 0, 0, 0, 0]
     for row in range(0, 7):
-        priority[row] = get_priorities(field, row, signOwn, signOpponent, signEmpty, 0.1, mistake_factor)
+        priority[row] = get_priorities(field, row, signOwn, signOpponent, signEmpty, factor_other_priorities,
+                                       factor_priority_above) + random.randint(0, get_mistake_factor(difficulty))
 
     maxPriority = -10000
     bestRow = 3
@@ -31,61 +49,66 @@ def next_move(field, signOwn, signOpponent, signEmpty, mistake_factor):
     return bestRow, False
 
 
-def get_priorities(field, j, signOwn, signOpponent, signEmpty, factorForOtherPriorities, mistake_factor):
+def get_priorities(field, j, signOwn, signOpponent, signEmpty, factor_other_priorities, factor_priority_above, iteration=0):
+
     i = get_position(field, -1, j, signEmpty)
 
     if i <= -1:
-        print "-9999 no field left"
+        if iteration == 0:
+            print "-9999 no field left"
+        else:
+            print "fatal error in game_logic"
         return -9999
 
-    prioritiesRow = get_priority(field, i, j, 0, 1, signOwn, signOpponent, signEmpty, mistake_factor)
-    prioritiesColumn = get_priority(field, i, j, 1, 0, signOwn, signOpponent, signEmpty, mistake_factor)
-    prioritiesDiagonal1 = get_priority(field, i, j, 1, 1, signOwn, signOpponent, signEmpty, mistake_factor)
-    prioritiesDiagonal2 = get_priority(field, i, j, 1, -1, signOwn, signOpponent, signEmpty, mistake_factor)
-    prioritiesRow_above_opponent = [0, 0]
-    prioritiesColumn_above_opponent = [0, 0]
-    prioritiesDiagonal1_above_opponent = [0, 0]
-    prioritiesDiagonal2_above_opponent = [0, 0]
+    priorities_row_off = get_priority(field, i, j, 0, 1, signOwn, signOpponent, signEmpty, True)
+    priorities_row_def = get_priority(field, i, j, 0, 1, signOpponent, signOwn, signEmpty, False)
+    priorities_column_off = get_priority(field, i, j, 1, 0, signOwn, signOpponent, signEmpty, True)
+    priorities_column_def = get_priority(field, i, j, 1, 0, signOpponent, signOwn, signEmpty, False)
+    priorities_diagonal1_off = get_priority(field, i, j, 1, 1, signOwn, signOpponent, signEmpty, True)
+    priorities_diagonal1_def = get_priority(field, i, j, 1, 1, signOpponent, signOwn, signEmpty, False)
+    priorities_diagonal2_off = get_priority(field, i, j, 1, -1, signOwn, signOpponent, signEmpty, True)
+    priorities_diagonal2_def = get_priority(field, i, j, 1, -1, signOpponent, signOwn, signEmpty, False)
 
-    if i-1 >= 0:
-        prioritiesRow_above_opponent = get_priority(field, i-1, j, 0, 1, signOpponent, signOwn, signEmpty, mistake_factor)
-        prioritiesColumn_above_opponent = get_priority(field, i-1, j, 1, 0, signOpponent, signOwn, signEmpty, mistake_factor)
-        prioritiesDiagonal1_above_opponent = get_priority(field, i-1, j, 1, 1, signOpponent, signOwn, signEmpty, mistake_factor)
-        prioritiesDiagonal2_above_opponent = get_priority(field, i-1, j, 1, -1, signOpponent, signOwn, signEmpty, mistake_factor)
+    if iteration == 0:
+        print(priorities_row_off, priorities_row_def, priorities_column_off, priorities_column_def,
+              priorities_diagonal1_off, priorities_diagonal1_def, priorities_diagonal2_off, priorities_diagonal2_def),
 
-    priority_above_opponent = max(prioritiesRow_above_opponent[0], prioritiesRow_above_opponent[1],
-                                  prioritiesColumn_above_opponent[0], prioritiesColumn_above_opponent[1],
-                                  prioritiesDiagonal1_above_opponent[0], prioritiesDiagonal1_above_opponent[1],
-                                  prioritiesDiagonal2_above_opponent[0], prioritiesDiagonal2_above_opponent[1])
-    print(prioritiesRow, prioritiesColumn, prioritiesDiagonal1, prioritiesDiagonal2),
-    print(max(prioritiesRow[0], prioritiesRow[1], prioritiesColumn[0], prioritiesColumn[1], prioritiesDiagonal1[0], prioritiesDiagonal1[1], prioritiesDiagonal2[0], prioritiesDiagonal2[1])),
-    max_of_offense = max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0])
-    max_of_defense = max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1])
-    if max_of_offense == 3000:
-        print("winning"),
-        print(3000)
-        return max_of_offense
+    # calculates the priority of the opponent for the field above -> a higher priority for the opponent means a lower priority for the actual field
+    priority_above = 0
+    if i > 0:
+        above_field = numpy.copy(field)
+        above_field[i][j] = signOwn
 
-    elif max_of_offense > max_of_defense:
-        print("offense"),
-        print(max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0]) \
-            + (factorForOtherPriorities * (prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0])) \
-            - (0.5 * priority_above_opponent))
-        return max(prioritiesRow[0], prioritiesColumn[0], prioritiesDiagonal1[0], prioritiesDiagonal2[0]) \
-            + (factorForOtherPriorities * (prioritiesRow[0] + prioritiesColumn[0] + prioritiesDiagonal1[0] + prioritiesDiagonal2[0])) \
-            - (0.5 * priority_above_opponent)
+        priority_above = factor_priority_above * get_priorities(above_field, j, signOpponent, signOwn, signEmpty, factor_other_priorities, factor_priority_above=factor_priority_above/2, iteration=iteration+1)
+
+    max_offense = max(priorities_row_off, priorities_column_off, priorities_diagonal1_off, priorities_diagonal2_off)
+    max_defense = max(priorities_row_def, priorities_column_def, priorities_diagonal1_def, priorities_diagonal2_def)
+    if max_offense == 3000:
+        if iteration == 0:
+            print("winning"),
+            print(3000)
+        return max_offense
+
+    elif max_offense > max_defense:
+        other_priorities = (factor_other_priorities * (
+                priorities_row_off + priorities_column_off + priorities_diagonal1_off + priorities_diagonal2_off))
+        result = max_offense + other_priorities - priority_above
+
+        if iteration == 0:
+            print"offense:", result, "(=", max_offense, "+", other_priorities, "-", priority_above, ")"
+        return result
 
     else:
-        print("defense"),
-        print(max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1]) \
-            + (factorForOtherPriorities * (prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1])) \
-            - (0.5 * priority_above_opponent))
-        return max(prioritiesRow[1], prioritiesColumn[1], prioritiesDiagonal1[1], prioritiesDiagonal2[1]) \
-            + (factorForOtherPriorities * (prioritiesRow[1] + prioritiesColumn[1] + prioritiesDiagonal1[1] + prioritiesDiagonal2[1])) \
-            - (0.5 * priority_above_opponent)
+        other_priorities = factor_other_priorities * (
+                priorities_row_def + priorities_column_def + priorities_diagonal1_def + priorities_diagonal2_def)
+        result = max_defense + other_priorities - priority_above
+
+        if iteration == 0:
+            print"defense:", result, "(=", max_defense, "+", other_priorities, "-", priority_above, ")"
+        return result
 
 
-def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mistake_factor):
+def get_priority_old(field, i, j, up, right, signOwn, signOpponent, signEmpty):
     priorityWin = 0
     priorityDefend = 0
     restAvailable1 = True
@@ -115,8 +138,8 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
             priorityWin = priorityWin + 1
             winningMoveDir1 = False
 
-    if 0 <= i - (up+up) <= 5 and 0 <= j - (right+right) <= 6:
-        if field[i - (up+up)][j - (right+right)] == signOwn:
+    if 0 <= i - (up + up) <= 5 and 0 <= j - (right + right) <= 6:
+        if field[i - (up + up)][j - (right + right)] == signOwn:
             if restAvailable1:
                 priorityWin = priorityWin + 9
                 if winningMoveDir1:
@@ -124,7 +147,7 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
 
             defendNecessaryDir1 = False
 
-        elif field[i - (up+up)][j - (right+right)] == signOpponent:
+        elif field[i - (up + up)][j - (right + right)] == signOpponent:
             priorityWin = priorityWin - 11
             winningMoveDir1 = False
             restAvailable1 = False
@@ -133,26 +156,25 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
                 priorityDefend = priorityDefend + 9
                 defendMove += 1
 
-        elif field[i - (up+up)][j - (right+right)] == signEmpty and restAvailable1:
+        elif field[i - (up + up)][j - (right + right)] == signEmpty and restAvailable1:
             priorityWin = priorityWin + 1
             winningMoveDir1 = False
 
-    if 0 <= i - (up+up+up) <= 5 and 0 <= j - (right+right+right) <= 6:
-        if field[i - (up+up+up)][j - (right+right+right)] == signOwn and restAvailable1:
+    if 0 <= i - (up + up + up) <= 5 and 0 <= j - (right + right + right) <= 6:
+        if field[i - (up + up + up)][j - (right + right + right)] == signOwn and restAvailable1:
             priorityWin = priorityWin + 6
             if winningMoveDir1:
                 winningMove += 1
 
-        elif field[i - (up+up+up)][j - (right+right+right)] == signOpponent:
+        elif field[i - (up + up + up)][j - (right + right + right)] == signOpponent:
             priorityWin = priorityWin - 10
 
             if defendNecessaryDir1:
                 priorityDefend = priorityDefend + 6
                 defendMove += 1
 
-        elif field[i - (up+up+up)][j - (right+right+right)] == signEmpty and restAvailable1:
+        elif field[i - (up + up + up)][j - (right + right + right)] == signEmpty and restAvailable1:
             priorityWin = priorityWin + 1
-
 
     # direction2
     if 0 <= i + up <= 5 and 0 <= j + right <= 6:
@@ -174,8 +196,8 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
             priorityWin = priorityWin + 1
             winningMoveDir2 = False
 
-    if 0 <= i + (up+up) <= 5 and 0 <= j + (right+right) <= 6:
-        if field[i + (up+up)][j + (right+right)] == signOwn:
+    if 0 <= i + (up + up) <= 5 and 0 <= j + (right + right) <= 6:
+        if field[i + (up + up)][j + (right + right)] == signOwn:
             if restAvailable2:
                 priorityWin = priorityWin + 9
                 if winningMoveDir2:
@@ -183,7 +205,7 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
 
             defendNecessaryDir2 = False
 
-        elif field[i + (up+up)][j + (right+right)] == signOpponent:
+        elif field[i + (up + up)][j + (right + right)] == signOpponent:
             priorityWin = priorityWin - 11
             winningMoveDir2 = False
             restAvailable2 = False
@@ -192,33 +214,93 @@ def get_priority(field, i, j, up, right, signOwn, signOpponent, signEmpty, mista
                 priorityDefend = priorityDefend + 9
                 defendMove += 1
 
-        elif field[i + (up+up)][j + (right+right)] == signEmpty and restAvailable2:
+        elif field[i + (up + up)][j + (right + right)] == signEmpty and restAvailable2:
             priorityWin = priorityWin + 1
             winningMoveDir2 = False
 
-    if 0 <= i + (up+up+up) <= 5 and 0 <= j + (right+right+right) <= 6:
-        if field[i + (up+up+up)][j + (right+right+right)] == signOwn and restAvailable2:
+    if 0 <= i + (up + up + up) <= 5 and 0 <= j + (right + right + right) <= 6:
+        if field[i + (up + up + up)][j + (right + right + right)] == signOwn and restAvailable2:
             priorityWin = priorityWin + 6
             if winningMoveDir2:
                 winningMove += 1
 
-        elif field[i + (up+up+up)][j + (right+right+right)] == signOpponent:
+        elif field[i + (up + up + up)][j + (right + right + right)] == signOpponent:
             priorityWin = priorityWin - 10
             if defendNecessaryDir2:
                 priorityDefend = priorityDefend + 6
                 defendMove += 1
 
-        elif field[i + (up+up+up)][j + (right+right+right)] == signEmpty and restAvailable2:
+        elif field[i + (up + up + up)][j + (right + right + right)] == signEmpty and restAvailable2:
             priorityWin = priorityWin + 1
 
-    priorityWin = priorityWin + random.randint(0, mistake_factor)
-    priorityDefend = priorityDefend + random.randint(0, mistake_factor)
     if winningMove >= 3:
         return [3000, priorityDefend]
     if defendMove >= 3:
         return [priorityWin, 2000]
 
     return [priorityWin, priorityDefend]
+    # priorities_row = get_priority(field, i, j, 0, 1, signOwn, signOpponent, signEmpty)
+    # priorities_column = get_priority(field, i, j, 1, 0, signOwn, signOpponent, signEmpty)
+    # priorities_diagonal1 = get_priority(field, i, j, 1, 1, signOwn, signOpponent, signEmpty)
+    # priorities_diagonal2 = get_priority(field, i, j, 1, -1, signOwn, signOpponent, signEmpty)
+
+
+def get_priority(field, i, j, up, right, sign_own, sign_opponent, sign_empty, off):
+    amount_own = 0
+    amount_empty = 0
+
+    # direction1
+    if 0 <= i - up <= 5 and 0 <= j - right <= 6:
+        if field[i - up][j - right] == sign_own:
+            amount_own += 1
+        if field[i - up][j - right] == sign_empty:
+            amount_empty += 1
+
+    if 0 <= i - (up + up) <= 5 and 0 <= j - (right + right) <= 6 and field[i - up][j - right] != sign_opponent:
+        if field[i - (up + up)][j - (right + right)] == sign_own:
+            amount_own += 1
+        if field[i - (up + up)][j - (right + right)] == sign_empty:
+            amount_empty += 1
+
+    if 0 <= i - (up + up + up) <= 5 and 0 <= j - (right + right + right) <= 6 and field[i - up][j - right] != sign_opponent and field[i - (up + up)][j - (right + right)] != sign_opponent:
+        if field[i - (up + up + up)][j - (right + right + right)] == sign_own:
+            amount_own += 1
+        if field[i - (up + up + up)][j - (right + right + right)] == sign_empty:
+            amount_empty += 1
+
+    # direction2
+    if 0 <= i + up <= 5 and 0 <= j + right <= 6:
+        if field[i + up][j + right] == sign_own:
+            amount_own += 1
+        if field[i + up][j + right] == sign_empty:
+            amount_empty += 1
+
+    if 0 <= i + (up + up) <= 5 and 0 <= j + (right + right) <= 6 and field[i + up][j + right] != sign_opponent:
+        if field[i + (up + up)][j + (right + right)] == sign_own:
+            amount_own += 1
+        if field[i + (up + up)][j + (right + right)] == sign_empty:
+            amount_empty += 1
+
+    if 0 <= i + (up + up + up) <= 5 and 0 <= j + (right + right + right) <= 6 and field[i + up][j + right] != sign_opponent and field[i + (up + up)][j + (right + right)] != sign_opponent:
+        if field[i + (up + up + up)][j + (right + right + right)] == sign_own:
+            amount_own += 1
+        if field[i + (up + up + up)][j + (right + right + right)] == sign_empty:
+            amount_empty += 1
+
+    priority_win = 0
+    if amount_own >= 3:
+        priority_win = 3000
+    elif amount_own == 2 and amount_empty >= 1:
+        priority_win = 20 + amount_empty * 1
+    elif amount_own == 1 and amount_empty >= 2:
+        priority_win = 10 + amount_empty * 1
+    elif amount_own == 0 and amount_empty >= 3:
+        priority_win = amount_empty * 1
+
+    if off:
+        return priority_win
+    else:
+        return priority_win * 2 / 3
 
 
 def set_point_y(field, i, j):

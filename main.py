@@ -10,10 +10,7 @@ from connect_four_tactic import connect_four_tactic
 from movement import movementControl
 import random
 
-# IP address of the NAO
 robotIP = "10.30.4.13"
-
-# Port number
 PORT = 9559
 
 
@@ -34,7 +31,7 @@ def choose_game_by_voice():  # returns "tictactoe" or "4 gewinnt" depending on w
 
     vocabulary = ["tictactoe", "Tictactoe", "Gewinnt", "gewinnt", "vier", "Vier"]
     asr.setVocabulary(vocabulary, True)
-    asr.setParameter("Sensitivity", 0.3)
+    asr.setParameter("Sensitivity", 0.4)
 
     asr.subscribe("MySpeechRecognition")
     memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
@@ -72,8 +69,16 @@ def choose_game_by_voice():  # returns "tictactoe" or "4 gewinnt" depending on w
 
 
 def get_random_nao_name():
-    names = ["Julius","Dieter", "Norbert", "Hugo", "Antonia", "Emil", "Martha", "Theodor", "Rosina", "Franz", "Adelheid", "Egon", "Elsa", "Hermann", "Cäcilie", "Oskar", "Karoline", "Rudolph", "Theresa", "Ferdinand", "Henriette", "Konrad", "Albertine", "Ludovica", "Leopold", "Henrietta", "Rosa", "Amalie", "Eduard", "Sophia", "Eberhard", "Johanna", "Kuno", "Veronika", "Clemens", "Eleonora", "Wilhelmina", "Eugenie", "Valentin", "Regina","Emma", "Fritz", "Johann", "Sophie", "Wilhelm", "Ida", "Heinrich", "Agnes", "Ludwig", "Elisabeth", "Friederike", "Paul", "Barbara", "Max", "Clara", "Gustav", "Katharina", "Otto", "Louise", "Eduard", "Anna", "Rudolf", "Gertrud", "Georg", "Maria", "Friedrich", "Mathilde", "Hans", "Margarethe", "Albert", "Augusta", "Richard", "Helena", "Walter", "Charlotte"]
+    names = ["Julius", "Dieter", "Norbert", "Hugo", "Antonia", "Emil", "Martha", "Theodor", "Rosina", "Franz",
+             "Adelheid", "Egon", "Elsa", "Hermann", "Cäcilie", "Oskar", "Karoline", "Rudolph", "Theresa", "Ferdinand",
+             "Henriette", "Konrad", "Albertine", "Ludovica", "Leopold", "Henrietta", "Rosa", "Amalie", "Eduard",
+             "Sophia", "Eberhard", "Johanna", "Kuno", "Veronika", "Clemens", "Eleonora", "Wilhelmina", "Eugenie",
+             "Valentin", "Regina", "Emma", "Fritz", "Johann", "Sophie", "Wilhelm", "Ida", "Heinrich", "Agnes", "Ludwig",
+             "Elisabeth", "Friederike", "Paul", "Barbara", "Max", "Clara", "Gustav", "Katharina", "Otto", "Louise",
+             "Eduard", "Anna", "Rudolf", "Gertrud", "Georg", "Maria", "Friedrich", "Mathilde", "Hans", "Margarethe",
+             "Albert", "Augusta", "Richard", "Helena", "Walter", "Charlotte"]
     return names[random.randint(0, len(names) - 1)]
+
 
 def get_difficulty_text(difficulty):
     if difficulty == 1:
@@ -86,37 +91,28 @@ def get_difficulty_text(difficulty):
         return "Schwierigkeitsstufe unmöglich. Ich werde dich vernichten"
 
 
-def get_difficulty(difficulty, is_tictactoe):
-    if is_tictactoe:
-        if difficulty == 1:
-            return "e"
-        elif difficulty == 2:
-            return "m"
-        elif difficulty == 3:
-            return "h"
-        elif difficulty == 4:
-            return "i"
-    else:
-        if difficulty == 1:
-            return 10
-        elif difficulty == 2:
-            return 5
-        elif difficulty == 3:
-            return 2
-        elif difficulty == 4:
-            return 0
+def get_difficulty(difficulty):
+    if difficulty == 1:
+        return "e"
+    elif difficulty == 2:
+        return "m"
+    elif difficulty == 3:
+        return "h"
+    elif difficulty == 4:
+        return "i"
 
 
 def choose_game_by_buttons():
     try:
-        movementControl.startPosition(robotIP, PORT)
+        movementControl.start_position(robotIP, PORT)
         touch = ALProxy("ALTouch", robotIP, PORT)
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
-        tts.say("Hallo, ich bin"+ get_random_nao_name() + ". Was möchtest du spielen? Für TicTacTo, berühre den Knopf an meiner Stirn! Für "
-                "Vier gewinnt, berühre den Knopf an meinem Hinterkopf! Zum Beenden, berühre den Knopf in der Mitte")
+        tts.say(
+            "Hallo, ich bin" + get_random_nao_name() + ". Was möchtest du spielen? Für TicTacTo, berühre den Knopf an meiner Stirn! Für "
+                                                       "Vier gewinnt, berühre den Knopf an meinem Hinterkopf! Zum Beenden, berühre den Knopf in der Mitte")
         vs_options_text = "Berühre den Knopf an meiner Stirn, dass ich gegen dich starte. " \
-                     "Berühre den Knopf an meinem Hinterkopf, dass du gegen mich startest. Berühre den Knopf in " \
-                     "der Mitte, dass ich gegen mich selbst spiele!"
+                          "Berühre den Knopf an meinem Hinterkopf, dass du gegen mich startest. Berühre den Knopf in " \
+                          "der Mitte, dass ich gegen mich selbst spiele!"
         difficulty_setting_text = "Wähle die Schwierigkeitsstufe, indem nur mit den äußeren " \
                                   "Knöpfen wählst und mit der Mitte bestätigst! Gerade bin ich auf leicht eingestellt!"
         tictactoe_mode = False
@@ -132,7 +128,7 @@ def choose_game_by_buttons():
                     print "No.", counter, e
                     if counter == 7 and not tictactoe_mode and not connect4_mode and not difficulty:
                         tictactoe_mode = True
-                        tts.say("Alles klar, TicTacTo. "+vs_options_text)
+                        tts.say("Alles klar, TicTacTo. " + vs_options_text)
                         break
 
                     if counter == 8 and tictactoe_mode and not difficulty:
@@ -141,20 +137,21 @@ def choose_game_by_buttons():
                         connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(connect4_mode,
                                                                                                        difficulty,
                                                                                                        nao_begins,
-                                                                                                       tictactoe_mode, tts)
+                                                                                                       tictactoe_mode,
+                                                                                                       tts)
                         break
 
                     if counter == 7 and tictactoe_mode and not difficulty:
                         difficulty = 1
                         nao_begins = True
 
-                        tts.say("Alles klar, ich beginne. "+difficulty_setting_text)
+                        tts.say("Alles klar, ich beginne. " + difficulty_setting_text)
                         break
 
                     if counter == 9 and tictactoe_mode and not difficulty:
                         difficulty = 1
                         tts.say(
-                            "Alles klar, du beginnst. "+difficulty_setting_text)
+                            "Alles klar, du beginnst. " + difficulty_setting_text)
                         break
 
                     if counter == 7 and difficulty:
@@ -178,20 +175,21 @@ def choose_game_by_buttons():
                             tts.say("Okay, ich spiele gegen dich TicTacTo mit" + get_difficulty_text(
                                 difficulty) + ". Gutes Spiel!")
                             if nao_begins:
-                                play_tictactoe_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=True))
+                                play_tictactoe_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty))
                             else:
-                                play_tictactoe_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=True))
+                                play_tictactoe_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty))
                         elif connect4_mode:
                             tts.say("Okay, ich spiele gegen dich Vier gewinnt mit" + get_difficulty_text(
                                 difficulty) + ". Gutes Spiel!")
                             if nao_begins:
-                                play_connect_four_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=False))
+                                play_connect_four_against_opponent_player1(robotIP, PORT, get_difficulty(difficulty))
                             else:
-                                play_connect_four_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty, is_tictactoe=False))
+                                play_connect_four_against_opponent_player2(robotIP, PORT, get_difficulty(difficulty))
                         connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(connect4_mode,
                                                                                                        difficulty,
                                                                                                        nao_begins,
-                                                                                                       tictactoe_mode, tts)
+                                                                                                       tictactoe_mode,
+                                                                                                       tts)
                         break
 
                     if counter == 8 and not connect4_mode and not tictactoe_mode and not difficulty:
@@ -201,7 +199,7 @@ def choose_game_by_buttons():
                     if counter == 9 and not connect4_mode and not tictactoe_mode and not difficulty:
                         connect4_mode = True
 
-                        tts.say("Alles klar, Vier gewinnt. "+vs_options_text)
+                        tts.say("Alles klar, Vier gewinnt. " + vs_options_text)
                         break
 
                     if counter == 8 and connect4_mode and not difficulty:
@@ -210,20 +208,21 @@ def choose_game_by_buttons():
                         connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(connect4_mode,
                                                                                                        difficulty,
                                                                                                        nao_begins,
-                                                                                                       tictactoe_mode, tts)
+                                                                                                       tictactoe_mode,
+                                                                                                       tts)
                         break
 
                     if counter == 7 and connect4_mode and not difficulty:
                         difficulty = 1
                         nao_begins = True
                         tts.say(
-                            "Alles klar, ich beginne. "+difficulty_setting_text)
+                            "Alles klar, ich beginne. " + difficulty_setting_text)
                         break
 
                     if counter == 9 and connect4_mode and not difficulty:
                         difficulty = 1
                         tts.say(
-                            "Alles klar, du beginnst. "+difficulty_setting_text)
+                            "Alles klar, du beginnst. " + difficulty_setting_text)
                         break
 
                 counter += 1
@@ -237,7 +236,7 @@ def choose_game_by_buttons():
 
 
 def reset_button_mode_menu(connect4_mode, difficulty, nao_begins, tictactoe_mode, tts):
-    movementControl.startPosition(robotIP, PORT)
+    movementControl.start_position(robotIP, PORT)
     tts.say("Das hat Spaß gemacht! Wenn du nochmal spielen möchtest, wähle erneut Stirn für TicTacTo "
             "und Hinterkopf für Vier gewinnt. Zum Beenden, berühre den Knopf in der Mitte")
     tictactoe_mode = False
@@ -273,7 +272,7 @@ def play_tictactoe_against_itself(robotIP, PORT):
                                                          difficulty='h')
         circle_turn = not circle_turn
         print(field)
-        movementControl.clickTicTacToe(robotIP, PORT, result)
+        movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
                 movement.movementControl.celebrate1(robotIP, PORT)
@@ -302,13 +301,13 @@ def play_connect_four_against_itself(robotIP, PORT):
                 return
         if yellow_turn:
             result, winning = connect_four_tactic.next_move(field, signOwn='Y', signOpponent='R', signEmpty='-',
-                                                            mistake_factor=0)
+                                                            difficulty='i')
         else:
             result, winning = connect_four_tactic.next_move(field, signOwn='R', signOpponent='Y', signEmpty='-',
-                                                            mistake_factor=0)
+                                                            difficulty='i')
         yellow_turn = not yellow_turn
 
-        movementControl.clickConnectFour(robotIP, PORT, result)
+        movementControl.click_connect_four(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
                 movement.movementControl.celebrate1(robotIP, PORT)
@@ -347,7 +346,7 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
 
         field_after_move = tictactoe_tactic.get_field_after_move(field, result, 'O')
 
-        movementControl.clickTicTacToe(robotIP, PORT, result)
+        movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
                 movement.movementControl.celebrate1(robotIP, PORT)
@@ -389,7 +388,7 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
         print(result)
 
         field_after_move = tictactoe_tactic.get_field_after_move(field, result, 'X')
-        movementControl.clickTicTacToe(robotIP, PORT, result)
+        movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
                 movement.movementControl.celebrate1(robotIP, PORT)
@@ -398,7 +397,7 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
             return
 
 
-def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
+def play_connect_four_against_opponent_player1(robotIP, PORT, difficulty='e'):
     field_after_move = []
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
@@ -410,7 +409,7 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img,debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
+            field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                      circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
@@ -423,12 +422,12 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             print("comparison not successful")
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
         result, winning = connect_four_tactic.next_move(field, signOwn='Y', signOpponent='R', signEmpty='-',
-                                                        mistake_factor=mistake_factor)
+                                                        difficulty=difficulty)
         field_after_move = field
         field_after_move = connect_four_tactic.set_point_y(field_after_move, -1, result)
         print(result)
 
-        movementControl.clickConnectFour(robotIP, PORT, result)
+        movementControl.click_connect_four(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
                 movement.movementControl.celebrate1(robotIP, PORT)
@@ -437,7 +436,7 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, mistake_factor=0):
             return
 
 
-def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
+def play_connect_four_against_opponent_player2(robotIP, PORT, difficulty='e'):
     field_after_move = \
         [['-', '-', '-', '-', '-', '-', '-'],
          ['-', '-', '-', '-', '-', '-', '-'],
@@ -455,7 +454,7 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
             field_none_counter += 1
             time.sleep(0.5)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img,debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
+            field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
                                                      circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
                                                      erode_iterations=1, gaussian_kernel_size=13)
             if field is None and field_none_counter > 5:
@@ -469,12 +468,12 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, mistake_factor=0):
 
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
         result, winning = connect_four_tactic.next_move(field, signOwn='R', signOpponent='Y', signEmpty='-',
-                                                        mistake_factor=mistake_factor)
+                                                        difficulty=difficulty)
         field_after_move = field
         field_after_move = connect_four_tactic.set_point_r(field_after_move, -1, result)
         print(result)
 
-        movementControl.clickConnectFour(robotIP, PORT, result)
+        movementControl.click_connect_four(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
                 movement.movementControl.celebrate1(robotIP, PORT)
@@ -487,7 +486,7 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
     # disable autonomous mode
     if "disable_autonomous" in modes:
         print("Disabling autonomous life...")
-        movementControl.disableAutonomousLife(robotIP, PORT)
+        movementControl.disable_autonomous_life(robotIP, PORT)
         movementControl.stand(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
@@ -497,12 +496,12 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
     if "x_angle" in modes:
         print("Preparing for x-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
-        movementControl.tabletPreparationXAngle(robotIP, PORT)
+        movementControl.tablet_preparation_x_angle(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
     if "y_angle" in modes:
         print("Preparing for y-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
-        movementControl.tabletPosition(robotIP, PORT)
+        movementControl.tablet_position(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
     if "vision_check" in modes:
@@ -511,7 +510,7 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
     if "start_position" in modes:
         print("Getting ready to rumble")
-        movementControl.startPosition(robotIP, PORT)
+        movementControl.start_position(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
 

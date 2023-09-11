@@ -13,6 +13,13 @@ def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
             if field[i][j] == signEmpty:
                 amountEmpty += 1
 
+    if amountEmpty == 0:
+        print("error: No empty field left")
+        return None
+
+    amountsOwn = amounts(field, signOwn)
+    amountsOpponent = amounts(field, signOpponent)
+
     if amountEmpty == 9:
         if difficulty == 'i':
             print("play in random corner")
@@ -38,13 +45,6 @@ def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
                 return 4, False
 
         return get_random_empty_corner(field, signEmpty), False
-
-    if amountEmpty == 0:
-        print("error: No empty field left")
-        return None
-
-    amountsOwn = amounts(field, signOwn)
-    amountsOpponent = amounts(field, signOpponent)
 
     if amountEmpty == 7:
         if difficulty == 'e':
