@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class ConnectFourPage extends StatefulWidget {
   const ConnectFourPage({Key? key}) : super(key: key);
@@ -26,16 +26,14 @@ class ConnectFourState extends State<ConnectFourPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Connect Four'),
+        title: const Text("Connect Four"),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return FractionallySizedBox(
-            alignment: Alignment.center,
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columns,
-                childAspectRatio: 1.0,
               ),
               itemCount: rows * columns,
               itemBuilder: (context, index) {
@@ -49,7 +47,7 @@ class ConnectFourState extends State<ConnectFourPage> {
                   },
                   child: Container(
                     color: color,
-                    margin: const EdgeInsets.all(2.0),
+                    margin: const EdgeInsets.all(2),
                   ),
                 );
               },

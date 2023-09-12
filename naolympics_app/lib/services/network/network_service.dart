@@ -1,13 +1,13 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
+import "dart:async";
+import "dart:io";
+import "dart:typed_data";
 
-import 'package:logging/logging.dart';
+import "package:logging/logging.dart";
 
 
 
 class NetworkService {
-  final log = Logger((NetworkService).toString());
+  static final log = Logger((NetworkService).toString());
   final Socket _connection;
 
   NetworkService(this._connection);
@@ -21,7 +21,7 @@ class NetworkService {
   Future<Uint8List> receiveData() async {
     final completer = Completer<Uint8List>();
 
-    _connection.listen((List<int> data) {
+    _connection.listen((data) {
       final receivedData = Uint8List.fromList(data);
       completer.complete(receivedData);
     }, onDone: () {
