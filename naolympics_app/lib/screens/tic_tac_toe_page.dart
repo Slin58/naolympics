@@ -86,8 +86,8 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  Future<void> _tapAction(int row, int col) async {
-    await ticTacToe.move(row, col);
+  void _tapAction(int row, int col) {
+    ticTacToe.move(row, col);
     setState(() {});
   }
 

@@ -39,7 +39,8 @@ class TicTacToeMultiplayer extends TicTacToe {
     if (currentTurn == playerSymbol &&
         super.playField[row][col] == TicTacToeFieldValues.empty) {
       makeMove(row, col);
-      await _sendMove(row, col);
+      // ignore: unawaited_futures
+      _sendMove(row, col);
     }
   }
 

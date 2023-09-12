@@ -20,12 +20,12 @@ class ConnectionService {
   static Future<SocketManager?> connectToHost(final String ip) async {
     try {
       _clientLog("Trying to connect to $ip.");
+      // ignore: close_sinks
       Socket socket = await Socket.connect(ip, port);
       SocketManager connection = SocketManager(socket, ip, port);
 
       var success = await _handleServerConnection(connection);
 
-      await socket.close();
       if (success == ConnectionStatus.connectionSuccessful) {
         return connection;
       } else {
