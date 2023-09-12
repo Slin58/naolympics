@@ -8,7 +8,6 @@ import "package:naolympics_app/services/network/connection_service.dart";
 import "package:naolympics_app/services/network/socket_manager.dart";
 import "package:naolympics_app/services/routing/client_routing_service.dart";
 import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
-import "package:naolympics_app/services/server.dart";
 import "package:naolympics_app/utils/ui_utils.dart";
 
 class FindPlayerPage extends StatefulWidget {
@@ -23,11 +22,9 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   List<String> foundHost = [];
   bool isHosting = false;
   bool wifi = true;
-  late Server server;
 
   @override
   void initState() {
-    server = Server(false);
     super.initState();
     isHosting = false;
     wifi = true;
@@ -36,9 +33,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Find Players"),
-        ),
+        appBar: AppBar(title: const Text("Find Players")),
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [
@@ -78,14 +73,11 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   Future<void> _startServer() async {
-    setState(() {
-      isHosting = true;
-    });
-    await ConnectionService.createHost()
-        .then(_handleClientConnection)
-        .timeout(const Duration(minutes: 5),
-            onTimeout: () =>
-                UIUtils.showTemporaryAlert(context, "Waited 5 min for connections."));
+    setState(() => isHosting = true);
+    await ConnectionService.createHost().then(_handleClientConnection).timeout(
+        const Duration(minutes: 5),
+        onTimeout: () => UIUtils.showTemporaryAlert(
+            context, "Waited 5 min for connections."));
   }
 
   void _handleClientConnection(SocketManager? value) {
@@ -104,10 +96,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   void _stopServer() {
-    setState(() {
-      isHosting = false;
-      server.stop();
-    });
+    setState(() => isHosting = false);
   }
 
   Future<List<String>> _showDevices() async {
@@ -152,10 +141,8 @@ class FindPlayerPageState extends State<FindPlayerPage> {
               );
             } else {
               return UIUtils.getBorderedTextButton(() {
-                setState(() {
-
-                });}
-              , Icons.refresh, "Search again", Colors.grey, 250);
+                setState(() {});
+              }, Icons.refresh, "Search again", Colors.grey, 250);
             }
           } else {
             return const Text("No data available.");
@@ -163,7 +150,8 @@ class FindPlayerPageState extends State<FindPlayerPage> {
         });
   }
 
-  static Future<void> _handleHostConnection(String ip, BuildContext context) async {
+  static Future<void> _handleHostConnection(
+      String ip, BuildContext context) async {
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
     if (socketManager == null) {
