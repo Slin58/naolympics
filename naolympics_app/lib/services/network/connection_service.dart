@@ -1,13 +1,12 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
+import "dart:async";
+import "dart:io";
+import "dart:typed_data";
 
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/network/json/json_objects/connection_establishment.dart';
-import 'package:naolympics_app/services/network/socket_manager.dart';
-
-import 'json/json_data.dart';
-import 'network_analyzer.dart';
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/connection_establishment.dart";
+import "package:naolympics_app/services/network/network_analyzer.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
 
 class ConnectionService {
   static final log = Logger((ConnectionService).toString());
@@ -26,12 +25,13 @@ class ConnectionService {
 
       var success = await _handleServerConnection(connection);
 
+      await socket.close();
       if (success == ConnectionStatus.connectionSuccessful) {
         return connection;
       } else {
         return null;
       }
-    } catch (error) {
+    } on Exception catch (error) {
       _clientLog(error.toString(), level: Level.SEVERE);
       return null;
     }
@@ -81,12 +81,12 @@ class ConnectionService {
           connection = socketManager;
           break;
         }
-      } catch (error) {
+      } on Exception catch (error) {
         _hostLog(error.toString(), level: Level.WARNING);
       }
     }
     _hostLog("Stopping to listen to incoming connections.");
-    serverSocket.close();
+    await serverSocket.close();
     return connection;
   }
 
@@ -109,7 +109,7 @@ class ConnectionService {
         _hostLog("finished handling connection to client");
       }
     }, onError: (error) {
-      _hostLog('Error: $error', level: Level.SEVERE);
+      _hostLog("Error: $error", level: Level.SEVERE);
       completer.completeError(error);
     }, onDone: () => _hostLog("finished handling connection to client"));
 
@@ -132,9 +132,9 @@ class ConnectionService {
     final String? ip = await _getCurrentIp();
     log.fine("Current ip of the system: $ip");
     if (ip == null) {
-      return Future(() => List.empty());
+      return Future(List.empty);
     } else {
-      final String submask = ip.substring(0, ip.lastIndexOf('.'));
+      final String submask = ip.substring(0, ip.lastIndexOf("."));
       final List<String> devices = await _discoverDevices(submask, port);
       log.info("Found ip addresses for given port: $devices");
 
@@ -241,7 +241,7 @@ enum ConnectionStatus {
       ConnectionStatus connectionStatus =
           ConnectionStatus.values.firstWhere((e) => e.toString() == message);
       return connectionStatus;
-    } catch (error) {
+    } on Exception {
       return null;
     }
   }

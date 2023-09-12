@@ -1,10 +1,9 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:naolympics_app/services/network/json/json_data.dart';
+import "package:json_annotation/json_annotation.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
+import "package:naolympics_app/services/network/json/data_types.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
 
-import '../../../gamemodes/tictactoe/tictactoe.dart';
-import '../data_types.dart';
-
-part 'tictactoe_data.g.dart';
+part "tictactoe_data.g.dart";
 
 @JsonSerializable()
 class TicTacToeData extends JsonData {
@@ -23,6 +22,6 @@ class TicTacToeData extends JsonData {
 
   @override
   String toString() {
-    return 'TicTacToeData{dataType: ${super.dataType}, row: $row, column: $column, fieldValue: $fieldValue}';
+    return "TicTacToeData{dataType: ${super.dataType}, row: $row, column: $column, fieldValue: $fieldValue}";
   }
 }

@@ -1,4 +1,4 @@
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
 
 class TicTacToeLocal extends TicTacToe {
   @override

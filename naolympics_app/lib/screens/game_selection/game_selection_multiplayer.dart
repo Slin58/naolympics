@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart';
-import 'package:naolympics_app/utils/ui_utils.dart';
-
-import '../../services/network/json/json_objects/navigation_data.dart';
-import '../connect_four_page.dart';
-import '../tic_tac_toe_page.dart';
-import 'game_selection.dart';
+import "package:flutter/material.dart";
+import "package:naolympics_app/screens/connect_four_page.dart";
+import "package:naolympics_app/screens/game_selection/game_selection.dart";
+import "package:naolympics_app/screens/tic_tac_toe_page.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/json_objects/navigation_data.dart";
+import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class GameSelectionPageMultiplayer extends GameSelectionPage {
   const GameSelectionPageMultiplayer({super.key});

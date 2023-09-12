@@ -1,24 +1,22 @@
-import 'dart:io';
+import "dart:io";
 
 class Server {
-
-  bool _running;
   Server(this._running);
 
-  void start() async {
+  bool _running;
+
+  Future<void> start() async {
     _running = true;
 
     const port = 7470;
     final server = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    print('Server listening on port ${server.port}');
 
     await for (Socket socket in server) {
-      if(_running) {
+      if (_running) {
         handleClient(socket);
       } else {
         break;
       }
-
     }
   }
 
@@ -27,28 +25,20 @@ class Server {
   }
 
   void handleClient(Socket socket) {
-    final clientAddress = socket.remoteAddress.address;
-    print('New client connected: $clientAddress');
+    // final clientAddress = socket.remoteAddress.address;
     socket.listen(
-          (List<int> data) {
-        final message = String.fromCharCodes(data).trim();
-        print('Received data: $message');
+      (data) {
+        //   final message = String.fromCharCodes(data).trim();
 
         // Handle the received data
-      },
-      onError: (error) {
-        print('Error: $error');
       },
       onDone: () {
         socket.destroy();
       },
     );
   }
-
 }
 
-
 Future<void> main() async {
-  Server server = Server(true);
-  server.start();
+  Server(true);
 }

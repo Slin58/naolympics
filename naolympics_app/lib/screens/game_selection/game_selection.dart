@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
-import 'package:naolympics_app/utils/ui_utils.dart';
-
-import '../connect_four_page.dart';
+import "package:flutter/material.dart";
+import "package:naolympics_app/screens/connect_four_page.dart";
+import "package:naolympics_app/screens/tic_tac_toe_page.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class GameSelectionPage extends StatefulWidget {
   const GameSelectionPage({super.key});
@@ -65,19 +64,19 @@ class GameSelectionState extends State<GameSelectionPage> {
 
   Widget getTicTacToeImageButton(BuildContext context, Widget route) {
     return _getImageButton(
-        context, route, "Tic Tac Toe", 'assets/images/tictactoe.png');
+        context, route, "Tic Tac Toe", "assets/images/tictactoe.png");
   }
 
   Widget getConnectFourImageButton(BuildContext context, Widget route) {
     return _getImageButton(
-        context, route, "Connect Four", 'assets/images/connect4.png');
+        context, route, "Connect Four", "assets/images/connect4.png");
   }
 
   Widget _getImageButton(
       BuildContext context, Widget route, String text, String imagePath) {
     double boxHeight;
     double boxWidth;
-    // TODO besseren Weg finden.
+    // todo: besseren Weg finden.
     const errorMargin = 50;
     if (orientation == Orientation.landscape) {
       boxHeight = height - errorMargin;

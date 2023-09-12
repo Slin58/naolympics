@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/utils/routing_utls.dart';
-
-import '../services/gamemodes/tictactoe/tictactoe_local.dart';
-import '../utils/ui_utils.dart';
+import "package:flutter/material.dart";
+import "package:flutter/scheduler.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_local.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/utils/routing_utls.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class TicTacToePage extends StatefulWidget {
   const TicTacToePage({super.key});
@@ -36,13 +35,13 @@ class TicTacToeState extends State<TicTacToePage> {
         context,
         Scaffold(
             appBar: AppBar(
-              title: const Text('Tic Tac Toe'),
+              title: const Text("Tic Tac Toe"),
               actions: [_displayCurrentTurn()],
             ),
             body: _buildTicTacToeField()));
   }
 
-  _displayCurrentTurn() {
+  Row _displayCurrentTurn() {
     const double size = 20;
     Icon icon = ticTacToe.currentTurn == TicTacToeFieldValues.o
         ? _getCircleIcon(size)
@@ -50,7 +49,7 @@ class TicTacToeState extends State<TicTacToePage> {
 
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       const Text("Current Turn:"),
-      const SizedBox(width: 8.0),
+      const SizedBox(width: 8),
       icon
     ]);
   }
@@ -98,10 +97,10 @@ class TicTacToeState extends State<TicTacToePage> {
       height: cellSize,
       decoration: const BoxDecoration(
         border: Border(
-          right: BorderSide(color: Colors.black),
-          left: BorderSide(color: Colors.black),
-          bottom: BorderSide(color: Colors.black),
-          top: BorderSide(color: Colors.black),
+          right: BorderSide(),
+          left: BorderSide(),
+          bottom: BorderSide(),
+          top: BorderSide(),
         ),
       ),
       child: Center(child: _setIcon(row, col, cellSize)),
@@ -113,8 +112,7 @@ class TicTacToeState extends State<TicTacToePage> {
     if (winner != TicTacToeWinner.ongoing) {
       showDialog(
           context: context,
-          builder: (BuildContext alertContext) =>
-              _winnerAlertDialog(winner, alertContext));
+          builder: (alertContext) => _winnerAlertDialog(winner, alertContext));
     }
   }
 
@@ -142,15 +140,15 @@ class TicTacToeState extends State<TicTacToePage> {
       title: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(winnerText), const SizedBox(width: 8.0), winnerIcon],
+          children: [Text(winnerText), const SizedBox(width: 8), winnerIcon],
         ),
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
         UIUtils.getBorderedTextButton(_setGoBackAction(alertContext),
-            Icons.arrow_back, 'Go Back', color, buttonWidth),
+            Icons.arrow_back, "Go Back", color, buttonWidth),
         const SizedBox(width: buttonWidth / 100000),
         UIUtils.getBorderedTextButton(_setResetAction(alertContext),
-            Icons.refresh, 'Reset', color, buttonWidth),
+            Icons.refresh, "Reset", color, buttonWidth),
       ]),
     );
   }

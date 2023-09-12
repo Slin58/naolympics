@@ -6,10 +6,10 @@
  * See LICENSE for distribution and usage details.
  */
 
-import 'dart:async';
-import 'dart:io';
+import "dart:async";
+import "dart:io";
 
-import 'package:logging/logging.dart';
+import "package:logging/logging.dart";
 
 /// [NetworkAnalyzer] class returns instances of [NetworkAddress].
 ///
@@ -34,18 +34,18 @@ class NetworkAnalyzer {
     Duration timeout = const Duration(milliseconds: 400),
   }) async* {
     if (port < 1 || port > 65535) {
-      throw 'Incorrect port';
+      throw Exception("Incorrect port");
     }
     // TODO : validate subnet
 
     for (int i = 1; i < 256; ++i) {
-      final host = '$subnet.$i';
+      final host = "$subnet.$i";
 
       try {
         final Socket s = await Socket.connect(host, port, timeout: timeout);
         s.destroy();
         yield NetworkAddress(host, true);
-      } catch (e) {
+      } on Exception catch (e) {
         if (e is! SocketException) {
           rethrow;
         }
@@ -70,20 +70,20 @@ class NetworkAnalyzer {
     Duration timeout = const Duration(seconds: 5),
   }) {
     if (port < 1 || port > 65535) {
-      throw 'Incorrect port';
+      throw Exception("Incorrect port");
     }
     // TODO : validate subnet
 
     final out = StreamController<NetworkAddress>();
     final futures = <Future<Socket>>[];
     for (int i = 1; i < 256; ++i) {
-      final host = '$subnet.$i';
+      final host = "$subnet.$i";
       final Future<Socket> f = _ping(host, port, timeout);
       futures.add(f);
       f.then((socket) {
         socket.destroy();
         out.sink.add(NetworkAddress(host, true));
-      }).catchError((dynamic e) {
+      }).catchError((e) {
         if (e is! SocketException) {
           throw e;
         }
@@ -102,7 +102,7 @@ class NetworkAnalyzer {
 
     Future.wait<Socket>(futures)
         .then<void>((sockets) => out.close())
-        .catchError((dynamic e) => out.close());
+        .catchError((e) => out.close());
 
     return out.stream;
   }

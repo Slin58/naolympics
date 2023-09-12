@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class UIUtils {
   static Container getBorderedTextButton(VoidCallback onPressed,
@@ -6,7 +6,7 @@ class UIUtils {
     return Container(
         decoration: BoxDecoration(
           border: Border.all(color: color),
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10),
         ),
         width: width,
         child: TextButton.icon(
@@ -16,7 +16,7 @@ class UIUtils {
             text,
             style: TextStyle(
               color: color,
-              fontSize: 15.0,
+              fontSize: 15,
             ),
           ),
         ));
@@ -63,9 +63,8 @@ class UIUtils {
     showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pop(true);
-          });
+          Future.delayed(const Duration(seconds: 1),
+              () => Navigator.of(context).pop(true));
           return AlertDialog(title: Center(child: Text(text)));
         });
   }
@@ -73,7 +72,7 @@ class UIUtils {
   static Container debugBorder(Widget child) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.red, width: 2.0),
+        border: Border.all(color: Colors.red, width: 2),
       ),
       child: child,
     );

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/screens/connect_four_page.dart';
-import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
-import 'package:naolympics_app/screens/home_page.dart';
-import 'package:naolympics_app/screens/tic_tac_toe_page.dart';
-import 'package:naolympics_app/services/routing/route_observer/observer_utils.dart';
+import "package:flutter/material.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/screens/connect_four_page.dart";
+import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
+import "package:naolympics_app/screens/home_page.dart";
+import "package:naolympics_app/screens/tic_tac_toe_page.dart";
+import "package:naolympics_app/services/routing/route_observer/observer_utils.dart";
 
 void main() {
   Logger.root.level = Level.INFO; // defaults to Level.INFO
@@ -13,6 +13,7 @@ void main() {
     if(record.level == Level.SEVERE) {
       baseMessage += "\n${record.error}\n${record.stackTrace}";
     }
+    // ignore: avoid_print
     print(baseMessage);
   });
   runApp(MaterialApp(

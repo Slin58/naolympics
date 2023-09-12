@@ -1,15 +1,14 @@
-import 'dart:async';
-import 'dart:ui';
+import "dart:async";
+import "dart:ui";
 
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/gamemodes/gamemode.dart';
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/network/json/json_objects/game_end_data.dart';
-import 'package:naolympics_app/services/network/json/json_objects/tictactoe_data.dart';
-
-import '../../network/json/json_data.dart';
-import '../../network/socket_manager.dart';
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/gamemodes/gamemode.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/game_end_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/tictactoe_data.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
 
 class TicTacToeMultiplayer extends TicTacToe {
   static final log = Logger((TicTacToeMultiplayer).toString());
@@ -40,7 +39,7 @@ class TicTacToeMultiplayer extends TicTacToe {
     if (currentTurn == playerSymbol &&
         super.playField[row][col] == TicTacToeFieldValues.empty) {
       makeMove(row, col);
-      _sendMove(row, col);
+      await _sendMove(row, col);
     }
   }
 

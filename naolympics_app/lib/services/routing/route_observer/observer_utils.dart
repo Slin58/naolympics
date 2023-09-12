@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import "package:flutter/cupertino.dart";
 
-import 'route_observer.dart';
+import "package:naolympics_app/services/routing/route_observer/route_observer.dart";
 
 class ObserverUtils {
   static RouteObserver<ModalRoute<void>>? _routeObserver;

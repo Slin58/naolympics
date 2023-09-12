@@ -1,6 +1,5 @@
-import 'package:naolympics_app/services/routing/client_routing_service.dart';
-
-import 'network/socket_manager.dart';
+import "package:naolympics_app/services/network/socket_manager.dart";
+import "package:naolympics_app/services/routing/client_routing_service.dart";
 
 class MultiplayerState {
   static SocketManager? connection;

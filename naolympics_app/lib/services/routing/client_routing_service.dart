@@ -1,18 +1,17 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/cupertino.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/network/socket_manager.dart';
-
-import '../multiplayer_state.dart';
-import '../network/json/data_types.dart';
-import '../network/json/json_data.dart';
-import '../network/json/json_objects/navigation_data.dart';
+import "package:flutter/cupertino.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/data_types.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/navigation_data.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
 
 class ClientRoutingService {
   final StreamSubscription<String> _routeHanding;
 
-  static final log = Logger((ClientRoutingService).toString());
+  static final Logger log = Logger((ClientRoutingService).toString());
 
   ClientRoutingService(socketManager, context)
       : _routeHanding = _setRouteHandling(socketManager, context);
@@ -71,7 +70,7 @@ class ClientRoutingService {
             break;
         }
       }
-    } on Error catch (e) {
+    } on Exception catch (e) {
       log.severe(
           "Issue while trying to handle client routing", e);
     }

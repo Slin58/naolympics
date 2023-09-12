@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 
 class MultiplayerRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   static final log = Logger((MultiplayerRouteObserver).toString());

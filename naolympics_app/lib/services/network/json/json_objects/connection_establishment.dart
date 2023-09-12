@@ -1,10 +1,9 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:naolympics_app/services/network/json/json_data.dart';
+import "package:json_annotation/json_annotation.dart";
+import "package:naolympics_app/services/network/connection_service.dart";
+import "package:naolympics_app/services/network/json/data_types.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
 
-import '../../connection_service.dart';
-import '../data_types.dart';
-
-part 'connection_establishment.g.dart';
+part "connection_establishment.g.dart";
 
 @JsonSerializable()
 class ConnectionEstablishment extends JsonData {

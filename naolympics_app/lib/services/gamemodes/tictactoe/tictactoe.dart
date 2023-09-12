@@ -1,5 +1,5 @@
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/gamemodes/gamemode.dart';
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/gamemodes/gamemode.dart";
 
 abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> _playField;
@@ -14,7 +14,7 @@ abstract class TicTacToe implements GameMode {
 
   @override
   void init() {
-    log.info('Reset TicTacToe play field.');
+    log.info("Reset TicTacToe play field.");
     _playField =
         List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty));
     currentTurn = TicTacToeFieldValues.o;
@@ -24,9 +24,9 @@ abstract class TicTacToe implements GameMode {
   @override
   Future<void> move(int row, int col);
 
-  makeMove(int row, int col) {
+  void makeMove(int row, int col) {
     if (_playField[row][col] == TicTacToeFieldValues.empty) {
-      log.info('Making move for Player ${currentTurn.name}');
+      log.info("Making move for Player ${currentTurn.name}");
 
       _playField[row][col] = currentTurn;
       checkWinner(row, col);

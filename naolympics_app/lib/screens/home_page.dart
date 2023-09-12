@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:naolympics_app/screens/find_player_page.dart';
+import "package:flutter/material.dart";
+import "package:naolympics_app/screens/find_player_page.dart";
 
-import 'game_selection/game_selection.dart';
+import "package:naolympics_app/screens/game_selection/game_selection.dart";
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -39,13 +39,13 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
     style: TextButton.styleFrom(
         foregroundColor: Colors.blue,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10),
           side: const BorderSide(
             color: Colors.blue,
             width: 2.5,
           ),
         ),
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(40),
         backgroundColor: Colors.transparent,
         fixedSize: const Size.fromWidth(700)),
     onPressed: () {

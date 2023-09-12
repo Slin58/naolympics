@@ -1,16 +1,15 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/routing/client_routing_service.dart';
-import 'package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart';
-import 'package:naolympics_app/utils/ui_utils.dart';
-
-import '../../services/network/connection_service.dart';
-import '../../services/server.dart';
-import '../services/network/socket_manager.dart';
+import "package:flutter/material.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/connection_service.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
+import "package:naolympics_app/services/routing/client_routing_service.dart";
+import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
+import "package:naolympics_app/services/server.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class FindPlayerPage extends StatefulWidget {
   const FindPlayerPage({super.key});
@@ -82,14 +81,14 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     setState(() {
       isHosting = true;
     });
-    ConnectionService.createHost()
-        .then((value) => _handleClientConnection(value))
+    await ConnectionService.createHost()
+        .then(_handleClientConnection)
         .timeout(const Duration(minutes: 5),
             onTimeout: () =>
                 UIUtils.showTemporaryAlert(context, "Waited 5 min for connections."));
   }
 
-  _handleClientConnection(SocketManager? value) {
+  void _handleClientConnection(SocketManager? value) {
     if (value != null) {
       MultiplayerState.setHost(value);
       Navigator.push(
@@ -134,12 +133,11 @@ class FindPlayerPageState extends State<FindPlayerPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Text("Error: ${snapshot.error}");
           } else if (snapshot.hasData && snapshot.data != null) {
             final List<String> listData = snapshot.requireData;
             if (listData.isNotEmpty) {
               return ListView.builder(
-                scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: listData.length,
                 itemBuilder: (context, index) {
@@ -147,7 +145,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
                   return ListTile(
                     title: Text(item),
                     onTap: () async {
-                      _handleHostConnection(item, context);
+                      await _handleHostConnection(item, context);
                     },
                   );
                 },
@@ -160,12 +158,12 @@ class FindPlayerPageState extends State<FindPlayerPage> {
               , Icons.refresh, "Search again", Colors.grey, 250);
             }
           } else {
-            return const Text('No data available.');
+            return const Text("No data available.");
           }
         });
   }
 
-  static _handleHostConnection(String ip, BuildContext context) async {
+  static Future<void> _handleHostConnection(String ip, BuildContext context) async {
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
     if (socketManager == null) {
