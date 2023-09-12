@@ -20,7 +20,7 @@ class ClientRoutingService {
   static StreamSubscription<String> _setRouteHandling(
       SocketManager socketManager, BuildContext context) {
     return socketManager.broadcastStream.listen(
-        (event) => _handlingIncomingRouteData(event, context),
+            (event) => _handlingIncomingRouteData(event, context),
         onError: (error) =>
             log.severe("Error while receiving routing instructions", error),
         onDone: () => log.info("Done routing."));
@@ -38,8 +38,8 @@ class ClientRoutingService {
     return _routeHanding.isPaused;
   }
 
-  static void _handlingIncomingRouteData(
-      String jsonData, BuildContext context) {
+  static void _handlingIncomingRouteData(String jsonData,
+      BuildContext context) {
     try {
       final navData = JsonData.fromJsonString(jsonData) as NavigationData;
 
@@ -66,16 +66,14 @@ class ClientRoutingService {
             Navigator.popUntil(context, (route) => !Navigator.canPop(context));
             break;
           default:
-            log.severe(
-                "",
-                UnimplementedError(
-                    "Unknown NavigationType received: $navType"));
+            log.severe("", UnimplementedError(
+                "Unknown NavigationType received: $navType"));
             break;
         }
       }
     } on Error catch (e) {
       log.severe(
-          "Issue while trying to handle client routing", e, e.stackTrace);
+          "Issue while trying to handle client routing", e);
     }
   }
 

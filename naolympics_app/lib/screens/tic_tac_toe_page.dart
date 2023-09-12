@@ -74,6 +74,9 @@ class TicTacToeState extends State<TicTacToePage> {
                     for (int col = 0; col < 3; col++)
                       GestureDetector(
                           onTap: () => _tapAction(row, col),
+                          onLongPress: () => _tapAction(row, col),
+                          onVerticalDragStart: (_) =>_tapAction(row, col),
+                          onHorizontalDragStart: (_) => _tapAction(row, col),
                           child: _buildCell(row, col, cellSize)),
                   ],
                 ),
@@ -115,7 +118,8 @@ class TicTacToeState extends State<TicTacToePage> {
     }
   }
 
-  AlertDialog _winnerAlertDialog(TicTacToeWinner winner, BuildContext alertContext) {
+  AlertDialog _winnerAlertDialog(
+      TicTacToeWinner winner, BuildContext alertContext) {
     const double iconSize = 40;
     Icon winnerIcon;
     String winnerText = "Winner: ";
@@ -140,8 +144,8 @@ class TicTacToeState extends State<TicTacToePage> {
         ),
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
-        UIUtils.getBorderedTextButton(() => _setGoBackAction(alertContext), Icons.arrow_back,
-            'Go Back', color, buttonWidth),
+        UIUtils.getBorderedTextButton(() => _setGoBackAction(alertContext),
+            Icons.arrow_back, 'Go Back', color, buttonWidth),
         const SizedBox(width: buttonWidth / 100000),
         UIUtils.getBorderedTextButton(() => _setResetAction(alertContext),
             Icons.refresh, 'Reset', color, buttonWidth),
@@ -150,7 +154,7 @@ class TicTacToeState extends State<TicTacToePage> {
   }
 
   void _setGoBackAction(BuildContext alertContext) {
-    if(MultiplayerState.isClient()){
+    if (MultiplayerState.isClient()) {
       UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
     } else {
       if (MultiplayerState.isHosting()) {
