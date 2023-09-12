@@ -4,7 +4,7 @@ import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
 import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_local.dart";
 import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
-import "package:naolympics_app/utils/routing_utls.dart";
+import "package:naolympics_app/utils/routing_utils.dart";
 import "package:naolympics_app/utils/ui_utils.dart";
 
 class TicTacToePage extends StatefulWidget {
