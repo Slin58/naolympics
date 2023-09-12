@@ -130,7 +130,7 @@ class ConnectionService {
 
   static Future<List<String>> getDevices() async {
     final String? ip = await _getCurrentIp();
-    log.info("Current ip of the system: $ip");
+    log.fine("Current ip of the system: $ip");
     if (ip == null) {
       return Future(() => List.empty());
     } else {

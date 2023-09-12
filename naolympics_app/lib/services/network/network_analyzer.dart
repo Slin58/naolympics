@@ -91,8 +91,8 @@ class NetworkAnalyzer {
         // Check if connection timed out or we got one of predefined errors
         if (e.osError == null || _errorCodes.contains(e.osError?.errorCode)) {
           out.sink.add(NetworkAddress(host, false));
-        } else if (Platform.isWindows && e.osError?.errorCode == 1225) {
-          log.finest("Windows os error when pinging remote machine.");
+        } else if (Platform.isWindows) {
+          log.finer("Windows os error when pinging remote machine. Error: $e");
         } else {
           // Error 23,24: Too many open files in system
           throw e;
@@ -108,8 +108,7 @@ class NetworkAnalyzer {
   }
 
   static Future<Socket> _ping(String host, int port, Duration timeout) {
-    return Socket.connect(host, port, timeout: timeout)
-        .then((socket) => socket);
+    return Socket.connect(host, port, timeout: timeout);
   }
 
   // 13: Connection failed (OS Error: Permission denied)
