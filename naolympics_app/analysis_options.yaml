@@ -75,6 +75,7 @@ linter:
     cascade_invocations: true
     cast_nullable_to_non_nullable: true
     close_sinks: true
+    collection_methods_unrelated_type: true
     comment_references: true
     constant_identifier_names: true
     control_flow_in_finally: true
@@ -90,13 +91,11 @@ linter:
     hash_and_equals: true
     implementation_imports: true
     invariant_booleans: true
-    iterable_contains_unrelated_type: true
     join_return_with_assignment: true
     leading_newlines_in_multiline_strings: true
     library_names: true
     library_prefixes: true
     library_private_types_in_public_api: true
-    list_remove_unrelated_type: true
     literal_only_boolean_expressions: true
     missing_whitespace_between_adjacent_strings: true
     no_adjacent_strings_in_list: true
