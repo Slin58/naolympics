@@ -1,6 +1,6 @@
 # coding=utf-8
 import time
-
+import argparse
 import cv2
 from naoqi import ALProxy
 import movement.movementControl
@@ -10,7 +10,7 @@ from connect_four_tactic import connect_four_tactic
 from movement import movementControl
 import random
 
-robotIP = "10.30.4.13"
+robotIP = "10.30.4.31"
 PORT = 9559
 
 
@@ -250,17 +250,17 @@ def play_tictactoe_against_itself(robotIP, PORT):
     circle_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img, debug=[], minRadius=75, maxRadius=85, acc_thresh=15,
-                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                              gaussian_kernel_size=9)  # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
+        field = vision.detect_tictactoe_state(img, debug=[],  minRadius=75, maxRadius=95, acc_thresh=15,
+                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                          gaussian_kernel_size=9) # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=85, acc_thresh=15,
-                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                                  gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
+                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                          gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -321,17 +321,17 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
     while True:
 
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img, minRadius=65, maxRadius=85, acc_thresh=15,
-                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                              gaussian_kernel_size=9)
+        field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
+                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                          gaussian_kernel_size=9)
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img, minRadius=65, maxRadius=85, acc_thresh=15,
-                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                                  gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
+                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                          gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -363,17 +363,17 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
     while True:
 
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img, minRadius=65, maxRadius=85, acc_thresh=15,
-                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                              gaussian_kernel_size=9)
+        field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
+                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                          gaussian_kernel_size=9)
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img, minRadius=65, maxRadius=85, acc_thresh=15,
-                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                                  gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
+                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                          gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -516,6 +516,18 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
 if __name__ == "__main__":
     # after startup of nao
-    # calibrate(["disable_autonomous", "y_angle", "vision_check", "start_position"])
+    # calibrate(["vision_check"])
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-i", "--ip",type=str, help="robot IP address")
+    argParser.add_argument("-p", "--port", type=int, help="robot Port")
+    args = argParser.parse_args()
+    if args.ip:
+        robotIP = args.ip
+    if args.port:
+        PORT = args.port
     choose_game_by_buttons()
-    # vision.record_image_from_nao("connect4_doku3.png", robotIP, PORT)
+    # vision.record_image_from_nao("connect4_doku3fsf.png", robotIP, PORT)
+    # img = vision.get_image_from_nao(ip=robotIP, port=PORT)
+    # field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+    #                                       canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+    #                                       gaussian_kernel_size=9)

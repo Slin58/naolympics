@@ -3,12 +3,12 @@ from vision import vision
 
 def connect4_error_count(robotIP, PORT, iterations=1000):
     field_after_move = \
-        [['-', '-', '-', '-', 'R', 'Y', '-'],
-         ['Y', 'R', '-', 'R', 'Y', 'R', 'R'],
-         ['Y', 'R', 'Y', 'R', 'Y', 'Y', 'Y'],
-         ['R', 'Y', 'Y', 'R', 'R', 'Y', 'Y'],
-         ['Y', 'R', 'R', 'Y', 'R', 'Y', 'R'],
-         ['Y', 'R', 'R', 'Y', 'Y', 'R', 'R']]
+        [['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', '-', '-', '-', '-'],
+         ['-', '-', '-', 'R', '-', '-', '-'],
+         ['Y', 'R', 'R', 'Y', 'R', 'Y', '-'],
+         ['Y', 'Y', 'R', 'R', 'Y', 'R', 'Y']]
     wrong_count = 0
     for i in range(iterations):
         fail = vision.get_image_from_nao(robotIP, PORT)
@@ -25,7 +25,7 @@ def connect4_error_count(robotIP, PORT, iterations=1000):
 
 
 def tictactoe_error_count(robotIP, PORT, iterations=1000):
-    field_after_move = [["X", "-", "-"], ["X", "O", "O"], ["O", "-", "X"]]
+    field_after_move = [["-", "X", "-"], ["O", "X", "O"], ["X", "O", "O"]]
     wrong_count = 0
     for i in range(iterations):
         fail = vision.get_image_from_nao(robotIP, PORT)
