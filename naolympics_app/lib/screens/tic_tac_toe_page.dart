@@ -75,7 +75,7 @@ class TicTacToeState extends State<TicTacToePage> {
                       GestureDetector(
                           onTap: () => _tapAction(row, col),
                           onLongPress: () => _tapAction(row, col),
-                          onVerticalDragStart: (_) =>_tapAction(row, col),
+                          onVerticalDragStart: (_) => _tapAction(row, col),
                           onHorizontalDragStart: (_) => _tapAction(row, col),
                           child: _buildCell(row, col, cellSize)),
                   ],
@@ -118,8 +118,8 @@ class TicTacToeState extends State<TicTacToePage> {
     }
   }
 
-  AlertDialog _winnerAlertDialog(
-      TicTacToeWinner winner, BuildContext alertContext) {
+  AlertDialog _winnerAlertDialog(TicTacToeWinner winner,
+      BuildContext alertContext) {
     const double iconSize = 40;
     Icon winnerIcon;
     String winnerText = "Winner: ";
@@ -130,11 +130,13 @@ class TicTacToeState extends State<TicTacToePage> {
       winnerIcon = _getCrossIcon(iconSize);
     } else {
       winnerIcon =
-          const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
+      const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
       winnerText = "It's a tie!";
     }
     const double buttonWidth = 130;
-    final color = Theme.of(context).primaryColor;
+    final color = Theme
+        .of(context)
+        .primaryColor;
 
     return AlertDialog(
       title: Center(
@@ -144,34 +146,38 @@ class TicTacToeState extends State<TicTacToePage> {
         ),
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
-        UIUtils.getBorderedTextButton(() => _setGoBackAction(alertContext),
+        UIUtils.getBorderedTextButton(_setGoBackAction(alertContext),
             Icons.arrow_back, 'Go Back', color, buttonWidth),
         const SizedBox(width: buttonWidth / 100000),
-        UIUtils.getBorderedTextButton(() => _setResetAction(alertContext),
+        UIUtils.getBorderedTextButton(_setResetAction(alertContext),
             Icons.refresh, 'Reset', color, buttonWidth),
       ]),
     );
   }
 
-  void _setGoBackAction(BuildContext alertContext) {
-    if (MultiplayerState.isClient()) {
-      UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
-    } else {
-      if (MultiplayerState.isHosting()) {
-        (ticTacToe as TicTacToeMultiplayer).handleGoBack();
+  void Function() _setGoBackAction(BuildContext alertContext) {
+    return () {
+      if (MultiplayerState.isClient()) {
+        UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
+      } else {
+        if (MultiplayerState.isHosting()) {
+          (ticTacToe as TicTacToeMultiplayer).handleGoBack();
+        }
+        Navigator.pop(alertContext);
+        Navigator.pop(context);
       }
-      Navigator.pop(alertContext);
-      Navigator.pop(context);
-    }
+    };
   }
 
-  void _setResetAction(BuildContext alertContext) {
-    if (MultiplayerState.isClient()) {
-      UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
-    } else {
-      setState(() => ticTacToe.init());
-      Navigator.pop(alertContext);
-    }
+  void Function() _setResetAction(BuildContext alertContext) {
+    return () {
+      if (MultiplayerState.isClient()) {
+        UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
+      } else {
+        setState(() => ticTacToe.init());
+        Navigator.pop(alertContext);
+      }
+    };
   }
 
   Icon? _setIcon(int row, int col, double iconSize) {
