@@ -56,9 +56,9 @@ class TicTacToeMultiplayer extends TicTacToe {
       final jsonData = JsonData.fromJsonString(data);
 
       if (jsonData is TicTacToeData) {
-        _handleGameData(data as TicTacToeData);
+        _handleGameData(jsonData);
       } else if (jsonData is GameEndData) {
-        _handleGameEndData(data as GameEndData);
+        _handleGameEndData(jsonData);
       } else {
         log.warning("Unknown JsonData received: '${jsonData.runtimeType}'");
       }
