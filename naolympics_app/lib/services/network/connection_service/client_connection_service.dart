@@ -14,8 +14,7 @@ abstract class ClientConnectionService {
       // ignore: close_sinks
       Socket socket = await Socket.connect(ip, port);
       SocketManager connection = SocketManager.fromExistingSocket(socket);
-
-      final success = await _handleServerConnection(connection);
+      final success = await _outgoingConnection(connection);
 
       if (success == ConnectionStatus.success) {
         return connection;
@@ -28,7 +27,7 @@ abstract class ClientConnectionService {
     }
   }
 
-  static Future<ConnectionStatus> _handleServerConnection(
+  static Future<ConnectionStatus> _outgoingConnection(
       SocketManager socketManager) async {
     clientLog("Sending connection message.");
     await sendConnectionMessage(socketManager, ConnectionStatus.connecting);

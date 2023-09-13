@@ -29,7 +29,7 @@ enum ConnectionStatus {
     //todo: client currently sends "[91, 48, 93]" as msg when connecting. this parses to null. am changing this to work temporarily for test purposes
     try {
       ConnectionStatus connectionStatus =
-      ConnectionStatus.values.firstWhere((e) => e.toString() == message);
+          ConnectionStatus.values.firstWhere((e) => e.toString() == message);
       return connectionStatus;
     } on Exception {
       return null;
