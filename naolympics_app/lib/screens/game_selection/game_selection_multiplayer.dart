@@ -43,18 +43,19 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
   }
 
   @override
-  List<Widget> getNavButtons(BuildContext context) {
-    return [
-      getTicTacToeImageButton(
-          context,
-          RouteAwareWidget((TicTacToePage).toString(),
-              child: const TicTacToePage())),
-      //SizedBox(height: marginSize, width: marginSize),
-      getConnectFourImageButton(
-          context,
-          RouteAwareWidget((ConnectFourPage).toString(),
-              child: const ConnectFourPage()))
-    ];
+  Widget getTicTacToeButtonWithRoute(BuildContext context) {
+    return getTicTacToeImageButton(
+        context,
+        RouteAwareWidget((TicTacToePage).toString(),
+            child: const TicTacToePage()));
+  }
+
+  @override
+  Widget getConnectFourButtonWithRoute(BuildContext context) {
+    return getConnectFourImageButton(
+        context,
+        RouteAwareWidget((ConnectFourPage).toString(),
+            child: const ConnectFourPage()));
   }
 
   @override
