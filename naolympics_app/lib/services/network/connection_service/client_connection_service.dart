@@ -16,11 +16,7 @@ abstract class ClientConnectionService {
       SocketManager connection = SocketManager.fromExistingSocket(socket);
       final success = await _outgoingConnection(connection);
 
-      if (success == ConnectionStatus.success) {
-        return connection;
-      } else {
-        return null;
-      }
+      return success == ConnectionStatus.success ? connection : null;
     } on Exception catch (error) {
       clientLog(error.toString(), level: Level.SEVERE);
       return null;
