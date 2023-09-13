@@ -19,28 +19,30 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
   @override
   List<Widget> getAppBarAction(BuildContext context) {
     return [
-      WillPopScope(
-    onWillPop: () async => false,
-    child: SizedBox(
-        child: TextButton.icon(
-          icon: const Icon(
-            Icons.stop_outlined,
-            size: 40,
-            color: Colors.white,
+     WillPopScope(
+          onWillPop: () async {
+            Navigator.of(context).pop(true);
+            return false;
+            },
+          child: SizedBox(
+            child: TextButton.icon(
+              icon: const Icon(
+                Icons.stop_outlined,
+                size: 40,
+                color: Colors.white,
+              ),
+              label: const Text(
+                "Close connection",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () async {
+                MultiplayerState.closeConnection();
+                Navigator.of(context).pop(true);
+              },
+            ),
           ),
-          label: const Text(
-            "Close connection",
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () async {
-
-              MultiplayerState.closeConnection();
-              //Navigator.popUntil(context, (route) => !Navigator.canPop(context));
-              Navigator.of(context).pop(true);
-          },
         ),
-      )
-      )
+
     ];
   }
 

@@ -23,15 +23,11 @@ class GameSelectionState extends State<GameSelectionPage> {
 
     return WillPopScope(
         onWillPop: () async {
+          Navigator.of(context).pop(true);
+          await Future.delayed(const Duration(milliseconds: 500));
           MultiplayerState.closeConnection();
           var connection = MultiplayerState.connection;
           log.info("Triggered WillPopScope and close connection. Multiplayerstate.connection is: $connection");
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => RouteAwareWidget(
-                      (HomePage).toString(),
-                      child: const HomePage(),),), (route) => false);
             return false;
           },
     child: Scaffold(

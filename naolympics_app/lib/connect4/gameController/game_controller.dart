@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/connect4/ConnectFourPage.dart';
 import 'package:naolympics_app/services/network/json/json_objects/connect4_data.dart';
 import 'package:naolympics_app/utils/ui_utils.dart';
 import '../../screens/game_selection/game_selection.dart';
-import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../services/multiplayer_state.dart';
 import 'package:collection/collection.dart';
 import '../../services/network/json/json_data.dart';
@@ -244,13 +244,9 @@ class GameController extends GetxController {
                       resetBoard();
                       await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
                       //Navigator.of(context).pop(true);
-                      await Future.delayed(const Duration(milliseconds: 400));
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RouteAwareWidget(
-                                  (GameSelectionPageMultiplayer).toString(),
-                                  child: const GameSelectionPageMultiplayer() )));
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      Navigator.pop(context);
+                      Navigator.pop(connectFourPageBuildContext); //anders braindead aber machste nix
                     }
                   },
                   child: const Padding(
@@ -274,23 +270,17 @@ class GameController extends GetxController {
 
         if(jsonData is GameEndData) {
           if(jsonData.reset) {
-            //resetBoard();
+            resetBoard();
             Navigator.of(diaContext!).pop(true);
-            subscription!.cancel();
           }
-
           else if(jsonData.goBack) {
-            log.info("Navigator was resumed");
+            resetBoard();
             Navigator.of(diaContext!).pop(true);
-
-            MultiplayerState.clientRoutingService?.resumeNavigator();
 
             log.info("Routing service is: ${MultiplayerState.clientRoutingService != null} ");
             log.info("Received the following data: $jsonData");
-
-            subscription!.cancel();
           }
-          resetBoard();
+          subscription!.cancel();
         }
       });
     }
@@ -479,12 +469,8 @@ class GameController extends GetxController {
         subscription!.cancel();
       }
       else {
-        log.info("removed \\n: ${ jsonData.toString().replaceAll("\\n", "") }");
-        log.info("normal form: ${jsonData.toString()}");
-
-        log.info("Unknown Datatype received: $jsonData");
+        log.info("Unknown Datatype received in startListning: $jsonData");
         log.info("Navigator status: ${MultiplayerState.clientRoutingService != null}");
-
       }
 
       log.info("Still listening and received with $trackingNumber: $data");
@@ -495,7 +481,6 @@ class GameController extends GetxController {
           MultiplayerState.clientRoutingService?.resumeNavigator();
 
           subscription?.cancel();
-          //completer.completeError(error);
         }, onDone: () {
           MultiplayerState.clientRoutingService?.resumeNavigator();
           log.info("Done method of startListening triggered");

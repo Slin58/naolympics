@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
+import 'package:naolympics_app/services/multiplayer_state.dart';
 import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
@@ -16,9 +17,7 @@ class BoardMultiplayer extends StatelessWidget {
 
   List<BoardColumn> _buildBoardMultiplayer() {
     int currentColNumber = 0;
-    //gameController.startListening();
-
-      return gameController.board
+    return gameController.board
           .map((boardColumn) => BoardColumn(
         chipsInColumn: boardColumn,
         columnNumber: currentColNumber++,
@@ -30,13 +29,7 @@ class BoardMultiplayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RouteAwareWidget(
-                  (GameSelectionPageMultiplayer).toString(),
-                  child: const GameSelectionPageMultiplayer())));
-      return false;
+            return false;
     },
     child: Scaffold(
       backgroundColor: Colors.blueGrey,

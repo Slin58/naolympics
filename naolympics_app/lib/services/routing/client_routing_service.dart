@@ -81,7 +81,7 @@ class ClientRoutingService {
         }
     } on Error catch (e) {
       log.severe(
-          "Issue while trying to handle client routing", e, e.stackTrace);
+          "Issue while trying to handle client routing", e);
     }
   }
 

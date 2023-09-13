@@ -16,12 +16,12 @@ class Connect4ScreenMultiplayer extends StatelessWidget {
   gameController.resetBoard();
     return WillPopScope(
         onWillPop: () async {
-        Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-        builder: (context) => RouteAwareWidget(
-        (GameSelectionPageMultiplayer).toString(),
-        child: const GameSelectionPageMultiplayer())));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RouteAwareWidget(
+                      (GameSelectionPageMultiplayer).toString(),
+                      child: const GameSelectionPageMultiplayer() )));
         return false;
     },
           child: BoardMultiplayer());
