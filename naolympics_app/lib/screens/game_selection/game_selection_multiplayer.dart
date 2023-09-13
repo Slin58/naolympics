@@ -42,7 +42,6 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
     ];
   }
 
-
   @override
   List<Widget> getNavButtons(BuildContext context) {
     return [

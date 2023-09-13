@@ -95,14 +95,7 @@ class TicTacToeState extends State<TicTacToePage> {
     return Container(
       width: cellSize,
       height: cellSize,
-      decoration: const BoxDecoration(
-        border: Border(
-          right: BorderSide(),
-          left: BorderSide(),
-          bottom: BorderSide(),
-          top: BorderSide(),
-        ),
-      ),
+      decoration: BoxDecoration(border: Border.all()),
       child: Center(child: _setIcon(row, col, cellSize)),
     );
   }
@@ -127,14 +120,11 @@ class TicTacToeState extends State<TicTacToePage> {
     } else if (winner == TicTacToeWinner.x) {
       winnerIcon = _getCrossIcon(iconSize);
     } else {
-      winnerIcon =
-      const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
+      winnerIcon = const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
       winnerText = "It's a tie!";
     }
     const double buttonWidth = 130;
-    final color = Theme
-        .of(context)
-        .primaryColor;
+    final color = Theme.of(context).primaryColor;
 
     return AlertDialog(
       title: Center(
