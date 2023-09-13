@@ -1,14 +1,14 @@
 # coding=utf-8
-import time
 import argparse
-import cv2
-from naoqi import ALProxy
-import movement.movementControl
-from vision import vision
-from tictactoe_tactic import tictactoe_tactic
-from connect_four_tactic import connect_four_tactic
-from movement import movementControl
 import random
+import time
+
+import movementControl
+from naoqi import ALProxy
+
+import connect_four_tactic
+import tictactoe_tactic
+import vision
 
 robotIP = "10.30.4.31"
 PORT = 9559
@@ -229,7 +229,8 @@ def choose_game_by_buttons():
 
             print "----"
             time.sleep(0.2)
-    except RuntimeError:
+    except RuntimeError as e:
+        print(e)
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
         tts.say("Tut mir leid, etwas ist schief gelaufen. Starten wir von vorne!")
         choose_game_by_buttons()
@@ -250,17 +251,17 @@ def play_tictactoe_against_itself(robotIP, PORT):
     circle_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img, debug=[],  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9) # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
+        field = vision.detect_tictactoe_state(img, debug=[], minRadius=75, maxRadius=95, acc_thresh=15,
+                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                              gaussian_kernel_size=9)  # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                                  gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -275,9 +276,9 @@ def play_tictactoe_against_itself(robotIP, PORT):
         movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
+                movementControl.celebrate1(robotIP, PORT)
             else:
-                movement.movementControl.celebrate2(robotIP, PORT)
+                movementControl.celebrate2(robotIP, PORT)
             return
 
 
@@ -310,9 +311,9 @@ def play_connect_four_against_itself(robotIP, PORT):
         movementControl.click_connect_four(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
+                movementControl.celebrate1(robotIP, PORT)
             else:
-                movement.movementControl.celebrate2(robotIP, PORT)
+                movementControl.celebrate2(robotIP, PORT)
             return
 
 
@@ -321,17 +322,17 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
     while True:
 
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+        field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                              gaussian_kernel_size=9)
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                                  gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -349,9 +350,9 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
         movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
+                movementControl.celebrate1(robotIP, PORT)
             else:
-                movement.movementControl.celebrate2(robotIP, PORT)
+                movementControl.celebrate2(robotIP, PORT)
             return
 
 
@@ -363,17 +364,17 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
     while True:
 
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+        field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                              gaussian_kernel_size=9)
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                                  gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -391,9 +392,9 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
         movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
+                movementControl.celebrate1(robotIP, PORT)
             else:
-                movement.movementControl.celebrate2(robotIP, PORT)
+                movementControl.celebrate2(robotIP, PORT)
             return
 
 
@@ -430,9 +431,9 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, difficulty='e'):
         movementControl.click_connect_four(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
+                movementControl.celebrate1(robotIP, PORT)
             else:
-                movement.movementControl.celebrate2(robotIP, PORT)
+                movementControl.celebrate2(robotIP, PORT)
             return
 
 
@@ -476,9 +477,9 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, difficulty='e'):
         movementControl.click_connect_four(robotIP, PORT, result)
         if winning:
             if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
+                movementControl.celebrate1(robotIP, PORT)
             else:
-                movement.movementControl.celebrate2(robotIP, PORT)
+                movementControl.celebrate2(robotIP, PORT)
             return
 
 
@@ -516,9 +517,9 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
 if __name__ == "__main__":
     # after startup of nao
-    # calibrate(["vision_check"])
+    # calibrate(["start_position"])
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("-i", "--ip",type=str, help="robot IP address")
+    argParser.add_argument("-i", "--ip", type=str, help="robot IP address")
     argParser.add_argument("-p", "--port", type=int, help="robot Port")
     args = argParser.parse_args()
     if args.ip:
@@ -526,7 +527,7 @@ if __name__ == "__main__":
     if args.port:
         PORT = args.port
     choose_game_by_buttons()
-    # vision.record_image_from_nao("connect4_doku3fsf.png", robotIP, PORT)
+    # vision.record_image_from_nao("connect4_doku3.png", robotIP, PORT)
     # img = vision.get_image_from_nao(ip=robotIP, port=PORT)
     # field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
     #                                       canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
