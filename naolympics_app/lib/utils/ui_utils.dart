@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-class UIUtils {
+abstract class UIUtils {
   static Container getBorderedTextButton(VoidCallback onPressed,
       IconData iconData, String text, Color color, double width) {
     return Container(
