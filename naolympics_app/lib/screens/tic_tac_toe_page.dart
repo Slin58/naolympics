@@ -87,7 +87,8 @@ class TicTacToeState extends State<TicTacToePage> {
   }
 
   void _tapAction(int row, int col) {
-    setState(() => ticTacToe.move(row, col));
+    ticTacToe.move(row, col);
+    setState(() => {});
   }
 
   Container _buildCell(int row, int col, double cellSize) {
@@ -122,7 +123,7 @@ class TicTacToeState extends State<TicTacToePage> {
       winnerIcon = const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
       winnerText = "It's a tie!";
     }
-    const double buttonWidth = 130;
+    const double buttonWidth = 120;
     final color = Theme.of(context).primaryColor;
 
     return AlertDialog(
@@ -135,7 +136,7 @@ class TicTacToeState extends State<TicTacToePage> {
       content: Row(mainAxisSize: MainAxisSize.min, children: [
         UIUtils.getBorderedTextButton(_setGoBackAction(alertContext),
             Icons.arrow_back, "Go Back", color, buttonWidth),
-        const SizedBox(width: buttonWidth / 100000),
+        const SizedBox(width: 10),
         UIUtils.getBorderedTextButton(_setResetAction(alertContext),
             Icons.refresh, "Reset", color, buttonWidth),
       ]),
