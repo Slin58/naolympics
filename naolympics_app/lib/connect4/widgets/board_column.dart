@@ -16,7 +16,6 @@ class BoardColumn extends StatelessWidget {
   }) : super(key: key);
 
   List<Cell> _buildBoardColumn() {
-    //print(coinsInColumn.length);
     return chipsInColumn.reversed
         .map((chip) => chip == 1
             ? Cell(currCellState: CellState.YELLOW)
@@ -29,8 +28,9 @@ class BoardColumn extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
       var playFunction = gameController.playColumnLocal;
-      if (MultiplayerState.connection != null)
+      if (MultiplayerState.connection != null) {
         playFunction = gameController.playColumnMultiplayer;
+      }
 
       bool moveWasMade = false;
 
@@ -39,6 +39,7 @@ class BoardColumn extends StatelessWidget {
             if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
               moveWasMade = true;
+              return;
             }
           },
           onLongPress: () {
@@ -47,13 +48,13 @@ class BoardColumn extends StatelessWidget {
               moveWasMade = true;
             }
           },
-          onVerticalDragStart: (details) {
+          onVerticalDragStart: (_) {
             if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
               moveWasMade = true;
             }
           },
-          onHorizontalDragStart: (details) {
+          onHorizontalDragStart: (_) {
             if (!gameController.blockTurn && !moveWasMade) {
               playFunction(columnNumber);
               moveWasMade = true;

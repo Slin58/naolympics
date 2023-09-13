@@ -34,7 +34,7 @@ class SocketManager {
   }
 
   Future<void> write(String object) async {
-    log..info("Now writing to ${socket.remoteAddress.address}");
+    log.info("Now writing to ${socket.remoteAddress.address}: $object");
     socket.write(object);
     await socket.flush();
   }

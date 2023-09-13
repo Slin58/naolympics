@@ -1,42 +1,23 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/network/json/json_data.dart';
-import 'package:naolympics_app/services/network/json/json_objects/game_end_data.dart';
 import '../../screens/game_selection/game_selection_multiplayer.dart';
-import '../../screens/home_page.dart';
-import '../../services/network/json/json_objects/connect4_data.dart';
-import '../../services/network/json/json_objects/navigation_data.dart';
 import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../gameController/game_controller.dart';
 import 'board_column.dart';
 
-bool stillListening = false;
-
 class BoardMultiplayer extends StatelessWidget {
-  final GameController gameController = Get.put(GameController());
+  BoardMultiplayer({super.key});
 
-  //final GameController gameController = Get.find<GameController>();
+  final GameController gameController = Get.find<GameController>();
+
   static final log = Logger((BoardMultiplayer).toString());
 
   List<BoardColumn> _buildBoardMultiplayer() {
     int currentColNumber = 0;
-
-
-    if(!stillListening) gameController.startListening();
-
-     if(MultiplayerState.isClient()) {
-      MultiplayerState.clientRoutingService?.pauseNavigator();
-    }
-
     //gameController.startListening();
 
-
-    //gameController.update();
       return gameController.board
           .map((boardColumn) => BoardColumn(
         chipsInColumn: boardColumn,
@@ -47,9 +28,17 @@ class BoardMultiplayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //gameController.startListening();
-
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RouteAwareWidget(
+                  (GameSelectionPageMultiplayer).toString(),
+                  child: const GameSelectionPageMultiplayer())));
+      return false;
+    },
+    child: Scaffold(
       backgroundColor: Colors.blueGrey,
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -114,7 +103,7 @@ class BoardMultiplayer extends StatelessWidget {
           ),
         ),
       ],
-    ));
+    )));
   }
 
 }

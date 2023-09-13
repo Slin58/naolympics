@@ -13,9 +13,7 @@ class Connect4ScreenMultiplayer extends StatelessWidget {
   Connect4ScreenMultiplayer({super.key});
   @override
   Widget build(BuildContext context) {
-
-    //gameController.startListening();
-
+  gameController.resetBoard();
     return WillPopScope(
         onWillPop: () async {
         Navigator.pushReplacement(

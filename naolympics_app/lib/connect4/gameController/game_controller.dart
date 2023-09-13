@@ -2,18 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
-import 'package:naolympics_app/connect4/widgets/board_multiplayer.dart';
 import 'package:naolympics_app/services/network/json/json_objects/connect4_data.dart';
 import 'package:naolympics_app/utils/ui_utils.dart';
 import '../../screens/game_selection/game_selection.dart';
 import '../../screens/game_selection/game_selection_multiplayer.dart';
 import '../../services/multiplayer_state.dart';
-import 'dart:convert';
 import 'package:collection/collection.dart';
 import '../../services/network/json/json_data.dart';
 import '../../services/network/json/json_objects/game_end_data.dart';
-import '../../services/network/json/json_objects/navigation_data.dart';
-import '../../services/routing/client_routing_service.dart';
 import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
 import '../widgets/cell.dart';
 
@@ -24,42 +20,40 @@ class GameController extends GetxController {
   bool get turnYellow => _turnYellow.value;
   bool blockTurn = false;
 
-  void buildBoard() {
-    this.board = [
-      List.filled(6, 0),
-      List.filled(6, 0),
-      List.filled(6, 0),
-      List.filled(6, 0),
-      List.filled(6, 0),
-      List.filled(6, 0),
-      List.filled(6, 0),
-    ];
-    update();
+  void resetBoard() {
+    initBoard();
+
+    _turnYellow.value = true;
+    if(MultiplayerState.connection != null) {
+      if (MultiplayerState.isHosting()) {
+        blockTurn = false;
+      }
+      else {
+        startListening();
+        blockTurn = true;
+      }
+    }
+
+  }
+
+  void initBoard() {
+      this.board = [
+        List.filled(6, 0),
+        List.filled(6, 0),
+        List.filled(6, 0),
+        List.filled(6, 0),
+        List.filled(6, 0),
+        List.filled(6, 0),
+        List.filled(6, 0),
+      ];
+      update();
+
   }
 
   @override
   void onInit() {
     super.onInit();
-    buildBoard();
-  }
-
-  Future<List<List<int>>?> getBoardFromOtherPlayer() {
-    final completer = Completer<List<List<int>>?>();
-    StreamSubscription<String> subscription =
-        MultiplayerState.connection!.broadcastStream.listen((data) {
-      List<List<int>> receivedBoard = jsonDecode(data);
-
-      log.info("Server received '$data' and parsed it to '$receivedBoard'");
-      completer.complete(receivedBoard);
-    }, onError: (error) {
-      log.info('Error: $error');
-      completer.completeError(error);
-    }, onDone: () {
-      log.info("finished getting board from other player");
-    });
-    subscription.cancel();
-
-    return completer.future.timeout(const Duration(seconds: 10));
+    initBoard();
   }
 
   Future<void> playColumnMultiplayer(int columnNumber) async {
@@ -69,8 +63,6 @@ class GameController extends GetxController {
     if (board[columnNumber].contains(0)) {
       final int row = board[columnNumber].indexWhere((cell) => cell == 0);
       board[columnNumber][row] = playerNumber;
-      update();
-
       checkForWinner(columnNumber);
 
       if (checkForFullBoard() == 1) {
@@ -81,6 +73,8 @@ class GameController extends GetxController {
       blockTurn = true;
       _turnYellow.value = !_turnYellow.value;
       MultiplayerState.connection!.writeJsonData(Connect4Data(board));
+      startListening();
+      update();
     } else {
       Get.snackbar("Not available", "This column is full already",
           snackPosition: SnackPosition.BOTTOM);
@@ -97,6 +91,8 @@ class GameController extends GetxController {
       update();
       checkForWinner(columnNumber);
       _turnYellow.value = !_turnYellow.value;
+      log.info("new turn yellow: ${_turnYellow.value}");
+
       if (checkForFullBoard() == 1) {
         int fB = checkForFullBoard();
         print("FullBoard: $fB");
@@ -154,7 +150,7 @@ class GameController extends GetxController {
           () => buttonVisible.value
               ? TextButton(
                   onPressed: () {
-                    buildBoard();
+                    resetBoard();
                     buttonVisible.value = false;
                     Get.back(id: dialogKey.currentContext!.hashCode);
                   },
@@ -175,10 +171,6 @@ class GameController extends GetxController {
       }
     }
     return 1;
-  }
-
-  BuildContext getContext() {
-    return Get.context!;
   }
 
   Future<void> declareWinner(int winner) async {
@@ -217,7 +209,7 @@ class GameController extends GetxController {
 
                     if(MultiplayerState.connection == null) {
                       Navigator.of(context).pop(true);
-                      buildBoard();
+                      resetBoard();
                     }
                     else if (MultiplayerState.isClient()) {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
@@ -226,7 +218,7 @@ class GameController extends GetxController {
                       MultiplayerState.connection!
                           .writeJsonData(GameEndData(true, false));
                       Navigator.of(context).pop(true);
-                      buildBoard();
+                      resetBoard();
                     }
                   },
                   child: const Padding(
@@ -236,35 +228,29 @@ class GameController extends GetxController {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-
                     if(MultiplayerState.connection == null) {
                       Navigator.of(context).pop(true);
-                      buildBoard();
+                      resetBoard();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => RouteAwareWidget(
                                   (GameSelectionPage).toString(),
                                   child: const GameSelectionPage())));
-
-
                     }
                     else if (MultiplayerState.isClient()) {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
                     } else {
-                      buildBoard();
+                      resetBoard();
                       await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
                       //Navigator.of(context).pop(true);
-                      await Future.delayed(const Duration(seconds: 1));
+                      await Future.delayed(const Duration(milliseconds: 400));
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => RouteAwareWidget(
                                   (GameSelectionPageMultiplayer).toString(),
                                   child: const GameSelectionPageMultiplayer() )));
-
-                      //MultiplayerState.connection!.write("\"dataType\":\"navigation\",\"route\":\"GameSelectionPageMultiplayer\",\"navigationType\":\"push\"");
-
                     }
                   },
                   child: const Padding(
@@ -284,29 +270,27 @@ class GameController extends GetxController {
     if(MultiplayerState.isClient()) {
 
       subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-        buildBoard();
         JsonData jsonData = JsonData.fromJsonString(data);
 
         if(jsonData is GameEndData) {
           if(jsonData.reset) {
-            buildBoard();
+            //resetBoard();
             Navigator.of(diaContext!).pop(true);
             subscription!.cancel();
-            startListening();
           }
 
           else if(jsonData.goBack) {
-            //Navigator.of(diaContext!).pop(true);
             log.info("Navigator was resumed");
             Navigator.of(diaContext!).pop(true);
 
             MultiplayerState.clientRoutingService?.resumeNavigator();
 
             log.info("Routing service is: ${MultiplayerState.clientRoutingService != null} ");
-            stillListening = false;
+            log.info("Received the following data: $jsonData");
 
             subscription!.cancel();
           }
+          resetBoard();
         }
       });
     }
@@ -440,90 +424,84 @@ class GameController extends GetxController {
     return upwardsDiagonal;
   }
 
+  int tempTrackingNumber = 0;
 
-  //todo: startListening() in GameController verschieben?
   Future<void> startListening() async {
+    int trackingNumber = tempTrackingNumber++;
 
-    stillListening = true;
+    log.info("stillListening has jus been called with: $trackingNumber");
 
-    if(MultiplayerState.isClient() && !MultiplayerState.clientRoutingService!.isNavigatorPaused()) {
+    /*if(MultiplayerState.isClient() && !MultiplayerState.clientRoutingService!.isNavigatorPaused()) {
       MultiplayerState.clientRoutingService?.pauseNavigator();
-    }
+    } */
 
-    StreamSubscription<String>? subscription;
-    final GameController gameController = Get.find<GameController>();
+    late StreamSubscription<String>? subscription;
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-      gameController.blockTurn = false;
-
+      blockTurn = false;
       JsonData jsonData = JsonData.fromJsonString(data);
 
       if(jsonData is GameEndData && MultiplayerState.isClient()) {
-       /* if(jsonData.reset) {
-          gameController.buildBoard();
-        }
-        else if(jsonData.goBack) {
-          MultiplayerState.clientRoutingService?.resumeNavigator();
-          gameController.buildBoard();
-        }
-        */
-        log.info("stopping listening");
+        log.info("stopping listening with: $trackingNumber");
         subscription!.cancel();
+        return;
       }
-
-     /* else if (jsonData is NavigationData) {
-        MultiplayerState.clientRoutingService?.resumeNavigator();
-      } */
 
       else if(jsonData is Connect4Data) {
         List<List<int>> receivedBoard = jsonData.board;
         log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
-        int newMoveInColumn = gameController.getIndexOfNewElementOfList(gameController.board, receivedBoard);
+        int newMoveInColumn = getIndexOfNewElementOfList(board, receivedBoard);
+
+        if(newMoveInColumn == -1) {
+          subscription!.cancel();
+          return;
+        }
 
         _turnYellow.value = !_turnYellow.value;
 
-        log.info("new turn yellow: ${gameController.turnYellow}");
+        log.info("new gamecontroller turn yellow: ${turnYellow}");
+        log.info("new _turn yellow: ${_turnYellow.value}");
 
-        var oldboard = gameController.board;
-        log.info("Old board: $oldboard");
+        var oldBoard = board;
+        log.info("Old board: $oldBoard");
         log.info("New board: $receivedBoard");
 
         log.info("newMoveInColumn: $newMoveInColumn");
-        gameController.board = receivedBoard;
+        board = receivedBoard;
         if (newMoveInColumn != -1) {
-          gameController.checkForWinner(newMoveInColumn);
+          //checkForWinner(newMoveInColumn);
+          if(checkForWinner(newMoveInColumn) != 0) {
+            subscription!.cancel();
+            return;
+          }
         }
-        gameController.update();
+        update();
         log.info("finished listening for new Board from other player");
+        subscription!.cancel();
       }
       else {
         log.info("removed \\n: ${ jsonData.toString().replaceAll("\\n", "") }");
         log.info("normal form: ${jsonData.toString()}");
 
-        log.info("Unknown Datatype received: ${jsonData}");
+        log.info("Unknown Datatype received: $jsonData");
         log.info("Navigator status: ${MultiplayerState.clientRoutingService != null}");
 
       }
 
-      log.info("Still listening and received: $data");
-
+      log.info("Still listening and received with $trackingNumber: $data");
 
     },
         onError: (error) {
           log.info("Error while trying to listen for Board Update");
           MultiplayerState.clientRoutingService?.resumeNavigator();
-          stillListening = false;
 
           subscription?.cancel();
           //completer.completeError(error);
         }, onDone: () {
           MultiplayerState.clientRoutingService?.resumeNavigator();
           log.info("Done method of startListening triggered");
-          stillListening = false;
 
           subscription!.cancel();
         });
   }
-
-
 
 }
