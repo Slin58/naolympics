@@ -49,7 +49,7 @@ abstract class ClientConnectionService {
     };
   }
 
-  static void Function(Exception e) _onError(Completer completer) {
+  static void Function(Object e) _onError(Completer completer) {
     return (e) {
       clientLog("Error while trying to receive success message from server");
       log.severe("", e);

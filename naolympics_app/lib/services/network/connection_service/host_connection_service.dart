@@ -59,7 +59,7 @@ class HostConnectionService {
     };
   }
 
-  static void Function(Exception e) _onError(Completer completer) {
+  static void Function(Object e) _onError(Completer completer) {
     return (e) {
       hostLog("Error: $e", level: Level.SEVERE);
       completer.completeError(e);
