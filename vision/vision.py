@@ -1,22 +1,13 @@
 from naoqi import ALProxy
 import cv2
 import numpy as np
-import vision_definitions
-
-"""
-  First get an image from Nao, then show it on the screen with PIL.
-  """
 
 
 def get_image_from_nao(ip, port):
-    foreheadCam = 2
     camProxy = ALProxy("ALVideoDevice", ip, port)
-    # camProxy.setParam(vision_definitions.kCameraSelectID, foreheadCam)
     resolution = 3
     colorSpace = 11
-    # videoClient = camProxy.subscribe("python_client", resolution, colorSpace, 5)
     videoClient = camProxy.subscribeCamera("my_client", 0, resolution, colorSpace, 5)  # Kamera-ID 0
-    image_data = camProxy.getImageRemote(videoClient)
     naoImage = camProxy.getImageRemote(videoClient)
     camProxy.unsubscribe(videoClient)
     imageWidth = naoImage[0]
@@ -37,20 +28,6 @@ def show_image_from_nao(ip, port):
     cv2.imshow('Nao POV', recorded)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-
-def detect_game_board(img, debug=[]):
-    input_img = np.copy(img)
-    edge_img, all_contours, inner_contours = find_board_contours(img, debug)
-    if len(inner_contours) == 9:
-        detect_tictactoe_state(img=input_img, debug=debug)
-    else:
-        cv2.drawContours(img, inner_contours, -1, (0, 250, 0), 3)
-        imgCopy = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
-        cv2.imshow("inner contours", imgCopy)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        detect_connect_four_state(img=input_img, debug=debug, minRadius=5, maxRadius=15)
 
 
 def get_pixel_color(pixel, white_lower_thresh):
@@ -243,7 +220,10 @@ def find_board_contours(img, debug, contour_area_thresh=500, gaussian_kernel_siz
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    _, all_contours, hierarchy = cv2.findContours(copy, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    if cv2.__version__[0] == "3":
+        _, all_contours, hierarchy = cv2.findContours(copy, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        all_contours, hierarchy = cv2.findContours(copy, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if all_contours is None:
         print("Error with contours")
         exit(1)
