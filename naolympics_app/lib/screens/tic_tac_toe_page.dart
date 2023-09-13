@@ -87,8 +87,7 @@ class TicTacToeState extends State<TicTacToePage> {
   }
 
   void _tapAction(int row, int col) {
-    ticTacToe.move(row, col);
-    setState(() {});
+    setState(() => ticTacToe.move(row, col));
   }
 
   Container _buildCell(int row, int col, double cellSize) {
