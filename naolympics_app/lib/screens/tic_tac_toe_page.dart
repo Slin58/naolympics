@@ -4,7 +4,6 @@ import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
 import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_local.dart";
 import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
-import "package:naolympics_app/utils/routing_utils.dart";
 import "package:naolympics_app/utils/ui_utils.dart";
 
 class TicTacToePage extends StatefulWidget {
@@ -31,14 +30,27 @@ class TicTacToeState extends State<TicTacToePage> {
   Widget build(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback((_) => _showWinner());
 
-    return RoutingUtils.handlePopScope(
-        context,
-        Scaffold(
-            appBar: AppBar(
-              title: const Text("Tic Tac Toe"),
-              actions: [_displayCurrentTurn()],
-            ),
-            body: _buildTicTacToeField()));
+    return _popScope(Scaffold(
+        appBar: AppBar(
+          title: const Text("Tic Tac Toe"),
+          actions: [_displayCurrentTurn()],
+        ),
+        body: _buildTicTacToeField()));
+  }
+
+  WillPopScope _popScope(Widget child) {
+    return WillPopScope(
+        onWillPop: () async {
+          if (MultiplayerState.isClient()) {
+            UIUtils.showTemporaryAlert(context, "You are not host");
+            return false;
+          }
+          if (MultiplayerState.isHosting()) {
+            (ticTacToe as TicTacToeMultiplayer).handleGoBack();
+          }
+          return true;
+        },
+        child: child);
   }
 
   Row _displayCurrentTurn() {
@@ -109,8 +121,8 @@ class TicTacToeState extends State<TicTacToePage> {
     }
   }
 
-  AlertDialog _winnerAlertDialog(TicTacToeWinner winner,
-      BuildContext alertContext) {
+  AlertDialog _winnerAlertDialog(
+      TicTacToeWinner winner, BuildContext alertContext) {
     const double iconSize = 40;
     Icon winnerIcon;
     String winnerText = "Winner: ";
@@ -120,7 +132,8 @@ class TicTacToeState extends State<TicTacToePage> {
     } else if (winner == TicTacToeWinner.x) {
       winnerIcon = _getCrossIcon(iconSize);
     } else {
-      winnerIcon = const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
+      winnerIcon =
+          const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
       winnerText = "It's a tie!";
     }
     const double buttonWidth = 120;
