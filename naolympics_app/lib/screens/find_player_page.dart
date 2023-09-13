@@ -4,7 +4,9 @@ import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
-import "package:naolympics_app/services/network/connection_service.dart";
+import "package:naolympics_app/services/network/connection_service/client_connection_service.dart";
+import "package:naolympics_app/services/network/connection_service/connection_service_network_utils.dart";
+import "package:naolympics_app/services/network/connection_service/host_connection_service.dart";
 import "package:naolympics_app/services/network/socket_manager.dart";
 import "package:naolympics_app/services/routing/client_routing_service.dart";
 import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
@@ -74,10 +76,11 @@ class FindPlayerPageState extends State<FindPlayerPage> {
 
   Future<void> _startServer() async {
     setState(() => isHosting = true);
-    await ConnectionService.createHost().then(_handleClientConnection).timeout(
-        const Duration(minutes: 5),
-        onTimeout: () => UIUtils.showTemporaryAlert(
-            context, "Waited 5 min for connections."));
+    await HostConnectionService.createHost()
+        .then(_handleClientConnection)
+        .timeout(const Duration(minutes: 5),
+            onTimeout: () => UIUtils.showTemporaryAlert(
+                context, "Waited 5 min for connections."));
   }
 
   void _handleClientConnection(SocketManager? value) {
@@ -105,7 +108,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
       final startTime = DateTime.now();
 
       while (DateTime.now().difference(startTime).inSeconds < 30) {
-        final list = await ConnectionService.getDevices();
+        final list = await getDevices();
         if (list.isNotEmpty) {
           result = list;
           break;
@@ -152,7 +155,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
 
   static Future<void> _handleHostConnection(
       String ip, BuildContext context) async {
-    SocketManager? socketManager = await ConnectionService.connectToHost(ip);
+    final socketManager = await ClientConnectionService.connectToHost(ip);
 
     if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");

@@ -21,7 +21,7 @@ Map<String, dynamic> _$ConnectionEstablishmentToJson(
 
 const _$ConnectionStatusEnumMap = {
   ConnectionStatus.connecting: "connecting",
-  ConnectionStatus.connectionSuccessful: "connectionSuccessful",
+  ConnectionStatus.success: "success",
 };
 
 const _$DataTypeEnumMap = {
