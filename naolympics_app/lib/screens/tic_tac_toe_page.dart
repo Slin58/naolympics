@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/utils/routing_utls.dart';
-
-import '../services/gamemodes/tictactoe/tictactoe_local.dart';
-import '../utils/ui_utils.dart';
+import "package:flutter/material.dart";
+import "package:flutter/scheduler.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_local.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe_multiplayer.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/utils/routing_utils.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class TicTacToePage extends StatefulWidget {
   const TicTacToePage({super.key});
@@ -24,31 +24,32 @@ class TicTacToeState extends State<TicTacToePage> {
       ticTacToe = TicTacToeLocal();
     } else {
       ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!, setState);
-      MultiplayerState.clientRoutingService?.pauseNavigator();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    SchedulerBinding.instance.addPostFrameCallback((_) => _showWinner());
+
     return RoutingUtils.handlePopScope(
         context,
         Scaffold(
             appBar: AppBar(
-              title: const Text('Tic Tac Toe'),
+              title: const Text("Tic Tac Toe"),
               actions: [_displayCurrentTurn()],
             ),
             body: _buildTicTacToeField()));
   }
 
-  _displayCurrentTurn() {
+  Row _displayCurrentTurn() {
     const double size = 20;
     Icon icon = ticTacToe.currentTurn == TicTacToeFieldValues.o
-        ? getCircleIcon(size)
-        : getCrossIcon(size);
+        ? _getCircleIcon(size)
+        : _getCrossIcon(size);
 
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       const Text("Current Turn:"),
-      const SizedBox(width: 8.0),
+      const SizedBox(width: 8),
       icon
     ]);
   }
@@ -57,7 +58,7 @@ class TicTacToeState extends State<TicTacToePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     final double smallerValue = height < width ? height : width;
-    final double fieldSize = smallerValue * 0.7;
+    final double cellSize = smallerValue * 0.7 / 3;
 
     return Column(
       children: [
@@ -71,18 +72,11 @@ class TicTacToeState extends State<TicTacToePage> {
                   children: [
                     for (int col = 0; col < 3; col++)
                       GestureDetector(
-                          onTap: () async {
-                            TicTacToeWinner winner =
-                                await ticTacToe.move(row, col);
-                            setState(() {});
-                            if (winner != TicTacToeWinner.ongoing) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext localContext) =>
-                                      _showWinner(winner, localContext));
-                            }
-                          },
-                          child: _buildTicTacToeCell(row, col, fieldSize)),
+                          onTap: () => _tapAction(row, col),
+                          onLongPress: () => _tapAction(row, col),
+                          onVerticalDragStart: (_) => _tapAction(row, col),
+                          onHorizontalDragStart: (_) => _tapAction(row, col),
+                          child: _buildCell(row, col, cellSize)),
                   ],
                 ),
             ],
@@ -92,83 +86,115 @@ class TicTacToeState extends State<TicTacToePage> {
     );
   }
 
-  Container _buildTicTacToeCell(int row, int col, double fieldSize) {
+  void _tapAction(int row, int col) {
+    ticTacToe.move(row, col);
+    setState(() {});
+  }
+
+  Container _buildCell(int row, int col, double cellSize) {
     return Container(
-      width: fieldSize / 3,
-      height: fieldSize / 3,
+      width: cellSize,
+      height: cellSize,
       decoration: const BoxDecoration(
         border: Border(
-          right: BorderSide(color: Colors.black),
-          left: BorderSide(color: Colors.black),
-          bottom: BorderSide(color: Colors.black),
-          top: BorderSide(color: Colors.black),
+          right: BorderSide(),
+          left: BorderSide(),
+          bottom: BorderSide(),
+          top: BorderSide(),
         ),
       ),
-      child: Center(child: setIcon(row, col)),
+      child: Center(child: _setIcon(row, col, cellSize)),
     );
   }
 
-  AlertDialog _showWinner(TicTacToeWinner winner, BuildContext localContext) {
+  void _showWinner() {
+    final winner = ticTacToe.winner;
+    if (winner != TicTacToeWinner.ongoing) {
+      showDialog(
+          context: context,
+          builder: (alertContext) => _winnerAlertDialog(winner, alertContext));
+    }
+  }
+
+  AlertDialog _winnerAlertDialog(TicTacToeWinner winner,
+      BuildContext alertContext) {
     const double iconSize = 40;
-    const double buttonWidth = 130;
     Icon winnerIcon;
     String winnerText = "Winner: ";
 
     if (winner == TicTacToeWinner.o) {
-      winnerIcon = getCircleIcon(iconSize);
+      winnerIcon = _getCircleIcon(iconSize);
     } else if (winner == TicTacToeWinner.x) {
-      winnerIcon = getCrossIcon(iconSize);
+      winnerIcon = _getCrossIcon(iconSize);
     } else {
       winnerIcon =
-          const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
+      const Icon(Icons.bolt_outlined, size: iconSize, color: Colors.amber);
       winnerText = "It's a tie!";
     }
+    const double buttonWidth = 130;
+    final color = Theme
+        .of(context)
+        .primaryColor;
+
     return AlertDialog(
       title: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(winnerText), const SizedBox(width: 8.0), winnerIcon],
+          children: [Text(winnerText), const SizedBox(width: 8), winnerIcon],
         ),
       ),
       content: Row(mainAxisSize: MainAxisSize.min, children: [
-        UIUtils.getBorderedTextButton(() {
-          if(MultiplayerState.isHosting()) {
-            (ticTacToe as TicTacToeMultiplayer).handleGoBack();
-          }
-
-          Navigator.pop(localContext);
-          Navigator.pop(context);
-        }, Icons.arrow_back, 'Go Back', Theme.of(context).primaryColor,
-            buttonWidth),
+        UIUtils.getBorderedTextButton(_setGoBackAction(alertContext),
+            Icons.arrow_back, "Go Back", color, buttonWidth),
         const SizedBox(width: buttonWidth / 100000),
-        UIUtils.getBorderedTextButton(() {
-          Navigator.pop(localContext);
-          setState(() {
-            ticTacToe.init();
-          });
-        }, Icons.refresh, 'Reset', Theme.of(context).primaryColor, buttonWidth),
+        UIUtils.getBorderedTextButton(_setResetAction(alertContext),
+            Icons.refresh, "Reset", color, buttonWidth),
       ]),
     );
   }
 
-  Icon? setIcon(int row, int col) {
-    const double iconSize = 120;
+  void Function() _setGoBackAction(BuildContext alertContext) {
+    return () {
+      if (MultiplayerState.isClient()) {
+        UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
+      } else {
+        if (MultiplayerState.isHosting()) {
+          (ticTacToe as TicTacToeMultiplayer).handleGoBack();
+        }
+        Navigator.pop(alertContext);
+        Navigator.pop(context);
+      }
+    };
+  }
+
+  void Function() _setResetAction(BuildContext alertContext) {
+    return () {
+      if (MultiplayerState.isClient()) {
+        UIUtils.showTemporaryAlert(context, "The Host chooses how to continue");
+      } else {
+        setState(() => ticTacToe.init());
+        Navigator.pop(alertContext);
+      }
+    };
+  }
+
+  Icon? _setIcon(int row, int col, double iconSize) {
     TicTacToeFieldValues fieldValue = ticTacToe.playField[row][col];
 
     if (fieldValue == TicTacToeFieldValues.o) {
-      return getCircleIcon(iconSize);
+      return _getCircleIcon(iconSize);
     } else if (fieldValue == TicTacToeFieldValues.x) {
-      return getCrossIcon(iconSize);
+      return _getCrossIcon(iconSize);
     } else {
       return null;
     }
   }
 
-  Icon getCircleIcon(double size) {
+  static Icon _getCircleIcon(double size) {
     return Icon(Icons.circle_outlined, size: size, color: Colors.red);
   }
 
-  Icon getCrossIcon(double size) {
+  static Icon _getCrossIcon(double size) {
     return Icon(Icons.close, size: size, color: Colors.black);
   }
 }

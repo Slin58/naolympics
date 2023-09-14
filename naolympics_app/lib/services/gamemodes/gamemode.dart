@@ -1,7 +1,7 @@
 abstract class GameMode {
   void init();
 
-  Future<Enum> move(int row, int col);
+  Future<void> move(int row, int col);
 }
 
 class MoveData {

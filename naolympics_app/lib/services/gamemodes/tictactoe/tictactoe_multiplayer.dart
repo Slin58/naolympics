@@ -1,15 +1,14 @@
-import 'dart:async';
-import 'dart:ui';
+import "dart:async";
+import "dart:ui";
 
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/gamemodes/gamemode.dart';
-import 'package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/network/json/json_objects/game_end_data.dart';
-import 'package:naolympics_app/services/network/json/json_objects/tictactoe_data.dart';
-
-import '../../network/json/json_data.dart';
-import '../../network/socket_manager.dart';
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/gamemodes/gamemode.dart";
+import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/game_end_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/tictactoe_data.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
 
 class TicTacToeMultiplayer extends TicTacToe {
   static final log = Logger((TicTacToeMultiplayer).toString());
@@ -26,6 +25,23 @@ class TicTacToeMultiplayer extends TicTacToe {
             ? TicTacToeFieldValues.o
             : TicTacToeFieldValues.x {
     _gameSubscription = _setGameSubscription(socketManager);
+    MultiplayerState.clientRoutingService?.pauseNavigator();
+  }
+
+  @override
+  void init() {
+    super.init();
+    _sendReset();
+  }
+
+  @override
+  Future<void> move(int row, int col) async {
+    if (currentTurn == playerSymbol &&
+        super.playField[row][col] == TicTacToeFieldValues.empty) {
+      makeMove(row, col);
+      // ignore: unawaited_futures
+      _sendMove(row, col);
+    }
   }
 
   StreamSubscription<String> _setGameSubscription(SocketManager socketManager) {
@@ -34,9 +50,9 @@ class TicTacToeMultiplayer extends TicTacToe {
       log.finer("received $data");
       _handleIncomingData(ticTacToeData);
     }, onError: (error) {
-      log.severe("Error while receiving routing instructions", error);
+      log.severe("Error while receiving game data", error);
     }, onDone: () {
-      log.info("Done routing.");
+      log.info("Done handling game data.");
     });
   }
 
@@ -57,7 +73,7 @@ class TicTacToeMultiplayer extends TicTacToe {
 
   void _handleGameEndData(GameEndData data) {
     if (data.reset) {
-      super.init();
+      setState.call(() => super.init());
     }
     if (data.goBack) {
       _cancelGameSubscription();
@@ -72,14 +88,8 @@ class TicTacToeMultiplayer extends TicTacToe {
     _sendGoBack();
   }
 
-  void _cancelGameSubscription(){
+  void _cancelGameSubscription() {
     _gameSubscription.cancel();
-  }
-
-  @override
-  void init() {
-    super.init();
-    _sendReset();
   }
 
   Future<void> _sendReset() async {
@@ -94,25 +104,9 @@ class TicTacToeMultiplayer extends TicTacToe {
     await socketManager.writeJsonData(gameEndData);
   }
 
-
-  @override
-  Future<TicTacToeWinner> move(int row, int col) async {
-    if (currentTurn == playerSymbol &&
-        super.playField[row][col] == TicTacToeFieldValues.empty) {
-      TicTacToeWinner winner = makeMove(row, col);
-
-      _sendMove(row, col);
-      return winner;
-    }
-    return TicTacToeWinner.ongoing;
-  }
-
-  Future<void> _sendMove(int row, int col, {bool? reset}) async {
-    reset = reset ?? false;
-    final ticTacToeData =
-        TicTacToeData(row, col, super.currentTurn, reset: reset);
-    log.fine(
-        "Sending move $ticTacToeData to ${MultiplayerState.getRemoteAddress()}");
+  Future<void> _sendMove(int row, int col) async {
+    final ticTacToeData = TicTacToeData(row, col, super.currentTurn);
+    log.fine("Sending move '$ticTacToeData' to ${MultiplayerState.getRemoteAddress()}");
     await socketManager.writeJsonData(ticTacToeData);
   }
 }

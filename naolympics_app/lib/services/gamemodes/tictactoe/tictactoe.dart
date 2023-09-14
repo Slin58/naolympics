@@ -1,40 +1,40 @@
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/gamemodes/gamemode.dart';
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/gamemodes/gamemode.dart";
 
 abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> _playField;
   TicTacToeFieldValues currentTurn;
+  TicTacToeWinner winner;
   static final log = Logger((TicTacToe).toString());
 
   TicTacToe({this.currentTurn = TicTacToeFieldValues.o})
       : _playField =
-            List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty));
+            List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty)),
+        winner = TicTacToeWinner.ongoing;
 
   @override
   void init() {
-    log.info('Reset TicTacToe play field.');
+    log.info("Reset TicTacToe play field.");
     _playField =
         List.generate(3, (_) => List.filled(3, TicTacToeFieldValues.empty));
     currentTurn = TicTacToeFieldValues.o;
+    winner = TicTacToeWinner.ongoing;
   }
 
   @override
-  Future<TicTacToeWinner> move(int row, int col);
+  Future<void> move(int row, int col);
 
-  TicTacToeWinner makeMove(int row, int col) {
+  void makeMove(int row, int col) {
     if (_playField[row][col] == TicTacToeFieldValues.empty) {
-      log.info('Making move for Player $currentTurn');
+      log.info("Making move for Player ${currentTurn.name}");
 
       _playField[row][col] = currentTurn;
-      TicTacToeWinner winner = checkWinner(row, col);
+      checkWinner(row, col);
       _switchTurn();
-
-      return winner;
     }
-    return TicTacToeWinner.ongoing;
   }
 
-  TicTacToeWinner checkWinner(int row, int col) {
+  void checkWinner(int row, int col) {
     TicTacToeFieldValues currentSymbol = _playField[row][col];
     bool won = false;
     bool isBoardFull = true;
@@ -81,13 +81,13 @@ abstract class TicTacToe implements GameMode {
     }
 
     if (won) {
-      return currentSymbol == TicTacToeFieldValues.x
+      winner = currentSymbol == TicTacToeFieldValues.x
           ? TicTacToeWinner.x
           : TicTacToeWinner.o;
     } else if (isBoardFull) {
-      return TicTacToeWinner.draw;
+      winner = TicTacToeWinner.draw;
     } else {
-      return TicTacToeWinner.ongoing;
+      winner = TicTacToeWinner.ongoing;
     }
   }
 
@@ -100,6 +100,6 @@ abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> get playField => _playField;
 }
 
-enum TicTacToeFieldValues { x, o, empty }
+enum TicTacToeFieldValues { x, o, empty}
 
 enum TicTacToeWinner { x, o, draw, ongoing }

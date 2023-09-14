@@ -1,18 +1,17 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/cupertino.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/network/socket_manager.dart';
-
-import '../multiplayer_state.dart';
-import '../network/json/data_types.dart';
-import '../network/json/json_data.dart';
-import '../network/json/json_objects/navigation_data.dart';
+import "package:flutter/cupertino.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/data_types.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/navigation_data.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
 
 class ClientRoutingService {
   final StreamSubscription<String> _routeHanding;
 
-  static final log = Logger((ClientRoutingService).toString());
+  static final Logger log = Logger((ClientRoutingService).toString());
 
   ClientRoutingService(socketManager, context)
       : _routeHanding = _setRouteHandling(socketManager, context);
@@ -20,10 +19,7 @@ class ClientRoutingService {
   static StreamSubscription<String> _setRouteHandling(
       SocketManager socketManager, BuildContext context) {
     return socketManager.broadcastStream.listen(
-        (event)  {
-          log.info("Received event in RouteHandling");
-          _handlingIncomingRouteData(event, context);
-        },
+            (event) => _handlingIncomingRouteData(event, context),
         onError: (error) =>
             log.severe("Error while receiving routing instructions", error),
         onDone: () => log.info("Done routing."));
@@ -41,45 +37,40 @@ class ClientRoutingService {
     return _routeHanding.isPaused;
   }
 
-  static void _handlingIncomingRouteData(String jsonData, BuildContext context) {
+  static void _handlingIncomingRouteData(String jsonData,
+      BuildContext context) {
     try {
-      log.info("In _handlingIncomingRouteData with: $jsonData");
       final navData = JsonData.fromJsonString(jsonData) as NavigationData;
 
-        if (navData.data == DataType.navigation) {
-          final remoteIp = MultiplayerState.getRemoteAddress();
-          NavigationType navType = navData.navigationType;
+      if (navData.data == DataType.navigation) {
+        final remoteIp = MultiplayerState.getRemoteAddress();
+        NavigationType navType = navData.navigationType;
 
-          switch (navType) {
-            case NavigationType.push:
-              _logIncomingRouteData(navType, remoteIp, route: navData.route);
-              Navigator.pushNamed(context, navData.route);
-              break;
-            case NavigationType.pop:
-              _logIncomingRouteData(navType, remoteIp);
-              Navigator.pop(context);
-              break;
-            case NavigationType.dispose:
-              _logIncomingRouteData(navType, remoteIp);
-              Navigator.pop(context);
-              break;
-            case NavigationType.closeConnection:
-              _logIncomingRouteData(navType, remoteIp);
-              MultiplayerState.closeConnection();
-              Navigator.popUntil(context, (route) => !Navigator.canPop(context));
-              break;
-            default:
-              log.severe(
-                  "",
-                  UnimplementedError(
-                      "Unknown NavigationType received: $navType"));
-              break;
-          }
-        } else {
-          log.warning(
-              "Did not receive navigation Data. Instead received data of type '${navData.data}'");
+        switch (navType) {
+          case NavigationType.push:
+            _logIncomingRouteData(navType, remoteIp, route: navData.route);
+            Navigator.pushNamed(context, navData.route);
+            break;
+          case NavigationType.pop:
+            _logIncomingRouteData(navType, remoteIp);
+            Navigator.pop(context);
+            break;
+          case NavigationType.dispose:
+            _logIncomingRouteData(navType, remoteIp);
+            Navigator.pop(context);
+            break;
+          case NavigationType.closeConnection:
+            _logIncomingRouteData(navType, remoteIp);
+            MultiplayerState.closeConnection();
+            Navigator.popUntil(context, (route) => !Navigator.canPop(context));
+            break;
+          default:
+            log.severe("", UnimplementedError(
+                "Unknown NavigationType received: $navType"));
+            break;
         }
-    } on Error catch (e) {
+      }
+    } on Exception catch (e) {
       log.severe(
           "Issue while trying to handle client routing", e);
     }

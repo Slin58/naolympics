@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:logging/logging.dart';
 import 'package:naolympics_app/services/network/json/json_data.dart';
-import 'package:naolympics_app/services/routing/client_routing_service.dart';
 
 class SocketManager {
   static final log = Logger((SocketManager).toString());
@@ -34,7 +34,7 @@ class SocketManager {
   }
 
   Future<void> write(String object) async {
-    log.info("Now writing to ${socket.remoteAddress.address}: $object");
+    log.finest("Now writing to ${socket.remoteAddress.address}");
     socket.write(object);
     await socket.flush();
   }

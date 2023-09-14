@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/services/network/json/json_objects/navigation_data.dart';
-import 'package:naolympics_app/services/routing/route_observer/observer_utils.dart';
-
-import '../../multiplayer_state.dart';
-import 'route_aware_widget.dart';
+import "package:flutter/material.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/json_objects/navigation_data.dart";
+import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
+import "package:naolympics_app/services/routing/route_observer/observer_utils.dart";
 
 class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   static final log = Logger((RouteAwareWidgetState).toString());
@@ -13,7 +12,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   void didChangeDependencies() {
     super.didChangeDependencies();
     ObserverUtils.getRouteObserver().subscribe(this, ModalRoute.of(context)!);
-    log.info("Subscribed '${widget.name}");
+    log.info("Subscribed '${widget.name}'");
   }
 
   @override

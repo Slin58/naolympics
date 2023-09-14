@@ -14,9 +14,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Naolympics",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -40,13 +38,13 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
     style: TextButton.styleFrom(
         foregroundColor: Colors.blue,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10),
           side: const BorderSide(
             color: Colors.blue,
             width: 2.5,
           ),
         ),
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(40),
         backgroundColor: Colors.transparent,
         fixedSize: const Size.fromWidth(700)),
     onPressed: () {

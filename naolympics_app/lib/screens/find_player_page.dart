@@ -1,16 +1,14 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import 'package:naolympics_app/services/routing/client_routing_service.dart';
-import 'package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart';
-import 'package:naolympics_app/utils/ui_utils.dart';
-
-import '../../services/network/connection_service.dart';
-import '../../services/server.dart';
-import '../services/network/socket_manager.dart';
+import "package:flutter/material.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/connection_service.dart";
+import "package:naolympics_app/services/network/socket_manager.dart";
+import "package:naolympics_app/services/routing/client_routing_service.dart";
+import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class FindPlayerPage extends StatefulWidget {
   const FindPlayerPage({super.key});
@@ -24,11 +22,9 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   List<String> foundHost = [];
   bool isHosting = false;
   bool wifi = true;
-  late Server server;
 
   @override
   void initState() {
-    server = Server(false);
     super.initState();
     isHosting = false;
     wifi = true;
@@ -37,13 +33,11 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Find Players"),
-        ),
-
+        appBar: AppBar(title: const Text("Find Players")),
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [
+            const SizedBox(height: 10), // fix for clipping into appbar
             Visibility(
               visible: wifi && !isHosting,
               child: _ipListElement(),
@@ -79,19 +73,14 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   Future<void> _startServer() async {
-    setState(() {
-      isHosting = true;
-    });
-    ConnectionService.createHost()
-        .then((value) => _handleClientConnection(value))
-        .timeout(const Duration(minutes: 1),
-            onTimeout: () => () {
-                  UIUtils.showTemporaryAlert(context, "Connection timed out.");
-                });
+    setState(() => isHosting = true);
+    await ConnectionService.createHost().then(_handleClientConnection).timeout(
+        const Duration(minutes: 5),
+        onTimeout: () => UIUtils.showTemporaryAlert(
+            context, "Waited 5 min for connections."));
   }
 
-  _handleClientConnection(SocketManager? value) async {
-    await Future.delayed(const Duration(seconds: 1));
+  void _handleClientConnection(SocketManager? value) {
     if (value != null) {
       MultiplayerState.setHost(value);
       Navigator.push(
@@ -107,15 +96,23 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   }
 
   void _stopServer() {
-    setState(() {
-      MultiplayerState.connection = null;
-      isHosting = false;
-      server.stop();
-    });
+    setState(() => isHosting = false);
   }
 
   Future<List<String>> _showDevices() async {
-    return isHosting ? [] : await ConnectionService.getDevices();
+    List<String> result = [];
+    if (!isHosting) {
+      final startTime = DateTime.now();
+
+      while (DateTime.now().difference(startTime).inSeconds < 30) {
+        final list = await ConnectionService.getDevices();
+        if (list.isNotEmpty) {
+          result = list;
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   FutureBuilder<List<String>> _ipListElement() {
@@ -125,12 +122,11 @@ class FindPlayerPageState extends State<FindPlayerPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Text("Error: ${snapshot.error}");
           } else if (snapshot.hasData && snapshot.data != null) {
             final List<String> listData = snapshot.requireData;
             if (listData.isNotEmpty) {
               return ListView.builder(
-                scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: listData.length,
                 itemBuilder: (context, index) {
@@ -138,29 +134,32 @@ class FindPlayerPageState extends State<FindPlayerPage> {
                   return ListTile(
                     title: Text(item),
                     onTap: () async {
-                      isHosting = false;
-                      _handleHostConnection(item, context);
+                      await _handleHostConnection(item, context);
                     },
                   );
                 },
               );
             } else {
-              return const Text("No other players found");
+              return UIUtils.getBorderedTextButton(() {
+                setState(() {});
+              }, Icons.refresh, "Search again", Colors.grey, 250);
             }
           } else {
-            return const Text('No data available.');
+            return const Text("No data available.");
           }
         });
   }
 
-  static _handleHostConnection(String ip, BuildContext context) async {
+  static Future<void> _handleHostConnection(
+      String ip, BuildContext context) async {
     SocketManager? socketManager = await ConnectionService.connectToHost(ip);
 
     if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
     } else {
-     MultiplayerState.connection = socketManager;
-     MultiplayerState.clientRoutingService = ClientRoutingService(socketManager, context);
+      MultiplayerState.connection = socketManager;
+      MultiplayerState.clientRoutingService =
+          ClientRoutingService(socketManager, context);
     }
   }
 }
