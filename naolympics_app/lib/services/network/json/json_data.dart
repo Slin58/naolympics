@@ -1,6 +1,6 @@
 import "dart:convert";
-
 import "package:naolympics_app/services/network/json/data_types.dart";
+import "package:naolympics_app/services/network/json/json_objects/connect4_data.dart";
 import "package:naolympics_app/services/network/json/json_objects/connection_establishment.dart";
 import "package:naolympics_app/services/network/json/json_objects/game_end_data.dart";
 import "package:naolympics_app/services/network/json/json_objects/navigation_data.dart";
@@ -26,6 +26,8 @@ abstract class JsonData {
           return TicTacToeData.fromJson(map);
         case DataType.gameEndData:
           return GameEndData.fromJson(map);
+        case DataType.connect4:
+          return Connect4Data.fromJson(map);
         default:
           throw UnimplementedError("Unknown DataType '$type");
       }

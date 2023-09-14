@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:naolympics_app/screens/find_player_page.dart";
-
 import "package:naolympics_app/screens/game_selection/game_selection.dart";
 
 class HomePage extends StatelessWidget {
@@ -25,8 +24,7 @@ class HomePage extends StatelessWidget {
           children: [
             createNavButton("Local", context, const GameSelectionPage()),
             SizedBox(height: marginSize / 3.0),
-            createNavButton(
-                "Multiplayer", context, const FindPlayerPage()) //placeholder
+            createNavButton("Multiplayer", context, const FindPlayerPage())
           ],
         ),
       ),

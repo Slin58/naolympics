@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:naolympics_app/logger/logger.dart";
-import "package:naolympics_app/screens/connect_four_page.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
 import "package:naolympics_app/screens/home_page.dart";
 import "package:naolympics_app/screens/tic_tac_toe_page.dart";
@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
         "HomePage": (context) => const HomePage(),
         "TicTacToePage": (context) => const TicTacToePage(),
         "ConnectFourPage": (connect) => const ConnectFourPage(),
-        "GameSelectionPageMultiplayer": (connect) => const GameSelectionPageMultiplayer()
+        "GameSelectionPageMultiplayer": (connect) =>
+            const GameSelectionPageMultiplayer()
       },
     );
   }
