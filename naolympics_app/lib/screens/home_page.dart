@@ -24,8 +24,7 @@ class HomePage extends StatelessWidget {
           children: [
             createNavButton("Local", context, const GameSelectionPage()),
             SizedBox(height: marginSize / 3.0),
-            createNavButton(
-                "Multiplayer", context, const FindPlayerPage()) //placeholder
+            createNavButton("Multiplayer", context, const FindPlayerPage())
           ],
         ),
       ),

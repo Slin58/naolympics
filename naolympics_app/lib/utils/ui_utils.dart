@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-class UIUtils {
+abstract class UIUtils {
   static Container getBorderedTextButton(VoidCallback onPressed,
       IconData iconData, String text, Color color, double width) {
     return Container(
@@ -22,40 +22,36 @@ class UIUtils {
         ));
   }
 
-  static SizedBox getSizedBoxWIthImageAndText(double boxWidth, double boxHeight,
+  static Widget getStackWithImageAndOutlinedText(
       String imagePath, String text, double fontSize, String fontFamily) {
     final strokeSize = fontSize / 10;
 
-    return SizedBox(
-      width: boxWidth,
-      height: boxHeight,
-      child: Stack(
-        children: <Widget>[
-          Center(
-              child: Image.asset(
-            imagePath,
-            fit: BoxFit.cover,
-          )),
-          Center(
-              child: Text(text,
-                  style: TextStyle(
-                      fontSize: fontSize,
-                      fontFamily: "Impact",
-                      foreground: Paint()
-                        ..style = PaintingStyle.stroke
-                        ..strokeWidth = strokeSize
-                        ..color = Colors.black))),
-          Center(
-              child: Text(
-            text,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: fontSize,
-              fontFamily: fontFamily,
-            ),
-          )),
-        ],
-      ),
+    return Stack(
+      children: <Widget>[
+        Center(
+            child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+        )),
+        Center(
+            child: Text(text,
+                style: TextStyle(
+                    fontSize: fontSize,
+                    fontFamily: "Impact",
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = strokeSize
+                      ..color = Colors.black))),
+        Center(
+            child: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: fontSize,
+            fontFamily: fontFamily,
+          ),
+        )),
+      ],
     );
   }
 

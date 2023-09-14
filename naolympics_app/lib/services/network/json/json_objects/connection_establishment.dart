@@ -1,5 +1,5 @@
 import "package:json_annotation/json_annotation.dart";
-import "package:naolympics_app/services/network/connection_service.dart";
+import "package:naolympics_app/services/network/connection_service/connections_service_enums.dart";
 import "package:naolympics_app/services/network/json/data_types.dart";
 import "package:naolympics_app/services/network/json/json_data.dart";
 

@@ -36,11 +36,7 @@ class GameSelectionState extends State<GameSelectionPage> {
       MultiplayerState.closeConnection();
       return false;
     },
-    child: Scaffold(
-      appBar: appBar,
-      body: Center(
-        child: _getGameSelection(),
-      ),
+    child: Scaffold(appBar: appBar, body: Center(child: _getGameSelection()),
     ));
   }
 
@@ -65,9 +61,26 @@ class GameSelectionState extends State<GameSelectionPage> {
 
   List<Widget> getNavButtons(BuildContext context) {
     return [
-      getTicTacToeImageButton(context, const TicTacToePage()),
-      getConnectFourImageButton(context, const ConnectFourPage()),
+      getTicTacToeButtonWithRoute(context),
+      getDivider(),
+      getConnectFourButtonWithRoute(context),
     ];
+  }
+
+  Widget getTicTacToeButtonWithRoute(BuildContext context) {
+    return getTicTacToeImageButton(context, const TicTacToePage());
+  }
+
+  Widget getDivider() {
+    const double indent = 10;
+
+    return orientation == Orientation.landscape
+        ? const VerticalDivider(indent: indent, endIndent: indent)
+        : const Divider(indent: indent, endIndent: indent);
+  }
+
+  Widget getConnectFourButtonWithRoute(BuildContext context) {
+    return getConnectFourImageButton(context, const ConnectFourPage());
   }
 
   Widget getTicTacToeImageButton(BuildContext context, Widget route) {
@@ -82,25 +95,13 @@ class GameSelectionState extends State<GameSelectionPage> {
 
   Widget _getImageButton(
       BuildContext context, Widget route, String text, String imagePath) {
-    double boxHeight;
-    double boxWidth;
-    // todo: besseren Weg finden.
-    const errorMargin = 50;
-    if (orientation == Orientation.landscape) {
-      boxHeight = height - errorMargin;
-      boxWidth = width / 2 - 6;
-    } else {
-      boxHeight = height / 2 - errorMargin;
-      boxWidth = width - errorMargin;
-    }
-
     const double fontSize = 60;
 
-    return Center(
+    return Expanded(
         child: GestureDetector(
             onTap: getOnPressedForNavButton(context, route),
-            child: UIUtils.getSizedBoxWIthImageAndText(
-                boxWidth, boxHeight, imagePath, text, fontSize, "Impact")));
+            child: UIUtils.getStackWithImageAndOutlinedText(
+                imagePath, text, fontSize, "Impact")));
   }
 
   VoidCallback getOnPressedForNavButton(BuildContext context, route) {

@@ -45,26 +45,24 @@ class TicTacToeMultiplayer extends TicTacToe {
   }
 
   StreamSubscription<String> _setGameSubscription(SocketManager socketManager) {
-    return socketManager.broadcastStream.listen((data) {
-      final ticTacToeData = JsonData.fromJsonString(data);
-      log.finer("received $data");
-      _handleIncomingData(ticTacToeData);
-    }, onError: (error) {
-      log.severe("Error while receiving game data", error);
-    }, onDone: () {
-      log.info("Done handling game data.");
-    });
+    return socketManager.broadcastStream.listen(_onData(),
+        onError: (error) => log.severe("Error while receiving gamedata", error),
+        onDone: () => log.info("Done handling game data."));
   }
 
-  void _handleIncomingData(JsonData data) {
-    final type = data.runtimeType;
-    if (type == TicTacToeData) {
-      _handleGameData(data as TicTacToeData);
-    } else if (type == GameEndData) {
-      _handleGameEndData(data as GameEndData);
-    } else {
-      log.warning("Unknown JsonData type received: '$type'");
-    }
+  void Function(String data) _onData() {
+    return (data) {
+      log.finer("received $data");
+      final jsonData = JsonData.fromJsonString(data);
+
+      if (jsonData is TicTacToeData) {
+        _handleGameData(jsonData);
+      } else if (jsonData is GameEndData) {
+        _handleGameEndData(jsonData);
+      } else {
+        log.warning("Unknown JsonData received: '${jsonData.runtimeType}'");
+      }
+    };
   }
 
   void _handleGameData(TicTacToeData data) {

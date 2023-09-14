@@ -11,13 +11,6 @@ class SocketManager {
   late StreamController<String> streamController;
   late Stream<String> broadcastStream;
 
-  String ip = "";
-  int port = 0;
-
-  SocketManager(this.socket, this.ip, this.port) {
-    startListening();
-  }
-
   SocketManager.fromExistingSocket(this.socket) {
     startListening();
   }
@@ -40,7 +33,7 @@ class SocketManager {
   }
 
   Future<void> writeJsonData(JsonData object) async {
-   await write(json.encode(object.toJson()));
+    await write(json.encode(object.toJson()));
   }
 
   Future<void> closeConnection() async {

@@ -4,16 +4,11 @@ import "package:naolympics_app/services/routing/client_routing_service.dart";
 class MultiplayerState {
   static SocketManager? connection;
   static ClientRoutingService? clientRoutingService;
-  static List<String> history = [];
   static bool _hosting = false;
 
   static void setHost(SocketManager connection) {
     MultiplayerState.connection = connection;
     MultiplayerState._hosting = true;
-  }
-
-  void addIp(String ip) {
-    history.add(ip);
   }
 
   static void closeConnection() {
