@@ -3,9 +3,7 @@ import "dart:io";
 import "package:logging/logging.dart";
 import "package:naolympics_app/services/network/socket_manager.dart";
 
-import "host_connection_service.dart";
-
-final log = Logger((HostConnectionService).toString());
+final log = Logger("ConnectionService");
 
 const String hostPrefix = "[HOST]:";
 const String clientPrefix = "[CLIENT]:";

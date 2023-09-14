@@ -43,13 +43,13 @@ Future<List<NetworkInterface>> _getWlanInterfaces() async {
   final List<NetworkInterface> interfaces =
       await NetworkInterface.list(type: InternetAddressType.IPv4);
 
-  return Stream<NetworkInterface>.fromIterable(interfaces)
+  return interfaces
       .where((i) => WlanInterfaceNames.getValues().contains(i.name))
       .toList();
 }
 
 bool _containsHotspot(NetworkInterface interface) =>
-    WlanInterfaceNames.androidHotspot.name == interface.name;
+    WlanInterfaceNames.getHotspotNames().contains(interface.name);
 
 Future<List<String>> _discoverDevices(String subnet, int port) {
   return NetworkAnalyzer.discover2(subnet, port)
@@ -64,8 +64,8 @@ Future<void> sendConnectionMessage(
 }
 
 ConnectionStatus parseIncomingData(String data) {
-final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
-log.finer("Received '$data' and parsed it to '$jsonData'");
+  final jsonData = JsonData.fromJsonString(data) as ConnectionEstablishment;
+  log.finer("Received '$data' and parsed it to '$jsonData'");
 
-return jsonData.connectionStatus;
+  return jsonData.connectionStatus;
 }
