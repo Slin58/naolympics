@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:naolympics_app/connect4/connect_four_page.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/tic_tac_toe_page.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
 import "package:naolympics_app/utils/ui_utils.dart";

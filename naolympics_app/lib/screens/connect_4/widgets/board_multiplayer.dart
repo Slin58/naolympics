@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
-import "package:naolympics_app/connect4/gameController/game_controller.dart";
-import "package:naolympics_app/connect4/widgets/board_column.dart";
+import "package:naolympics_app/screens/connect_4/widgets/board_column.dart";
 import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
+import "package:naolympics_app/services/gamemodes/connect_4/game_controller.dart";
 import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
 
 class BoardMultiplayer extends StatelessWidget {

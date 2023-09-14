@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
-import "package:naolympics_app/connect4/bindings/controller_binding.dart";
-import "package:naolympics_app/connect4/game_screens/connect_4_screen.dart";
-import "package:naolympics_app/connect4/game_screens/connect_4_screen_multiplayer.dart";
+import "package:naolympics_app/services/gamemodes/connect_4/bindings/controller_binding.dart";
+import "package:naolympics_app/services/gamemodes/connect_4/connect_4_screen.dart";
+import "package:naolympics_app/services/gamemodes/connect_4/connect_4_screen_multiplayer.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
 
 void main() {
