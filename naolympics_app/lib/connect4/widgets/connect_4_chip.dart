@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class Connect4Chip extends StatelessWidget {
   final Color chipColor;
 
   const Connect4Chip({
-    Key? key,
-    required this.chipColor,
+    required this.chipColor, Key? key,
   }) : super(key: key);
 
   @override
@@ -21,11 +19,3 @@ class Connect4Chip extends StatelessWidget {
     );
   }
 }
-/*
-return Container(
-height: 80,
-width: 80,
-decoration: BoxDecoration(
-borderRadius: BorderRadius.circular(80), color: coinColor),
-);
-*/

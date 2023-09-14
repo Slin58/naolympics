@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../gameController/game_controller.dart';
-import 'board_column.dart';
+import "package:flutter/material.dart";
+import "package:get/get.dart";
+import "package:naolympics_app/connect4/gameController/game_controller.dart";
+import "package:naolympics_app/connect4/widgets/board_column.dart";
 
 class Board extends StatelessWidget {
   final GameController gameController = Get.find<GameController>();
+
+  Board({super.key});
 
   List<BoardColumn> _buildBoard() {
     int currentColNumber = 0;
@@ -23,10 +24,10 @@ class Board extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 100),
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 100),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
     decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(50),
               topRight: Radius.circular(50),
               bottomLeft: Radius.circular(50),
@@ -38,7 +39,7 @@ class Board extends StatelessWidget {
                 color: Colors.blueAccent.withOpacity(0.5),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               )
             ],
           ),
@@ -46,7 +47,6 @@ class Board extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
-                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     GetBuilder<GameController>(

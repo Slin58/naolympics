@@ -1,27 +1,25 @@
-import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
-import 'package:naolympics_app/services/multiplayer_state.dart';
-import '../gameController/game_controller.dart';
-import 'cell.dart';
+import "package:flutter/cupertino.dart";
+import "package:get/get.dart";
+import "package:naolympics_app/connect4/gameController/game_controller.dart";
+import "package:naolympics_app/connect4/widgets/cell.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
 
 class BoardColumn extends StatelessWidget {
-  GameController gameController = Get.find<GameController>();
+  final GameController gameController = Get.find<GameController>(); //todo: test
   late final List<int> chipsInColumn;
   final int columnNumber;
 
   BoardColumn({
-    Key? key,
-    required this.chipsInColumn,
-    required this.columnNumber,
+    required this.chipsInColumn, required this.columnNumber, Key? key,
   }) : super(key: key);
 
   List<Cell> _buildBoardColumn() {
     return chipsInColumn.reversed
         .map((chip) => chip == 1
-            ? Cell(currCellState: CellState.YELLOW)
+            ? const Cell(currCellState: CellState.yellow)
             : chip == 2
-                ? Cell(currCellState: CellState.RED)
-                : Cell(currCellState: CellState.EMPTY))
+                ? const Cell(currCellState: CellState.red)
+                : const Cell(currCellState: CellState.empty))
         .toList();
   }
 

@@ -1,8 +1,8 @@
-import '../data_types.dart';
-import '../json_data.dart';
-import 'package:json_annotation/json_annotation.dart';
+import "package:json_annotation/json_annotation.dart";
+import "package:naolympics_app/services/network/json/data_types.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
 
-part 'connect4_data.g.dart';
+part "connect4_data.g.dart";
 
 @JsonSerializable()
 class Connect4Data extends JsonData {

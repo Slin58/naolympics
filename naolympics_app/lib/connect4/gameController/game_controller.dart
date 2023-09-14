@@ -1,22 +1,24 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:logging/logging.dart';
-import 'package:naolympics_app/connect4/ConnectFourPage.dart';
-import 'package:naolympics_app/services/network/json/json_objects/connect4_data.dart';
-import 'package:naolympics_app/utils/ui_utils.dart';
-import '../../screens/game_selection/game_selection.dart';
-import '../../services/multiplayer_state.dart';
-import 'package:collection/collection.dart';
-import '../../services/network/json/json_data.dart';
-import '../../services/network/json/json_objects/game_end_data.dart';
-import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
-import '../widgets/cell.dart';
+import "dart:async";
+
+import "package:collection/collection.dart";
+import "package:flutter/material.dart";
+import "package:get/get.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/connect4/connect_four_page.dart";
+import "package:naolympics_app/connect4/widgets/cell.dart";
+import "package:naolympics_app/screens/game_selection/game_selection.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/services/network/json/json_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/connect4_data.dart";
+import "package:naolympics_app/services/network/json/json_objects/game_end_data.dart";
+import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class GameController extends GetxController {
   static final log = Logger((GameController).toString());
   List<List<int>> board = [];
-  RxBool _turnYellow = true.obs;
+  RxBool _turnYellow = true.obs; //ignore: prefer_final_fields
+  // todo: change maybe --> test
   bool get turnYellow => _turnYellow.value;
   bool blockTurn = false;
 
@@ -37,7 +39,7 @@ class GameController extends GetxController {
   }
 
   void initBoard() {
-      this.board = [
+      board = [
         List.filled(6, 0),
         List.filled(6, 0),
         List.filled(6, 0),
@@ -67,13 +69,13 @@ class GameController extends GetxController {
 
       if (checkForFullBoard() == 1) {
         int fB = checkForFullBoard();
-        print("FullBoard: $fB");
+        log.info("FullBoard: $fB");
         showFullBoardDialog();
       }
       blockTurn = true;
       _turnYellow.value = !_turnYellow.value;
-      MultiplayerState.connection!.writeJsonData(Connect4Data(board));
-      startListening();
+      await MultiplayerState.connection!.writeJsonData(Connect4Data(board));
+      startListening(); // ignore: unawaited_futures
       update();
     } else {
       Get.snackbar("Not available", "This column is full already",
@@ -95,7 +97,7 @@ class GameController extends GetxController {
 
       if (checkForFullBoard() == 1) {
         int fB = checkForFullBoard();
-        print("FullBoard: $fB");
+        log.info("FullBoard: $fB");
         showFullBoardDialog();
       }
       blockTurn = true;
@@ -110,8 +112,8 @@ class GameController extends GetxController {
     int horizontalWinCond = checkForHorizontalWin(columnNumber);
     int verticalWinCond = checkForVerticalWin(columnNumber);
     int diagonalWinCond = checkDiagonalWinCond(columnNumber);
-    print("Horizontal Winner: $horizontalWinCond");
-    print("Vertical Winner: $verticalWinCond");
+    log..info("Horizontal Winner: $horizontalWinCond")
+    ..info("Vertical Winner: $verticalWinCond");
 
     int winner = (horizontalWinCond != 0)
         ? horizontalWinCond
@@ -129,9 +131,8 @@ class GameController extends GetxController {
 
   int getIndexOfNewElementOfList(
       List<List<int>> previousBoard, List<List<int>> newBoard) {
-    Function eq = const ListEquality().equals;
     for (int i = 0; i < previousBoard.length; i++) {
-      if (!eq(previousBoard[i], newBoard[i])) {
+      if (! (const ListEquality().equals(previousBoard[i], newBoard[i]))) {
         return newBoard.indexOf(newBoard[i]);
       }
     }
@@ -145,7 +146,7 @@ class GameController extends GetxController {
     Get.dialog(
       AlertDialog(
         key: dialogKey,
-        title: Text('Draw'),
+        title: const Text("Draw"),
         content: Obx(
           () => buttonVisible.value
               ? TextButton(
@@ -154,9 +155,9 @@ class GameController extends GetxController {
                     buttonVisible.value = false;
                     Get.back(id: dialogKey.currentContext!.hashCode);
                   },
-                  child: Text('OK'),
+                  child: const Text("OK"),
                 )
-              : SizedBox(),
+              : const SizedBox(),
         ),
       ),
     );
@@ -177,17 +178,17 @@ class GameController extends GetxController {
 
     blockTurn = true;
     BuildContext? diaContext;
-    showDialog(context: Get.context!,
+    await showDialog(context: Get.context!,
       barrierDismissible: false,
       builder: (context) {
         diaContext = context;
             return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-            winner == 1 ? 'Player 1 (yellow) won' : 'Player 2 (red) won',
-            style: TextStyle(
+            winner == 1 ? "Player 1 (yellow) won" : "Player 2 (red) won",
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -196,7 +197,7 @@ class GameController extends GetxController {
             height: 90,
             child: Center(
               child: Cell(
-                currCellState: winner == 1 ? CellState.YELLOW : CellState.RED,
+                currCellState: winner == 1 ? CellState.yellow : CellState.red,
               ),
             ),
           ),
@@ -222,8 +223,8 @@ class GameController extends GetxController {
                     }
                   },
                   child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Replay'),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text("Replay"),
                   ),
                 ),
                 ElevatedButton(
@@ -231,7 +232,7 @@ class GameController extends GetxController {
                     if(MultiplayerState.connection == null) {
                       Navigator.of(context).pop(true);
                       resetBoard();
-                      Navigator.push(
+                      await Navigator.push( //todo might fuck me
                           context,
                           MaterialPageRoute(
                               builder: (context) => RouteAwareWidget(
@@ -243,15 +244,14 @@ class GameController extends GetxController {
                     } else {
                       resetBoard();
                       await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
-                      //Navigator.of(context).pop(true);
                       await Future.delayed(const Duration(milliseconds: 500));
                       Navigator.pop(context);
-                      Navigator.pop(connectFourPageBuildContext); //anders braindead aber machste nix
+                      Navigator.pop(connectFourPageBuildContext!); //anders braindead aber machste nix
                     }
                   },
                   child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Go Back'),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text("Go Back"),
                   ),
                 ),
               ],
@@ -262,12 +262,9 @@ class GameController extends GetxController {
     );
 
     StreamSubscription<String>? subscription;
-
     if(MultiplayerState.isClient()) {
-
       subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
         JsonData jsonData = JsonData.fromJsonString(data);
-
         if(jsonData is GameEndData) {
           if(jsonData.reset) {
             resetBoard();
@@ -277,15 +274,13 @@ class GameController extends GetxController {
             resetBoard();
             Navigator.of(diaContext!).pop(true);
 
-            log.info("Routing service is: ${MultiplayerState.clientRoutingService != null} ");
-            log.info("Received the following data: $jsonData");
+            log..info("Routing service is: ${MultiplayerState.clientRoutingService != null} ")
+            ..info("Received the following data: $jsonData");
           }
           subscription!.cancel();
         }
       });
     }
-
-
   }
 
   int checkForVerticalWin(int columnNumber) {
@@ -327,14 +322,10 @@ class GameController extends GetxController {
   }
 
   List<int> getRowAsList(int columnNumber) {
-    List<int> colm = board[columnNumber].reversed.toList();
-    print("Column: $colm");
     int rowIndex = (board[columnNumber].length - 1) -
         board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
     List<int> rowEntries = [];
     board.forEach((column) => rowEntries.add(column[rowIndex]));
-    print("row: $rowEntries");
-
     return rowEntries;
   }
 
@@ -343,7 +334,6 @@ class GameController extends GetxController {
     int rowMax = 5; //max indices of the lists representing the field
     int rowIndex = (board[columnNumber].length - 1) -
         board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
-
     List<int> upwardsDiagonal =
         getUpwardsDiagonalAsList(columnNumber, rowIndex, columnMax, rowMax);
     List<int> downwardsDiagonal =
@@ -380,7 +370,7 @@ class GameController extends GetxController {
       downwardsDiagonal.add(curColumn[rowCounter]);
     }
 
-    print("DownardsDiagonal: $downwardsDiagonal");
+    log.finer("DownardsDiagonal: $downwardsDiagonal");
 
     return downwardsDiagonal;
   }
@@ -409,7 +399,7 @@ class GameController extends GetxController {
       upwardsDiagonal.insert(0, curColumn[rowCounter]);
     }
 
-    print("UpwardsDiagonal: $upwardsDiagonal");
+    log.finer("UpwardsDiagonal: $upwardsDiagonal");
 
     return upwardsDiagonal;
   }
@@ -418,12 +408,7 @@ class GameController extends GetxController {
 
   Future<void> startListening() async {
     int trackingNumber = tempTrackingNumber++;
-
-    log.info("stillListening has jus been called with: $trackingNumber");
-
-    /*if(MultiplayerState.isClient() && !MultiplayerState.clientRoutingService!.isNavigatorPaused()) {
-      MultiplayerState.clientRoutingService?.pauseNavigator();
-    } */
+    log.finer("stillListening has jus been called with: $trackingNumber");
 
     late StreamSubscription<String>? subscription;
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
@@ -431,53 +416,49 @@ class GameController extends GetxController {
       JsonData jsonData = JsonData.fromJsonString(data);
 
       if(jsonData is GameEndData && MultiplayerState.isClient()) {
-        log.info("stopping listening with: $trackingNumber");
+        log.finer("stopping listening with: $trackingNumber");
         subscription!.cancel();
         return;
       }
 
       else if(jsonData is Connect4Data) {
         List<List<int>> receivedBoard = jsonData.board;
-        log.info("In startListening(): received '$data' and parsed it to '$receivedBoard'");
+        log.finer("In startListening(): received '$data' and parsed it to '$receivedBoard'");
         int newMoveInColumn = getIndexOfNewElementOfList(board, receivedBoard);
-
         if(newMoveInColumn == -1) {
           subscription!.cancel();
           return;
         }
-
         _turnYellow.value = !_turnYellow.value;
-
-        log.info("new gamecontroller turn yellow: ${turnYellow}");
-        log.info("new _turn yellow: ${_turnYellow.value}");
+        log..finer("new gamecontroller turn yellow: $turnYellow")
+        ..finer("new _turn yellow: ${_turnYellow.value}");
 
         var oldBoard = board;
-        log.info("Old board: $oldBoard");
-        log.info("New board: $receivedBoard");
+        log..finer("Old board: $oldBoard")
+        ..finer("New board: $receivedBoard")
 
-        log.info("newMoveInColumn: $newMoveInColumn");
+        ..finer("newMoveInColumn: $newMoveInColumn");
         board = receivedBoard;
         if (newMoveInColumn != -1) {
-          //checkForWinner(newMoveInColumn);
           if(checkForWinner(newMoveInColumn) != 0) {
             subscription!.cancel();
             return;
           }
         }
         update();
-        log.info("finished listening for new Board from other player");
+        log.finer("finished listening for new Board from other player");
         subscription!.cancel();
       }
       else {
-        log.info("Unknown Datatype received in startListning: $jsonData");
-        log.info("Navigator status: ${MultiplayerState.clientRoutingService != null}");
+        log..finer("Unknown Datatype received in startListning: $jsonData")
+        ..finer("Navigator status: ${MultiplayerState.clientRoutingService != null}");
       }
 
-      log.info("Still listening and received with $trackingNumber: $data");
+      log.finer("Still listening and received with $trackingNumber: $data");
 
     },
         onError: (error) {
-          log.info("Error while trying to listen for Board Update");
+          log.finer("Error while trying to listen for Board Update");
           MultiplayerState.clientRoutingService?.resumeNavigator();
 
           subscription?.cancel();

@@ -1,34 +1,32 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'Connect4Chip.dart';
-
+import "package:flutter/material.dart";
+import "package:naolympics_app/connect4/widgets/connect_4_chip.dart";
 
 enum CellState {
-  EMPTY,
-  YELLOW,
-  RED,
+  empty,
+  yellow,
+  red,
 }
 
 class Cell extends StatelessWidget {
-  final currCellState;
+  final CellState currCellState;
 
-  Cell({
-    Key? key,
+  const Cell({
     required this.currCellState,
+    Key? key,
   }) : super(key: key);
 
   Connect4Chip _buildChip() {
-    switch (this.currCellState) {
-      case CellState.YELLOW:
-        return Connect4Chip(
+    switch (currCellState) {
+      case CellState.yellow:
+        return const Connect4Chip(
           chipColor: Colors.yellow,
         );
-      case CellState.RED:
-        return Connect4Chip(
+      case CellState.red:
+        return const Connect4Chip(
           chipColor: Colors.red,
         );
       default:
-        return Connect4Chip(
+        return const Connect4Chip(
           chipColor: Colors.white,
         );
     }
@@ -41,7 +39,6 @@ class Cell extends StatelessWidget {
         Container(height: 95, width: 100, color: Colors.lightBlueAccent),
         Positioned.fill(
             child: Align(
-          alignment: Alignment.center,
           child: _buildChip(),
         ))
       ],

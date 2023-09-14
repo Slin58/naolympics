@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:logging/logging.dart';
-import '../../screens/game_selection/game_selection.dart';
-import '../../services/routing/route_aware_widgets/route_aware_widget.dart';
-import '../gameController/game_controller.dart';
-import '../widgets/board.dart';
+import "package:flutter/material.dart";
+import "package:get/get.dart";
+import "package:logging/logging.dart";
+import "package:naolympics_app/connect4/gameController/game_controller.dart";
+import "package:naolympics_app/connect4/widgets/board.dart";
+import "package:naolympics_app/screens/game_selection/game_selection.dart";
+import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
 
 class Connect4Screen extends StatelessWidget {
   final GameController gameController = Get.put(GameController());
@@ -18,7 +17,7 @@ class Connect4Screen extends StatelessWidget {
     return WillPopScope(
         onWillPop: () async {
       log.info("Triggered WillPopScope in Connect4Screen");
-      Navigator.push(
+      await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => RouteAwareWidget(
@@ -31,7 +30,7 @@ class Connect4Screen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
                 context,
