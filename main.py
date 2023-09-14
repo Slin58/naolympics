@@ -168,14 +168,14 @@ def choose_game_by_buttons():
                     if counter == 8 and difficulty:
                         if tictactoe_mode:
                             tts.say("Okay, ich spiele gegen dich TicTacTo mit" + get_difficulty_text(
-                                difficulty) + ".Beende jederzeit mit einem der Knöpfe. Gutes Spiel!")
+                                difficulty) + ". Gutes Spiel!")
                             if nao_begins:
                                 play_tictactoe_against_opponent_player1(robotIP, PORT, touch, get_difficulty(difficulty))
                             else:
                                 play_tictactoe_against_opponent_player2(robotIP, PORT, touch, get_difficulty(difficulty))
                         elif connect4_mode:
                             tts.say("Okay, ich spiele gegen dich Vier gewinnt mit" + get_difficulty_text(
-                                difficulty) + ".Beende jederzeit mit einem der Knöpfe. Gutes Spiel!")
+                                difficulty) + ". Gutes Spiel!")
                             if nao_begins:
                                 play_connect_four_against_opponent_player1(robotIP, PORT, touch, get_difficulty(difficulty))
                             else:
@@ -194,7 +194,7 @@ def choose_game_by_buttons():
                         break
 
                     if counter == 8 and connect4_mode and not difficulty:
-                        tts.say("Alles klar, ich spiele gegen mich selbst. Beende jederzeit mit einem der Knöpfe. "
+                        tts.say("Alles klar, ich spiele gegen mich selbst."
                                 "Viel Spaß beim zuschauen!")
                         play_connect_four_against_itself(robotIP, PORT, touch)
                         connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(tts)
@@ -234,7 +234,7 @@ def reset_button_mode_menu(tts):
     return connect4_mode, difficulty, nao_begins, tictactoe_mode
 
 
-def play_tictactoe_against_itself(robotIP, PORT, touch=None):
+def play_tictactoe_against_itself(robotIP, PORT):
     circle_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
@@ -267,14 +267,9 @@ def play_tictactoe_against_itself(robotIP, PORT, touch=None):
             else:
                 movement.movementControl.celebrate2(robotIP, PORT)
             return
-        if touch is not None:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1] and (counter == 7 or counter == 8 or counter == 9):
-                    return
 
-def play_connect_four_against_itself(robotIP, PORT, touch=None):
+
+def play_connect_four_against_itself(robotIP, PORT):
     yellow_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
@@ -307,15 +302,9 @@ def play_connect_four_against_itself(robotIP, PORT, touch=None):
             else:
                 movement.movementControl.celebrate2(robotIP, PORT)
             return
-        if touch is not None:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1] and (counter == 7 or counter == 8 or counter == 9):
-                    return
 
 
-def play_tictactoe_against_opponent_player1(robotIP, PORT, touch=None, difficulty="m"):
+def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
     field_after_move = []
     while True:
 
@@ -352,15 +341,9 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, touch=None, difficult
             else:
                 movement.movementControl.celebrate2(robotIP, PORT)
             return
-        if touch is not None:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1] and (counter == 7 or counter == 8 or counter == 9):
-                    return
 
 
-def play_tictactoe_against_opponent_player2(robotIP, PORT, touch=None, difficulty="m"):
+def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
     field_after_move = \
         [['-', '-', '-'],
          ['-', '-', '-'],
@@ -400,15 +383,9 @@ def play_tictactoe_against_opponent_player2(robotIP, PORT, touch=None, difficult
             else:
                 movement.movementControl.celebrate2(robotIP, PORT)
             return
-        if touch is not None:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1] and (counter == 7 or counter == 8 or counter == 9):
-                    return
 
 
-def play_connect_four_against_opponent_player1(robotIP, PORT, touch=None, difficulty='e'):
+def play_connect_four_against_opponent_player1(robotIP, PORT, difficulty='e'):
     field_after_move = []
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
@@ -445,15 +422,9 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, touch=None, diffic
             else:
                 movement.movementControl.celebrate2(robotIP, PORT)
             return
-        if touch is not None:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1] and (counter == 7 or counter == 8 or counter == 9):
-                    return
 
 
-def play_connect_four_against_opponent_player2(robotIP, PORT, touch=None, difficulty='e'):
+def play_connect_four_against_opponent_player2(robotIP, PORT, difficulty='e'):
     field_after_move = \
         [['-', '-', '-', '-', '-', '-', '-'],
          ['-', '-', '-', '-', '-', '-', '-'],
@@ -497,12 +468,6 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, touch=None, diffic
             else:
                 movement.movementControl.celebrate2(robotIP, PORT)
             return
-        if touch is not None:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1] and (counter == 7 or counter == 8 or counter == 9):
-                    return
 
 
 def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]):
@@ -537,7 +502,7 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
         raw_input("Press Enter to continue...")
 
 
-def test(robotIP, PORT):
+def test_angles(robotIP, PORT):
 
     motionProxy = ALProxy("ALMotion", robotIP, PORT)
 
@@ -570,4 +535,4 @@ if __name__ == "__main__":
     # field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
     #                                       canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
     #                                       gaussian_kernel_size=9)
-    test(robotIP, PORT)
+    test_angles(robotIP, PORT)

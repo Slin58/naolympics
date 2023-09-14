@@ -67,7 +67,7 @@ def detect_connect_four_state(img, debug=[], minRadius=60, maxRadius=120, acc_th
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    circles = cv2.HoughCircles(processed_img, cv2.HOUGH_GRADIENT, 1, circle_distance, param1=200,
+    circles = cv2.HoughCircles(processed_img, 3L, 1, circle_distance, param1=200,
                                param2=acc_thresh, minRadius=minRadius, maxRadius=maxRadius)
     if circles is not None:
         if 2 in debug:
