@@ -4,8 +4,8 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
-import "package:naolympics_app/connect4/connect_four_page.dart";
-import "package:naolympics_app/connect4/widgets/cell.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
+import "package:naolympics_app/screens/connect_4/widgets/cell.dart";
 import "package:naolympics_app/screens/game_selection/game_selection.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
 import "package:naolympics_app/services/network/json/json_data.dart";
@@ -17,7 +17,7 @@ import "package:naolympics_app/utils/ui_utils.dart";
 class GameController extends GetxController {
   static final log = Logger((GameController).toString());
   List<List<int>> board = [];
-  RxBool _turnYellow = true.obs; //ignore: prefer_final_fields
+  RxBool _turnYellow = true.obs;
   // todo: change maybe --> test
   bool get turnYellow => _turnYellow.value;
   bool blockTurn = false;
@@ -178,7 +178,7 @@ class GameController extends GetxController {
 
     blockTurn = true;
     BuildContext? diaContext;
-    await showDialog(context: Get.context!,
+    showDialog(context: Get.context!, //ignore: unawaited_futures
       barrierDismissible: false,
       builder: (context) {
         diaContext = context;
@@ -232,7 +232,7 @@ class GameController extends GetxController {
                     if(MultiplayerState.connection == null) {
                       Navigator.of(context).pop(true);
                       resetBoard();
-                      await Navigator.push( //todo might fuck me
+                      await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => RouteAwareWidget(
@@ -264,15 +264,16 @@ class GameController extends GetxController {
     StreamSubscription<String>? subscription;
     if(MultiplayerState.isClient()) {
       subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+
         JsonData jsonData = JsonData.fromJsonString(data);
         if(jsonData is GameEndData) {
           if(jsonData.reset) {
+            Navigator.pop(diaContext!);
             resetBoard();
-            Navigator.of(diaContext!).pop(true);
           }
           else if(jsonData.goBack) {
             resetBoard();
-            Navigator.of(diaContext!).pop(true);
+            Navigator.pop(diaContext!);
 
             log..info("Routing service is: ${MultiplayerState.clientRoutingService != null} ")
             ..info("Received the following data: $jsonData");

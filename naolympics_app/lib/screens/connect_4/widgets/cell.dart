@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:naolympics_app/connect4/widgets/connect_4_chip.dart";
+import "package:naolympics_app/screens/connect_4/widgets/connect_4_chip.dart";
 
 enum CellState {
   empty,

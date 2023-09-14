@@ -1,11 +1,11 @@
 import "package:flutter/cupertino.dart";
 import "package:get/get.dart";
-import "package:naolympics_app/connect4/gameController/game_controller.dart";
-import "package:naolympics_app/connect4/widgets/cell.dart";
+import 'package:naolympics_app/services/gamemodes/connect_4/game_controller.dart';
+import "package:naolympics_app/screens/connect_4/widgets/cell.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
 
 class BoardColumn extends StatelessWidget {
-  final GameController gameController = Get.find<GameController>(); //todo: test
+  final GameController gameController = Get.find<GameController>();
   late final List<int> chipsInColumn;
   final int columnNumber;
 
@@ -31,7 +31,6 @@ class BoardColumn extends StatelessWidget {
       }
 
       bool moveWasMade = false;
-
       return GestureDetector( //nao specific
           onTap: () {
             if (!gameController.blockTurn && !moveWasMade) {

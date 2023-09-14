@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:get/get.dart";
-import "package:naolympics_app/connect4/gameController/game_controller.dart";
-import "package:naolympics_app/connect4/widgets/board_column.dart";
+import 'package:naolympics_app/services/gamemodes/connect_4/game_controller.dart';
+import "package:naolympics_app/screens/connect_4/widgets/board_column.dart";
 
 class Board extends StatelessWidget {
   final GameController gameController = Get.find<GameController>();

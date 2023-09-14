@@ -19,7 +19,7 @@ class ClientRoutingService {
   static StreamSubscription<String> _setRouteHandling(
       SocketManager socketManager, BuildContext context) {
     return socketManager.broadcastStream.listen(
-            (event) => _handlingIncomingRouteData(event, context),
+        (event) => _handlingIncomingRouteData(event, context),
         onError: (error) =>
             log.severe("Error while receiving routing instructions", error),
         onDone: () => log.info("Done routing."));
@@ -37,12 +37,13 @@ class ClientRoutingService {
     return _routeHanding.isPaused;
   }
 
-  static void _handlingIncomingRouteData(String jsonData,
-      BuildContext context) {
-    try {
-      final navData = JsonData.fromJsonString(jsonData) as NavigationData;
+  static void _handlingIncomingRouteData(String data, BuildContext context) {
+    final jsonData = JsonData.fromJsonString(data);
 
-      if (navData.data == DataType.navigation) {
+    if (jsonData is NavigationData) {
+      NavigationData navData = jsonData;
+
+      if (jsonData.data == DataType.navigation) {
         final remoteIp = MultiplayerState.getRemoteAddress();
         NavigationType navType = navData.navigationType;
 
@@ -65,14 +66,15 @@ class ClientRoutingService {
             Navigator.popUntil(context, (route) => !Navigator.canPop(context));
             break;
           default:
-            log.severe("", UnimplementedError(
-                "Unknown NavigationType received: $navType"));
+            log.severe(
+                "",
+                UnimplementedError(
+                    "Unknown NavigationType received: $navType"));
             break;
         }
       }
-    } on Exception catch (e) {
-      log.severe(
-          "Issue while trying to handle client routing", e);
+    } else {
+      log.warning("Received JsonData of type ${jsonData.runtimeType}");
     }
   }
 
