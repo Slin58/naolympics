@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
-import "package:naolympics_app/screens/connect_four_page.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/tic_tac_toe_page.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
 import "package:naolympics_app/utils/ui_utils.dart";
 
 class GameSelectionPage extends StatefulWidget {
@@ -28,12 +29,19 @@ class GameSelectionState extends State<GameSelectionPage> {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height - appBar.preferredSize.height;
 
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      Navigator.of(context).pop(true);
+      await Future.delayed(const Duration(milliseconds: 500));
+      MultiplayerState.closeConnection();
+      return false;
+    },
+    child: Scaffold(
       appBar: appBar,
       body: Center(
         child: _getGameSelection(),
       ),
-    );
+    ));
   }
 
   Widget _getGameSelection() {

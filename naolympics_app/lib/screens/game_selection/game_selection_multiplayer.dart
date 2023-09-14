@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:naolympics_app/screens/connect_four_page.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/game_selection/game_selection.dart";
 import "package:naolympics_app/screens/tic_tac_toe_page.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
@@ -41,7 +41,6 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
       )
     ];
   }
-
 
   @override
   List<Widget> getNavButtons(BuildContext context) {

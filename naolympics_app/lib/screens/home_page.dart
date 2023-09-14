@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:naolympics_app/screens/find_player_page.dart";
-
 import "package:naolympics_app/screens/game_selection/game_selection.dart";
 
 class HomePage extends StatelessWidget {
