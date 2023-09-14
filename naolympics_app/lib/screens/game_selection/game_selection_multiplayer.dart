@@ -7,7 +7,6 @@ import "package:naolympics_app/services/network/json/json_objects/navigation_dat
 import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
 import "package:naolympics_app/utils/ui_utils.dart";
 
-// das ist so anders hirntot, aber juckt absolut null
 class GameSelectionPageMultiplayer extends GameSelectionPage {
   const GameSelectionPageMultiplayer({super.key});
 

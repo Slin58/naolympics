@@ -62,5 +62,4 @@ class Board extends StatelessWidget {
       ],
     );
   }
-
 }

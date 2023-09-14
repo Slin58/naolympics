@@ -229,7 +229,7 @@ class GameController extends GetxController {
                     if(MultiplayerState.connection == null) {
                       resetBoard();
                       Navigator.pop(context);
-                      Navigator.pop(connectFourPageBuildContext!); //anders braindead aber machste nix
+                      Navigator.pop(connectFourPageBuildContext!);
                     }
                     else if (MultiplayerState.isClient()) {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
@@ -238,7 +238,7 @@ class GameController extends GetxController {
                       await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
                       await Future.delayed(const Duration(milliseconds: 500));
                       Navigator.pop(context);
-                      Navigator.pop(connectFourPageBuildContext!); //anders braindead aber machste nix
+                      Navigator.pop(connectFourPageBuildContext!);
                     }
                   },
                   child: const Padding(

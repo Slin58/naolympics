@@ -16,84 +16,86 @@ class BoardMultiplayer extends StatelessWidget {
   List<BoardColumn> _buildBoardMultiplayer() {
     int currentColNumber = 0;
     return gameController.board
-          .map((boardColumn) => BoardColumn(
-        chipsInColumn: boardColumn,
-        columnNumber: currentColNumber++,
-      ))
-          .toList();
-    }
+        .map((boardColumn) => BoardColumn(
+              chipsInColumn: boardColumn,
+              columnNumber: currentColNumber++,
+            ))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-            return false;
-    },
-    child: Scaffold(
-      backgroundColor: Colors.blueGrey,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => RouteAwareWidget(
-                        (GameSelectionPageMultiplayer).toString(),
-                        child: const GameSelectionPageMultiplayer())));
-          },
-        ),
-        title: Obx(() => Text(
-          gameController.turnYellow
-              ? "Player 1 (yellow)"
-              : "Player 2 (red)",
-          style: TextStyle(
-            color: gameController.turnYellow ? Colors.yellow : Colors.red,
-          ),
-        )),
-      ),
-    body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 100),
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(50),
-              topRight: Radius.circular(50),
-              bottomLeft: Radius.circular(50),
-              bottomRight: Radius.circular(50),
-            ),
-            color: Colors.blueAccent,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blueAccent.withOpacity(0.5),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: const Offset(0, 3),
-              )
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GetBuilder<GameController>(
-                    builder: (gameController) => Row(
-                      children: _buildBoardMultiplayer(),
-                    ),
-                  ),
-                ],
+          return false;
+        },
+        child: Scaffold(
+            backgroundColor: Colors.blueGrey,
+            appBar: AppBar(
+              backgroundColor: Colors.blue,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RouteAwareWidget(
+                              (GameSelectionPageMultiplayer).toString(),
+                              child: const GameSelectionPageMultiplayer())));
+                },
               ),
-            ],
-          ),
-        ),
-      ],
-    )));
+              title: Obx(() => Text(
+                    gameController.turnYellow
+                        ? "Player 1 (yellow)"
+                        : "Player 2 (red)",
+                    style: TextStyle(
+                      color: gameController.turnYellow
+                          ? Colors.yellow
+                          : Colors.red,
+                    ),
+                  )),
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 100),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50),
+                      bottomLeft: Radius.circular(50),
+                      bottomRight: Radius.circular(50),
+                    ),
+                    color: Colors.blueAccent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blueAccent.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GetBuilder<GameController>(
+                            builder: (gameController) => Row(
+                              children: _buildBoardMultiplayer(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )));
   }
-
 }

@@ -4,7 +4,8 @@ class Connect4Chip extends StatelessWidget {
   final Color chipColor;
 
   const Connect4Chip({
-    required this.chipColor, Key? key,
+    required this.chipColor,
+    Key? key,
   }) : super(key: key);
 
   @override
