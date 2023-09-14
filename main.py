@@ -516,6 +516,7 @@ def test_angles(robotIP, PORT):
     [str(x*180/3.14) for x in angles2]
     print(angles2)
 
+
 if __name__ == "__main__":
     # after startup of nao
 
@@ -535,4 +536,6 @@ if __name__ == "__main__":
     # field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
     #                                       canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
     #                                       gaussian_kernel_size=9)
-    test_angles(robotIP, PORT)
+    # test_angles(robotIP, PORT)
+    play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='e')
+    # test(robotIP, PORT)

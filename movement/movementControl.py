@@ -6,6 +6,15 @@ import time
 import armPosition
 
 
+def newRobotVersion(robotIP, port):
+    autonomous_life = ALProxy("ALAutonomousLife", robotIP, port)
+    try:
+        autonomous_life.getAutonomousAbilitiesStatus()
+    except RuntimeError as e:
+        return False
+    return True
+
+
 def crouch(robotIP, port):
     postureProxy = ALProxy("ALRobotPosture", robotIP, port)
     postureProxy.goToPosture("Crouch", 1.0)
@@ -157,6 +166,11 @@ def arm_movement(robotIP, port, arm, position, go_back):
         motionProxy.setStiffnesses("LArm", 1.0)
 
         for i in range(0, 5):
+            if newRobotVersion(robotIP, port) and armPosition.positionL[i] == "ShoulderPitch":  # fix for a bug with the newer naoqi version 2.8.6 with robot 10.30.4.31
+                motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i], (position[i] + 3.5) * almath.TO_RAD, 0.2)
+                print("new version left")
+                continue
+
             motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i], position[i] * almath.TO_RAD, 0.2)
             motionProxy.waitUntilMoveIsFinished()
 
@@ -169,10 +183,13 @@ def arm_movement(robotIP, port, arm, position, go_back):
         # for right arm, use left arm positions with right arm:
         #    multiply: ShoulderRow, ElbowRow, WristYaw and ElbowYaw by (-1) (everything except ShoulderPitch)
 
-        # enable arm control
         motionProxy.setStiffnesses("RArm", 1.0)
 
-        motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0], position[0] * almath.TO_RAD, 0.2)
+        if newRobotVersion(robotIP, port):  # fix for a bug with the newer naoqi version 2.8.6 with robot 10.30.4.31
+            motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0], (position[0] + 3.5) * almath.TO_RAD, 0.2)
+            print("new version right")
+        else:
+            motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0], position[0] * almath.TO_RAD, 0.2)
         motionProxy.waitUntilMoveIsFinished()
         for i in range(1, 5):
             motionProxy.angleInterpolationWithSpeed(armPosition.positionR[i], (position[i] * (-1)) * almath.TO_RAD, 0.2)
@@ -320,7 +337,7 @@ def celebrate2(robotIP, port):
 
 
 if __name__ == "__main__":
-    IP = "10.30.4.31"
+    IP = "10.30.4.13"
     PORT = 9559
 
     # start_position(IP, PORT)

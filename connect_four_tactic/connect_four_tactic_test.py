@@ -58,7 +58,7 @@ if __name__ == "__main__":
         set_point_x(-1, y)
         print_game_state()
 
-        #time.sleep(2)
+        # time.sleep(2)
 
         # y = input("Reihe: ")
         # while field[0][y] != '-':
@@ -68,5 +68,3 @@ if __name__ == "__main__":
 
         set_point_o(-1, y)
         print_game_state()
-
-
