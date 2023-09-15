@@ -16,60 +16,6 @@ robotIP = "10.30.4.13"
 PORT = 9559
 
 
-def choose_game_by_voice():  # returns "tictactoe" or "4 gewinnt" depending on what you say -> after 20 seconds without recognized word returns None
-    asr = ALProxy("ALSpeechRecognition", robotIP, PORT)
-    memory = ALProxy("ALMemory", robotIP, PORT)
-    tts = ALProxy("ALTextToSpeech", robotIP, PORT)
-
-    def on_word_recognized(value):
-        print(value)
-        recognized_word = value[0]
-        print("Recognized:", recognized_word)
-
-        if recognized_word == "Hello":
-            tts.say("Hello!")
-
-    asr.setLanguage("German")
-
-    vocabulary = ["tictactoe", "Tictactoe", "Gewinnt", "gewinnt", "vier", "Vier"]
-    asr.setVocabulary(vocabulary, True)
-    asr.setParameter("Sensitivity", 0.4)
-
-    asr.subscribe("MySpeechRecognition")
-    memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
-
-    empty_data = ['', 0]
-    memory.insertData("WordRecognized", empty_data)
-
-    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
-    data = memory.getData("WordRecognized")
-
-    print ("Speech recognition engine started")
-    tts.say("Was möchtest du spielen?")
-
-    counter = 0
-    while True:
-        if 'Tictactoe' in data[0] or 'tictactoe' in data[0]:
-            tts.say("Okay lass uns Tictactoe spielen!")
-            memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
-            asr.unsubscribe("MySpeechRecognition")
-            return "tictactoe"
-        elif 'gewinnt' in data[0] or 'vier' in data[0] and 'Gewinnt' in data[0] and 'Vier' in data[0]:
-            tts.say("Okay lass uns 4 gewinnt spielen!")
-            memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
-            asr.unsubscribe("MySpeechRecognition")
-            return "4 gewinnt"
-        elif counter > 20:
-            tts.say("Ich hab dich leider nicht verstanden")
-            memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
-            asr.unsubscribe("MySpeechRecognition")
-            return None
-        counter += 1
-        time.sleep(1)
-
-        data = memory.getData("WordRecognized")
-
-
 def get_random_nao_name():
     names = ["Julius", "Dieter", "Norbert", "Hugo", "Antonia", "Emil", "Martha", "Theodor", "Rosina", "Franz",
              "Adelheid", "Egon", "Elsa", "Hermann", "Cäcilie", "Oskar", "Karoline", "Rudolph", "Theresa", "Ferdinand",
@@ -93,162 +39,322 @@ def get_difficulty_text(difficulty):
         return "Schwierigkeitsstufe unmöglich. Ich werde dich vernichten"
 
 
-def get_difficulty(difficulty):
-    if difficulty == 1:
-        return "e"
-    elif difficulty == 2:
-        return "m"
-    elif difficulty == 3:
-        return "h"
-    elif difficulty == 4:
-        return "i"
+def choose_game_by_voice(asr, memory, tts):
+    def on_word_recognized(value):
+        print(value)
+        recognized_word = value[0]
+        print("Recognized:", recognized_word)
+
+        if recognized_word == "Hello":
+            tts.say("Hello!")
+
+    asr.setLanguage("German")
+
+    vocabulary = ["tictactoe", 0.4, "gewinnt", 0.4, "vier", 0.9, "ende", 0.6]
+    asr.setVocabulary(vocabulary, True)
+    # asr.setParameter("Sensitivity", 0.4)
+
+    asr.subscribe("MySpeechRecognition")
+    memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
+
+    empty_data = ['', 0]
+    memory.insertData("WordRecognized", empty_data)
+
+    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
+    data = memory.getData("WordRecognized")
+
+    print ("Speech recognition engine started")
+    tts.say("Was möchtest du spielen? tictactoe, vier gewinnt oder ende.")
+
+    counter = 0
+    while True:
+        if 'tictactoe' in data[0]:
+            tts.say("Okay lass uns Tictactoe spielen!")
+            game = True
+            break
+        elif 'gewinnt' in data[0] or 'vier' in data[0]:
+            tts.say("Okay lass uns 4 gewinnt spielen!")
+            game = False
+            break
+        elif 'ende' in data[0]:
+            tts.say("Okay bis zum nächsten Mal!")
+            game = None
+            break
+        counter += 1
+        time.sleep(0.2)
+
+    memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
+    asr.unsubscribe("MySpeechRecognition")
+    return game
 
 
-def choose_game_by_buttons():
+def choose_start_player_by_voice(asr, memory, tts):
+    def on_word_recognized(value):
+        print(value)
+        recognized_word = value[0]
+        print("Recognized:", recognized_word)
+
+        if recognized_word == "Hello":
+            tts.say("Hello!")
+
+    asr.setLanguage("German")
+
+    vocabulary = ["Ich", 0.5, "Du", 0.5, "selbst", 0.5]
+    asr.setVocabulary(vocabulary, True)
+    # asr.setParameter("Sensitivity", 0.4)
+
+    asr.subscribe("MySpeechRecognition")
+    memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
+
+    empty_data = ['', 0]
+    memory.insertData("WordRecognized", empty_data)
+
+    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
+    data = memory.getData("WordRecognized")
+
+    print ("Speech recognition engine started")
+    tts.say("Wer soll anfangen? Ich, Du oder gegen mich selbst")
+
+    counter = 0
+    while True:
+        if 'Ich' in data[0]:
+            tts.say("Okay, du beginnst.")
+            player = 2
+            break
+        elif 'Du' in data[0]:
+            tts.say("Okay, ich beginne.")
+            player = 1
+            break
+        elif 'selbst' in data[0]:
+            tts.say("Okay, ich spiele gegen mich selbst. Viel Spaß beim Zuschauen!")
+            player = 0
+            break
+        counter += 1
+        time.sleep(0.2)
+
+    memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
+    asr.unsubscribe("MySpeechRecognition")
+    return player
+
+
+def choose_difficulty_by_voice(asr, memory, tts):
+    def on_word_recognized(value):
+        print(value)
+        recognized_word = value[0]
+        print("Recognized:", recognized_word)
+
+        if recognized_word == "Hello":
+            tts.say("Hello!")
+
+    asr.setLanguage("German")
+
+    vocabulary = ["Leicht", 0.5, "Mittel", 0.5, "Schwer", 0.5, "Unmöglich", 0.5]
+    asr.setVocabulary(vocabulary, True)
+    # asr.setParameter("Sensitivity", 0.4)
+
+    asr.subscribe("MySpeechRecognition")
+    memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
+
+    empty_data = ['', 0]
+    memory.insertData("WordRecognized", empty_data)
+
+    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
+    data = memory.getData("WordRecognized")
+
+    print ("Speech recognition engine started")
+    tts.say("Welche Schwierigkeitsstufe? Leicht, Mittel, Schwer oder Unmöglich")
+
+    counter = 0
+    while True:
+        if 'Leicht' in data[0]:
+            difficulty = 1
+            tts.say("Okay, " + get_difficulty_text(difficulty))
+            break
+        elif 'Mittel' in data[0]:
+            difficulty = 2
+            tts.say("Okay, " + get_difficulty_text(difficulty))
+            break
+        elif 'Schwer' in data[0]:
+            difficulty = 3
+            tts.say("Okay, " + get_difficulty_text(difficulty))
+            break
+        elif 'Unmöglich' in data[0]:
+            difficulty = 4
+            tts.say("Okay, " + get_difficulty_text(difficulty))
+            break
+        counter += 1
+        time.sleep(0.2)
+
+    memory.unsubscribeToEvent("WordRecognized", "MySpeechRecognition")
+    asr.unsubscribe("MySpeechRecognition")
+    return difficulty
+
+
+def play_games_by_voice():
+    try:
+        movementControl.start_position(robotIP, PORT)
+        asr = ALProxy("ALSpeechRecognition", robotIP, PORT)
+        memory = ALProxy("ALMemory", robotIP, PORT)
+        tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+
+        tts.say("Hallo, ich bin" + get_random_nao_name())
+        while True:
+            tictactoe_mode = choose_game_by_voice(asr, memory, tts)
+            if tictactoe_mode:
+                return
+
+            player = choose_start_player_by_voice(asr, memory, tts)
+
+            difficulty = 0
+            if player != 0:
+                difficulty = choose_difficulty_by_voice(asr, memory, tts)
+
+            if tictactoe_mode:
+                if player == 0:
+                    play_tictactoe_against_itself(robotIP, PORT)
+                else:
+                    tts.say(
+                        "Okay, ich spiele gegen dich TicTacTo mit" + get_difficulty_text(difficulty) + ". Gutes Spiel!")
+                    play_tictactoe_against_opponent(robotIP, PORT, player, difficulty)
+            else:
+                if player == 0:
+                    play_connect_four_against_itself(robotIP, PORT)
+                else:
+                    tts.say("Okay, ich spiele gegen dich Vier gewinnt mit" + get_difficulty_text(
+                        difficulty) + ". Gutes Spiel!")
+                    play_connect_four_against_opponent(robotIP, PORT, player, difficulty)
+
+            tts.say("Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, hinten Vier gewinnt")
+
+    except RuntimeError:
+        tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+        tts.say("Tut mir leid, etwas ist schief gelaufen. Starten wir von vorne!")
+        play_games_by_buttons()
+
+
+def choose_game_by_buttons(touch, tts):
+    tts.say("Vorne Tictacto, Hinten Vier gewinnt, Mitte Beenden")
+    while True:
+        status = touch.getStatus()
+
+        if status[0][1]:
+            print "No.", status[7], status[8], status[9]
+
+            if status[7][1]:  # front -> tictactoe
+                tts.say("Alles klar, TicTacTo.")
+                return True
+            if status[8][1]:  # middle -> end
+                tts.say("Bis zum nächsten mal!")
+                return None
+            if status[9][1]:  # rear -> connectfour
+                tts.say("Alles klar, Vier gewinnt.")
+                return False
+        time.sleep(0.2)
+
+
+def choose_start_player_by_buttons(touch, tts):
+    tts.say("Vorne: Ich starte. Hinten: Du startest. Mitte: Ich spiele gegen mich selbst")
+    while True:
+        status = touch.getStatus()
+
+        if status[0][1]:
+            print "No.", status[7], status[8], status[9]
+            if status[7][1]:  # front -> is player1
+                tts.say("Alles klar, ich beginne.")
+                return 1
+            if status[8][1]:  # middle -> play against itself
+                tts.say("Alles klar, ich spiele gegen mich selbst. Viel Spaß beim Zuschauen!")
+                return 0
+            if status[9][1]:  # rear -> is player2
+                tts.say("Alles klar, du beginnst.")
+                return 2
+        time.sleep(0.2)
+
+
+def choose_difficulty_by_buttons(touch, tts):
+    tts.say("Wähle die Schwierigkeitsstufe. Navigiere mit vorne und hinten und bestätige mit Mitte! Gerade bin ich auf leicht eingestellt!")
+    difficulty = 1
+
+    while True:  # Auswahl Schwierigkeitsstufe
+        status = touch.getStatus()
+
+        if status[0][1]:
+            print "No.", status[7], status[8], status[9]
+
+            if status[7][1]:  # front -> higher difficulty
+                if difficulty >= 4:
+                    difficulty = 1
+                else:
+                    difficulty += 1
+            if status[8][1]:  # middle -> end
+                tts.say(get_difficulty_text(difficulty))
+                return difficulty
+            if status[9][1]:  # rear -> lower difficulty
+                if difficulty <= 1:
+                    difficulty = 4
+                else:
+                    difficulty -= 1
+            tts.say(get_difficulty_text(difficulty))
+            time.sleep(0.2)
+
+
+def play_games_by_buttons():
     try:
         movementControl.start_position(robotIP, PORT)
         touch = ALProxy("ALTouch", robotIP, PORT)
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+
         tts.say(
-            "Hallo, ich bin" + get_random_nao_name() + ". Was möchtest du spielen? Navigiere mit den Knöpfen auf meinem Kopf. Vorne Tictacto, hinten Vier gewinnt, Mitte Beenden")
-        vs_options_text = "Vorne: Ich starte. Hinten: Du startest. Mitte: Ich spiele gegen mich selbst"
-        difficulty_setting_text = "Wähle die Schwierigkeitsstufe. Navigiere mit vorne und hinten und bestätige mit Mitte! Gerade bin ich auf leicht eingestellt!"
-        tictactoe_mode = False
-        connect4_mode = False
-        nao_begins = False
-        difficulty = 0
-
+            "Hallo, ich bin" + get_random_nao_name() + ". Was möchtest du spielen? Navigiere mit den Knöpfen auf meinem Kopf.")
         while True:
-            status = touch.getStatus()
-            counter = 0
-            for e in status:
-                if e[1]:
-                    print "No.", counter, e
-                    if counter == 7 and not tictactoe_mode and not connect4_mode and not difficulty:
-                        tictactoe_mode = True
-                        tts.say("Alles klar, TicTacTo. " + vs_options_text)
-                        break
+            tictactoe_mode = choose_game_by_buttons(touch, tts)
+            if tictactoe_mode:
+                return
 
-                    if counter == 8 and tictactoe_mode and not difficulty:
-                        tts.say("Alles klar, ich spiele gegen mich selbst. Beende jederzeit mit einem der Knöpfe. "
-                                "Viel Spaß beim zuschauen!")
-                        play_tictactoe_against_itself(robotIP, PORT, touch)
-                        connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(tts)
-                        break
+            player = choose_start_player_by_buttons(touch, tts)
 
-                    if counter == 7 and tictactoe_mode and not difficulty:
-                        difficulty = 1
-                        nao_begins = True
+            difficulty = 0
+            if player != 0:
+                difficulty = choose_difficulty_by_buttons(touch, tts)
 
-                        tts.say("Alles klar, ich beginne. " + difficulty_setting_text)
-                        break
+            if tictactoe_mode:
+                if player == 0:
+                    play_tictactoe_against_itself(robotIP, PORT)
+                else:
+                    tts.say(
+                        "Okay, ich spiele gegen dich TicTacTo mit" + get_difficulty_text(difficulty) + ". Gutes Spiel!")
+                    play_tictactoe_against_opponent(robotIP, PORT, player, difficulty)
+            else:
+                if player == 0:
+                    play_connect_four_against_itself(robotIP, PORT)
+                else:
+                    tts.say("Okay, ich spiele gegen dich Vier gewinnt mit" + get_difficulty_text(
+                        difficulty) + ". Gutes Spiel!")
+                    play_connect_four_against_opponent(robotIP, PORT, player, difficulty)
 
-                    if counter == 9 and tictactoe_mode and not difficulty:
-                        difficulty = 1
-                        tts.say(
-                            "Alles klar, du beginnst. " + difficulty_setting_text)
-                        break
+            tts.say("Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, hinten Vier gewinnt")
 
-                    if counter == 7 and difficulty:
-                        difficulty += 1
-                        if difficulty == 5:
-                            difficulty = 1
-                        difficulty_text = get_difficulty_text(difficulty)
-                        tts.say(difficulty_text)
-                        break
-
-                    if counter == 9 and difficulty:
-                        difficulty -= 1
-                        if difficulty == 0:
-                            difficulty = 4
-                        difficulty_text = get_difficulty_text(difficulty)
-                        tts.say(difficulty_text)
-                        break
-
-                    if counter == 8 and difficulty:
-                        if tictactoe_mode:
-                            tts.say("Okay, ich spiele gegen dich TicTacTo mit" + get_difficulty_text(
-                                difficulty) + ". Gutes Spiel!")
-                            if nao_begins:
-                                play_tictactoe_against_opponent_player1(robotIP, PORT, touch, get_difficulty(difficulty))
-                            else:
-                                play_tictactoe_against_opponent_player2(robotIP, PORT, touch, get_difficulty(difficulty))
-                        elif connect4_mode:
-                            tts.say("Okay, ich spiele gegen dich Vier gewinnt mit" + get_difficulty_text(
-                                difficulty) + ". Gutes Spiel!")
-                            if nao_begins:
-                                play_connect_four_against_opponent_player1(robotIP, PORT, touch, get_difficulty(difficulty))
-                            else:
-                                play_connect_four_against_opponent_player2(robotIP, PORT, touch, get_difficulty(difficulty))
-                        connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(tts)
-                        break
-
-                    if counter == 8 and not connect4_mode and not tictactoe_mode and not difficulty:
-                        tts.say("Bis zum nächsten mal!")
-                        return
-
-                    if counter == 9 and not connect4_mode and not tictactoe_mode and not difficulty:
-                        connect4_mode = True
-
-                        tts.say("Alles klar, Vier gewinnt. " + vs_options_text)
-                        break
-
-                    if counter == 8 and connect4_mode and not difficulty:
-                        tts.say("Alles klar, ich spiele gegen mich selbst."
-                                "Viel Spaß beim zuschauen!")
-                        play_connect_four_against_itself(robotIP, PORT, touch)
-                        connect4_mode, difficulty, nao_begins, tictactoe_mode = reset_button_mode_menu(tts)
-                        break
-
-                    if counter == 7 and connect4_mode and not difficulty:
-                        difficulty = 1
-                        nao_begins = True
-                        tts.say(
-                            "Alles klar, ich beginne. " + difficulty_setting_text)
-                        break
-
-                    if counter == 9 and connect4_mode and not difficulty:
-                        difficulty = 1
-                        tts.say(
-                            "Alles klar, du beginnst. " + difficulty_setting_text)
-                        break
-
-                counter += 1
-
-            print "----"
-            time.sleep(0.2)
     except RuntimeError:
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
         tts.say("Tut mir leid, etwas ist schief gelaufen. Starten wir von vorne!")
-        choose_game_by_buttons()
-
-
-def reset_button_mode_menu(tts):
-    movementControl.start_position(robotIP, PORT)
-    tts.say("Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, "
-            "hinten Vier gewinnt")
-    tictactoe_mode = False
-    connect4_mode = False
-    nao_begins = False
-    difficulty = 0
-    return connect4_mode, difficulty, nao_begins, tictactoe_mode
+        play_games_by_buttons()
 
 
 def play_tictactoe_against_itself(robotIP, PORT):
     circle_turn = True
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img, debug=[],  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9) # field = [['O', 'O', 'X'], ['X', 'X', '-'], ['-', 'X', 'O']]
+        field = vision.detect_tictactoe_state(img, debug=[], minRadius=75, maxRadius=95, acc_thresh=15,
+                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                              gaussian_kernel_size=9)
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                                  gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -304,22 +410,32 @@ def play_connect_four_against_itself(robotIP, PORT):
             return
 
 
-def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
-    field_after_move = []
+def play_tictactoe_against_opponent(robotIP, PORT, player=1, difficulty=2):
+    if player == 1:
+        field_after_move = []
+        signOwn = 'O'
+        signOpponent = 'X'
+    else:
+        field_after_move = \
+            [['-', '-', '-'],
+             ['-', '-', '-'],
+             ['-', '-', '-']]
+        signOwn = 'X'
+        signOpponent = 'O'
     while True:
 
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+        field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                              canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                              gaussian_kernel_size=9)
         field_none_counter = 0
         while field is None:
             field_none_counter += 1
             time.sleep(0.2)
             img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
+            field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
+                                                  canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
+                                                  gaussian_kernel_size=9)
             if field is None and field_none_counter > 5:
                 print("Game over")
                 return
@@ -328,11 +444,11 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
             continue
 
         # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = tictactoe_tactic.next_move(field, signOwn='O', signOpponent='X', signEmpty='-',
+        result, winning = tictactoe_tactic.next_move(field, signOwn=signOwn, signOpponent=signOpponent, signEmpty='-',
                                                      difficulty=difficulty)
         print(result)
 
-        field_after_move = tictactoe_tactic.get_field_after_move(field, result, 'O')
+        field_after_move = tictactoe_tactic.get_field_after_move(field, result, signOwn)
 
         movementControl.click_tic_tac_toe(robotIP, PORT, result)
         if winning:
@@ -343,50 +459,22 @@ def play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty="m"):
             return
 
 
-def play_tictactoe_against_opponent_player2(robotIP, PORT, difficulty="m"):
-    field_after_move = \
-        [['-', '-', '-'],
-         ['-', '-', '-'],
-         ['-', '-', '-']]
-    while True:
+def play_connect_four_against_opponent(robotIP, PORT, player=1, difficulty=2):
+    if player == 1:
+        field_after_move = []
+        signOwn = 'Y'
+        signOpponent = 'R'
+    else:
+        field_after_move = \
+            [['-', '-', '-', '-', '-', '-', '-'],
+             ['-', '-', '-', '-', '-', '-', '-'],
+             ['-', '-', '-', '-', '-', '-', '-'],
+             ['-', '-', '-', '-', '-', '-', '-'],
+             ['-', '-', '-', '-', '-', '-', '-'],
+             ['-', '-', '-', '-', '-', '-', '-']]
+        signOwn = 'R'
+        signOpponent = 'Y'
 
-        img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
-        field_none_counter = 0
-        while field is None:
-            field_none_counter += 1
-            time.sleep(0.2)
-            img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_tictactoe_state(img,  minRadius=75, maxRadius=95, acc_thresh=15,
-                                          canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-                                          gaussian_kernel_size=9)
-            if field is None and field_none_counter > 5:
-                print("Game over")
-                return
-
-        if field == field_after_move or field is None:
-            time.sleep(0.2)
-            continue
-
-        # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = tictactoe_tactic.next_move(field, signOwn='X', signOpponent='O', signEmpty='-',
-                                                     difficulty=difficulty)
-        print(result)
-
-        field_after_move = tictactoe_tactic.get_field_after_move(field, result, 'X')
-        movementControl.click_tic_tac_toe(robotIP, PORT, result)
-        if winning:
-            if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
-            else:
-                movement.movementControl.celebrate2(robotIP, PORT)
-            return
-
-
-def play_connect_four_against_opponent_player1(robotIP, PORT, difficulty='e'):
-    field_after_move = []
     while True:
         img = vision.get_image_from_nao(ip=robotIP, port=PORT)
         field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
@@ -409,56 +497,14 @@ def play_connect_four_against_opponent_player1(robotIP, PORT, difficulty='e'):
         else:
             print("comparison not successful")
         # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = connect_four_tactic.next_move(field, signOwn='Y', signOpponent='R', signEmpty='-',
+        result, winning = connect_four_tactic.next_move(field, signOwn=signOwn, signOpponent=signOpponent,
+                                                        signEmpty='-',
                                                         difficulty=difficulty)
         field_after_move = field
-        field_after_move = connect_four_tactic.set_point_y(field_after_move, -1, result)
-        print(result)
-
-        movementControl.click_connect_four(robotIP, PORT, result)
-        if winning:
-            if random.randint(0, 1):
-                movement.movementControl.celebrate1(robotIP, PORT)
-            else:
-                movement.movementControl.celebrate2(robotIP, PORT)
-            return
-
-
-def play_connect_four_against_opponent_player2(robotIP, PORT, difficulty='e'):
-    field_after_move = \
-        [['-', '-', '-', '-', '-', '-', '-'],
-         ['-', '-', '-', '-', '-', '-', '-'],
-         ['-', '-', '-', '-', '-', '-', '-'],
-         ['-', '-', '-', '-', '-', '-', '-'],
-         ['-', '-', '-', '-', '-', '-', '-'],
-         ['-', '-', '-', '-', '-', '-', '-']]
-    while True:
-        img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-        field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
-                                                 circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
-                                                 erode_iterations=1, gaussian_kernel_size=13)
-        field_none_counter = 0
-        while field is None:  # while field is None mit counter bis 3
-            field_none_counter += 1
-            time.sleep(0.5)
-            img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-            field = vision.detect_connect_four_state(img, debug=[6], minRadius=55, maxRadius=65, acc_thresh=10,
-                                                     circle_distance=120, canny_upper_thresh=30, dilate_iterations=4,
-                                                     erode_iterations=1, gaussian_kernel_size=13)
-            if field is None and field_none_counter > 5:
-                print("Game over")
-                return
-        if field == field_after_move or field is None:
-            time.sleep(0.2)
-            continue
+        if player == 1:
+            field_after_move = connect_four_tactic.set_point_y(field_after_move, -1, result)
         else:
-            print("comparison not successful")
-
-        # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
-        result, winning = connect_four_tactic.next_move(field, signOwn='R', signOpponent='Y', signEmpty='-',
-                                                        difficulty=difficulty)
-        field_after_move = field
-        field_after_move = connect_four_tactic.set_point_r(field_after_move, -1, result)
+            field_after_move = connect_four_tactic.set_point_r(field_after_move, -1, result)
         print(result)
 
         movementControl.click_connect_four(robotIP, PORT, result)
@@ -470,8 +516,10 @@ def play_connect_four_against_opponent_player2(robotIP, PORT, difficulty='e'):
             return
 
 
-def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]):
-    # disable autonomous mode
+def calibrate(modes=None):
+    if modes is None:
+        modes = ["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]
+        # disable autonomous mode
     if "disable_autonomous" in modes:
         print("Disabling autonomous life...")
         movementControl.disable_autonomous_life(robotIP, PORT)
@@ -503,17 +551,16 @@ def calibrate(modes=["disable_autonomous", "z_angle", "x_angle", "y_angle", "vis
 
 
 def test_angles(robotIP, PORT):
-
     motionProxy = ALProxy("ALMotion", robotIP, PORT)
 
     angles1 = motionProxy.getAngles("Head", False)
     print "Eingestellte Winkel:"
-    [str(x*180/3.14) for x in angles1]
+    [str(x * 180 / 3.14) for x in angles1]
     print(angles1)
 
     angles2 = motionProxy.getAngles("Head", True)
     print "Tatsaechliche Winkel:"
-    [str(x*180/3.14) for x in angles2]
+    [str(x * 180 / 3.14) for x in angles2]
     print(angles2)
 
 
@@ -521,14 +568,14 @@ if __name__ == "__main__":
     # after startup of nao
 
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("-i", "--ip",type=str, help="robot IP address")
+    argParser.add_argument("-i", "--ip", type=str, help="robot IP address")
     argParser.add_argument("-p", "--port", type=int, help="robot Port")
     args = argParser.parse_args()
     if args.ip:
         robotIP = args.ip
     if args.port:
         PORT = args.port
-    # calibrate(["y_angle"])
+    # calibrate(["y_angle", "start_position"])
     # vision.record_image_from_nao("test.png", robotIP, PORT)
     # choose_game_by_buttons()
     # vision.record_image_from_nao("connect4_doku3fsf.png", robotIP, PORT)
@@ -537,5 +584,6 @@ if __name__ == "__main__":
     #                                       canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
     #                                       gaussian_kernel_size=9)
     # test_angles(robotIP, PORT)
-    play_tictactoe_against_opponent_player1(robotIP, PORT, difficulty='e')
     # test(robotIP, PORT)
+    play_games_by_buttons()
+    # play_tictactoe_against_opponent(robotIP, PORT, 1, difficulty=3)

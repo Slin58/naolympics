@@ -80,7 +80,10 @@ def start_position(robotIP, port):
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
-    motionProxy.angleInterpolationWithSpeed("HeadPitch", 8.0 * almath.TO_RAD, 0.2)
+    if newRobotVersion(robotIP, port):
+        motionProxy.angleInterpolationWithSpeed("HeadPitch", 15.0 * almath.TO_RAD, 0.2)
+    else:
+        motionProxy.angleInterpolationWithSpeed("HeadPitch", 8.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
     start_position_l(robotIP, port)
     start_position_r(robotIP, port)
@@ -159,7 +162,10 @@ def arm_movement(robotIP, port, arm, position, go_back):
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
-    motionProxy.angleInterpolationWithSpeed("HeadPitch", 8.0 * almath.TO_RAD, 0.2)
+    if newRobotVersion(robotIP, port):
+        motionProxy.angleInterpolationWithSpeed("HeadPitch", 16.0 * almath.TO_RAD, 0.2)
+    else:
+        motionProxy.angleInterpolationWithSpeed("HeadPitch", 8.0 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
 
     if arm == "L":
@@ -167,7 +173,7 @@ def arm_movement(robotIP, port, arm, position, go_back):
 
         for i in range(0, 5):
             if newRobotVersion(robotIP, port) and armPosition.positionL[i] == "ShoulderPitch":  # fix for a bug with the newer naoqi version 2.8.6 with robot 10.30.4.31
-                motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i], (position[i] + 3.5) * almath.TO_RAD, 0.2)
+                motionProxy.angleInterpolationWithSpeed(armPosition.positionL[i], (position[i] - 3.5) * almath.TO_RAD, 0.2)
                 print("new version left")
                 continue
 
@@ -186,7 +192,7 @@ def arm_movement(robotIP, port, arm, position, go_back):
         motionProxy.setStiffnesses("RArm", 1.0)
 
         if newRobotVersion(robotIP, port):  # fix for a bug with the newer naoqi version 2.8.6 with robot 10.30.4.31
-            motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0], (position[0] + 3.5) * almath.TO_RAD, 0.2)
+            motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0], (position[0] - 3.5) * almath.TO_RAD, 0.2)
             print("new version right")
         else:
             motionProxy.angleInterpolationWithSpeed(armPosition.positionR[0], position[0] * almath.TO_RAD, 0.2)
@@ -343,6 +349,7 @@ if __name__ == "__main__":
     # start_position(IP, PORT)
     # after startup of nao
     # disable_autonomous_life(IP, PORT)
+    # crouch(IP, PORT)
     # stand(IP, PORT)
 
     # tablet positioning

@@ -5,7 +5,7 @@ import random
 # restructure idea: do methods do best move, do good move, do okay move, do bad move
 # -> than for every amountOfEmptyFields it is decided depending on how difficult the game should be which move is done
 
-# difficulties: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
+# difficulties: 4 -> impossible, 3 -> hard, 2 -> medium, 1 -> easy
 def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
     amountEmpty = 0
     for i in range(0, len(field)):
@@ -21,35 +21,35 @@ def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
     amountsOpponent = amounts(field, signOpponent)
 
     if amountEmpty == 9:
-        if difficulty == 'i':
+        if difficulty == 4:
             print("play in random corner")
             return get_random_empty_corner(field, signEmpty), False
-        elif difficulty == 'h':
+        elif difficulty == 3:
             print("play middle")
             return 4, False
-        elif difficulty == 'm' or difficulty == 'e':
+        elif difficulty == 2 or difficulty == 1:
             print("play in random edge")
             return get_random_empty_edge(field, signEmpty), False
 
     if amountEmpty == 8:
-        if difficulty == 'e' or difficulty == 'm':
+        if difficulty == 1 or difficulty == 2:
             return get_random_empty_edge(field, signEmpty), False
 
         # if placed in a corner: Play middle
         if field[0][0] == signOpponent or field[0][2] == signOpponent or field[2][0] == signOpponent or field[2][2] == signOpponent:
-            if difficulty == 'h':
+            if difficulty == 3:
                 print("play random corner")
                 return get_random_empty_corner(field, signEmpty), False
-            if difficulty == 'i':
+            if difficulty == 4:
                 print("play middle")
                 return 4, False
 
         return get_random_empty_corner(field, signEmpty), False
 
     if amountEmpty == 7:
-        if difficulty == 'e':
+        if difficulty == 1:
             return get_random_empty_edge(field, signEmpty), False
-        if difficulty == 'm':
+        if difficulty == 2:
             for i in range(0, len(amountsOwn)):
                 if amountsOwn[i] == 1 and amountsOpponent[i] == 0:
                     print("set mark next to other mark")
@@ -126,7 +126,7 @@ def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
             return get_empty_places_in(field, i, signEmpty)[0], True
 
     # check if you have to defend
-    if difficulty == 'i' or difficulty == 'h' or difficulty == 'm':
+    if difficulty == 4 or difficulty == 3 or difficulty == 2:
         for i in range(0, len(amountsOwn)):
             if amountsOpponent[i] == 2 and amountsOwn[i] == 0:
                 print("defend")
@@ -134,7 +134,7 @@ def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
 
     # set mark where ever you can generate two pairs of two (Zwickmuehle) |
     # see rows with columns, rows with diagonals, columns with diagonals
-    if difficulty == 'i' or difficulty == 'h':
+    if difficulty == 4 or difficulty == 3:
         for i in range(0, 3):
             for j in range(3, 6):
                 for k in range(6, 8):
@@ -353,7 +353,7 @@ def get_field_after_move(field, result, ownSign):
 # benötigter Input:
 # drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners
 # field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']] -> aktuelles Feld mit jeweils gesetzten Zeichen (hier '_' als nicht belegtes Feld)
-# Schwierigkeitsgrad ist auch wählbar: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
+# Schwierigkeitsgrad ist auch wählbar: 4 -> impossible, 3 -> hard, 2 -> medium, 1 -> easy
 
 # Output:
 # Place -> enthält Nummerierung des Felds startet links oben bei 0 und zählt noch links nach rechts Zeilenweise bis nach rechts unten 8

@@ -3,13 +3,13 @@ import numpy
 
 
 def get_mistake_factor(difficulty):
-    if difficulty == 'e':
+    if difficulty == 1:
         return 10
-    elif difficulty == 'm':
+    elif difficulty == 2:
         return 5
-    elif difficulty == 'h':
+    elif difficulty == 3:
         return 2
-    elif difficulty == 'i':
+    elif difficulty == 4:
         return 0
 
 
