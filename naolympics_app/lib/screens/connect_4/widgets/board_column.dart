@@ -32,31 +32,28 @@ class BoardColumn extends StatelessWidget {
       makeMove = gameController.playColumnMultiplayer;
     }
     bool madeMove = false;
-    if (gameController.blockTurn) {
-      return GestureDetector();
-    } else {
       return GestureDetector(
           //nao specific
           onTap: () {
-            if (!madeMove) {
+            if (!madeMove && !gameController.blockTurn) {
               makeMove(columnNumber);
               madeMove = true;
             }
           },
           onLongPress: () {
-            if (!madeMove) {
+            if (!madeMove && !gameController.blockTurn) {
               makeMove(columnNumber);
               madeMove = true;
             }
           },
           onVerticalDragStart: (_) {
-            if (!madeMove) {
+            if (!madeMove && !gameController.blockTurn) {
               makeMove(columnNumber);
               madeMove = true;
             }
           },
           onHorizontalDragStart: (_) {
-            if (!madeMove) {
+            if (!madeMove && !gameController.blockTurn) {
               makeMove(columnNumber);
               madeMove = true;
             }
@@ -66,6 +63,5 @@ class BoardColumn extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: _buildBoardColumn(),
           ));
-    }
   }
 }
