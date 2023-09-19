@@ -11,6 +11,9 @@ def get_mistake_factor(difficulty):
         return 2
     elif difficulty == 4:
         return 0
+    else:
+        print "not allowed difficulty"
+        return None
 
 
 def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
@@ -297,10 +300,10 @@ def get_priority(field, i, j, up, right, sign_own, sign_opponent, sign_empty, of
     elif amount_own == 0 and amount_empty >= 3:
         priority_win = amount_empty * 1
 
-    if off:
+    if off: # it is possible to prioritize the offensive or defensive by multiplying the value returned by a factor
         return priority_win
     else:
-        return priority_win * 2 / 3
+        return priority_win * 0.9
 
 
 def set_point_y(field, i, j):

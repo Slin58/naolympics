@@ -64,7 +64,7 @@ if __name__ == "__main__":
         # while field[0][y] != '-':
         #     y = input("Reihe: ")
 
-        y, winning_move = connect_four_tactic.next_move(field, 'o', 'x', '-', difficulty='e')
+        y, winning_move = connect_four_tactic.next_move(field, 'o', 'x', '-', difficulty=4)
 
         set_point_o(-1, y)
         print_game_state()
