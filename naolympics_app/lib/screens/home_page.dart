@@ -10,11 +10,20 @@ class HomePage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final marginSize = screenWidth * 0.1;
 
-    return Scaffold(
+    return Container(
+        decoration: const BoxDecoration(
+        image: DecorationImage(
+        image: AssetImage("assets/images/thwsLogo.png"),
+    fit: BoxFit.cover,
+    ),
+    ),
+    child: Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Center(
+        child: Text(
           "Naolympics",
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          style: TextStyle(color: Colors.white, fontSize: 28),
+        )
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -28,6 +37,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+    )
     );
   }
 }
@@ -44,7 +54,7 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
           ),
         ),
         padding: const EdgeInsets.all(40),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.blue,
         fixedSize: const Size.fromWidth(700)),
     onPressed: () {
       Navigator.push(context, MaterialPageRoute(builder: (context) => route));
@@ -54,7 +64,7 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
       child: Text(
         title,
         softWrap: false,
-        style: const TextStyle(fontSize: 30),
+        style: const TextStyle(fontSize: 30, color: Colors.white),
       ),
     ),
   );

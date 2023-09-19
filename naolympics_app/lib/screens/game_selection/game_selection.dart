@@ -75,8 +75,8 @@ class GameSelectionState extends State<GameSelectionPage> {
     const double indent = 10;
 
     return orientation == Orientation.landscape
-        ? const VerticalDivider(indent: indent, endIndent: indent)
-        : const Divider(indent: indent, endIndent: indent);
+        ? const VerticalDivider(indent: indent, endIndent: indent, thickness: 0, color: Colors.white,)
+        : const Divider(indent: indent, endIndent: indent, thickness: 0, color: Colors.white,);
   }
 
   Widget getConnectFourButtonWithRoute(BuildContext context) {
@@ -95,7 +95,7 @@ class GameSelectionState extends State<GameSelectionPage> {
 
   Widget _getImageButton(
       BuildContext context, Widget route, String text, String imagePath) {
-    const double fontSize = 60;
+    const double fontSize = 80;
 
     return Expanded(
         child: GestureDetector(

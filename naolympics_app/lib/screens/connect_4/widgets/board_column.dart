@@ -10,7 +10,9 @@ class BoardColumn extends StatelessWidget {
   final int columnNumber;
 
   BoardColumn({
-    required this.chipsInColumn, required this.columnNumber, Key? key,
+    required this.chipsInColumn,
+    required this.columnNumber,
+    Key? key,
   }) : super(key: key);
 
   List<Cell> _buildBoardColumn() {
@@ -23,38 +25,40 @@ class BoardColumn extends StatelessWidget {
         .toList();
   }
 
-    @override
-    Widget build(BuildContext context) {
-      var playFunction = gameController.playColumnLocal;
-      if (MultiplayerState.connection != null) {
-        playFunction = gameController.playColumnMultiplayer;
-      }
-
-      bool moveWasMade = false;
-      return GestureDetector( //nao specific
+  @override
+  Widget build(BuildContext context) {
+    var makeMove = gameController.playColumnLocal;
+    if (MultiplayerState.connection != null) {
+      makeMove = gameController.playColumnMultiplayer;
+    }
+    bool madeMove = false;
+    if (gameController.blockTurn) {
+      return GestureDetector();
+    } else {
+      return GestureDetector(
+          //nao specific
           onTap: () {
-            if (!gameController.blockTurn && !moveWasMade) {
-              playFunction(columnNumber);
-              moveWasMade = true;
-              return;
+            if (!madeMove) {
+              makeMove(columnNumber);
+              madeMove = true;
             }
           },
           onLongPress: () {
-            if (!gameController.blockTurn && !moveWasMade) {
-              playFunction(columnNumber);
-              moveWasMade = true;
+            if (!madeMove) {
+              makeMove(columnNumber);
+              madeMove = true;
             }
           },
           onVerticalDragStart: (_) {
-            if (!gameController.blockTurn && !moveWasMade) {
-              playFunction(columnNumber);
-              moveWasMade = true;
+            if (!madeMove) {
+              makeMove(columnNumber);
+              madeMove = true;
             }
           },
           onHorizontalDragStart: (_) {
-            if (!gameController.blockTurn && !moveWasMade) {
-              playFunction(columnNumber);
-              moveWasMade = true;
+            if (!madeMove) {
+              makeMove(columnNumber);
+              madeMove = true;
             }
           },
           child: Column(
@@ -63,4 +67,5 @@ class BoardColumn extends StatelessWidget {
             children: _buildBoardColumn(),
           ));
     }
+  }
 }

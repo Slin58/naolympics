@@ -1,3 +1,5 @@
+import "dart:ui";
+
 import "package:flutter/material.dart";
 
 abstract class UIUtils {
@@ -5,8 +7,9 @@ abstract class UIUtils {
       IconData iconData, String text, Color color, double width) {
     return Container(
         decoration: BoxDecoration(
-          border: Border.all(color: color),
+          border: Border.all(color: Colors.blue),
           borderRadius: BorderRadius.circular(10),
+          color: Colors.blue,
         ),
         width: width,
         child: TextButton.icon(
@@ -24,34 +27,46 @@ abstract class UIUtils {
 
   static Widget getStackWithImageAndOutlinedText(
       String imagePath, String text, double fontSize, String fontFamily) {
-    final strokeSize = fontSize / 10;
+    final strokeSize = fontSize / 12.5;
 
-    return Stack(
-      children: <Widget>[
-        Center(
-            child: Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-        )),
-        Center(
-            child: Text(text,
-                style: TextStyle(
-                    fontSize: fontSize,
-                    fontFamily: "Impact",
-                    foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = strokeSize
-                      ..color = Colors.black))),
-        Center(
-            child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: fontSize,
-            fontFamily: fontFamily,
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Stack(
+        children: <Widget>[
+          Center(
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 1.3, sigmaY: 1.3), // Adjust blur intensity as needed
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
-        )),
-      ],
+          Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontFamily: "Impact",
+                foreground: Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = strokeSize
+                  ..color = Colors.black,
+              ),
+            ),
+          ),
+          Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: fontSize,
+                fontFamily: fontFamily,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

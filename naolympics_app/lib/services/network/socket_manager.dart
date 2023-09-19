@@ -1,7 +1,6 @@
 import "dart:async";
 import "dart:convert";
 import "dart:io";
-
 import "package:logging/logging.dart";
 import "package:naolympics_app/services/network/json/json_data.dart";
 

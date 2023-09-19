@@ -35,7 +35,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Find Players")),
+        appBar: AppBar(title: const Text("Find Players"), backgroundColor: Theme.of(context).primaryColor,),
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [

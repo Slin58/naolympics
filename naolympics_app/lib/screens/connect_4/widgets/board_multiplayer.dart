@@ -6,6 +6,8 @@ import "package:naolympics_app/screens/game_selection/game_selection_multiplayer
 import "package:naolympics_app/services/gamemodes/connect_4/game_controller.dart";
 import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
 
+import "../connect_four_page.dart";
+
 class BoardMultiplayer extends StatelessWidget {
   BoardMultiplayer({super.key});
 
@@ -32,7 +34,7 @@ class BoardMultiplayer extends StatelessWidget {
         child: Scaffold(
             backgroundColor: Colors.blueGrey,
             appBar: AppBar(
-              backgroundColor: Colors.blue,
+              backgroundColor: Theme.of(context).primaryColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
@@ -44,16 +46,7 @@ class BoardMultiplayer extends StatelessWidget {
                               child: const GameSelectionPageMultiplayer())));
                 },
               ),
-              title: Obx(() => Text(
-                    gameController.turnYellow
-                        ? "Player 1 (yellow)"
-                        : "Player 2 (red)",
-                    style: TextStyle(
-                      color: gameController.turnYellow
-                          ? Colors.yellow
-                          : Colors.red,
-                    ),
-                  )),
+              title: Obx(() => ConnectFourPage.getPlayerTurnIndicator()),
             ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,

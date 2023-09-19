@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/connect_4/widgets/board.dart";
 import "package:naolympics_app/screens/game_selection/game_selection.dart";
 import "package:naolympics_app/services/gamemodes/connect_4/game_controller.dart";
@@ -17,7 +18,7 @@ class Connect4Screen extends StatelessWidget {
     return WillPopScope(
         onWillPop: () async {
       log.info("Triggered WillPopScope in Connect4Screen");
-      await Navigator.push(
+      await Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => RouteAwareWidget(
@@ -26,9 +27,9 @@ class Connect4Screen extends StatelessWidget {
       return false;
     },
     child: Scaffold(
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -40,14 +41,7 @@ class Connect4Screen extends StatelessWidget {
                         child: const GameSelectionPage())));
           },
         ),
-        title: Obx(() => Text(
-              gameController.turnYellow
-                  ? "Player 1 (yellow)"
-                  : "Player 2 (red)",
-              style: TextStyle(
-                  color:
-                      gameController.turnYellow ? Colors.yellow : Colors.red),
-            )),
+        title: Obx(() => ConnectFourPage.getPlayerTurnIndicator()),
       ),
       body: Board(),
     )

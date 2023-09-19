@@ -34,6 +34,7 @@ class TicTacToeState extends State<TicTacToePage> {
         appBar: AppBar(
           title: const Text("Tic Tac Toe"),
           actions: [_displayCurrentTurn()],
+          backgroundColor: Theme.of(context).primaryColor,
         ),
         body: _buildTicTacToeField()));
   }
@@ -137,7 +138,7 @@ class TicTacToeState extends State<TicTacToePage> {
       winnerText = "It's a tie!";
     }
     const double buttonWidth = 120;
-    final color = Theme.of(context).primaryColor;
+    const color = Colors.black;
 
     return AlertDialog(
       title: Center(
