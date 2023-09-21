@@ -31,10 +31,10 @@ class GameSelectionState extends State<GameSelectionPage> {
 
     return WillPopScope(
         onWillPop: () async {
-      Navigator.of(context).pop(true);
-      await Future.delayed(const Duration(milliseconds: 500));
-      MultiplayerState.closeConnection();
-      return false;
+          if(MultiplayerState.connection == null) {
+            Navigator.pop(context);
+          }
+          return false;
     },
     child: Scaffold(appBar: appBar, body: Center(child: _getGameSelection()),
     ));

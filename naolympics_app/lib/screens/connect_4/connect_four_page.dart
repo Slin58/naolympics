@@ -23,12 +23,8 @@ class ConnectFourPage extends StatelessWidget {
     connectFourPageBuildContext = context;
     return WillPopScope(
         onWillPop: () async {
-          if (MultiplayerState.isClient()) {
-            return false;
-          } else {
-            Navigator.of(context).pop(true);
-            return false;
-          }
+          Navigator.pop(connectFourPageBuildContext!);
+          return false;
         },
         child: GetMaterialApp(
           initialBinding: ControllerBinding(),

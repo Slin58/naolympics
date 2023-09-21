@@ -30,7 +30,7 @@ abstract class UIUtils {
     final strokeSize = fontSize / 12.5;
 
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Stack(
         children: <Widget>[
           Center(
