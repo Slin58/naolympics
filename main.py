@@ -51,6 +51,7 @@ def choose_game_by_voice(asr, memory, tts):
     asr.setLanguage("German")
 
     vocabulary = ["tictactoe", 0.4, "gewinnt", 0.4, "vier", 0.9, "ende", 0.6]
+    vocabulary = ["tictactoe", "gewinnt", "vier", "ende"]
     asr.setVocabulary(vocabulary, True)
     # asr.setParameter("Sensitivity", 0.4)
 
@@ -190,7 +191,7 @@ def choose_difficulty_by_voice(asr, memory, tts):
     return difficulty
 
 
-def play_games_by_voice():
+def play_games_by_voice():  # not usable because the robot is moving as soon as it goes into the ALSpeechRecognition -> possible fix: Calibrate the robot again after SpeechRecognition, but not very usable
     try:
         movementControl.start_position(robotIP, PORT)
         asr = ALProxy("ALSpeechRecognition", robotIP, PORT)
@@ -226,7 +227,8 @@ def play_games_by_voice():
 
             tts.say("Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, hinten Vier gewinnt")
 
-    except RuntimeError:
+    except RuntimeError as e:
+        print(e)
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
         tts.say("Tut mir leid, etwas ist schief gelaufen. Starten wir von vorne!")
         play_games_by_buttons()
@@ -238,7 +240,7 @@ def choose_game_by_buttons(touch, tts):
         status = touch.getStatus()
 
         if status[0][1]:
-            print "No.", status[7], status[8], status[9]
+            print status[7], status[8], status[9]
 
             if status[7][1]:  # front -> tictactoe
                 tts.say("Alles klar, TicTacTo.")
@@ -258,7 +260,7 @@ def choose_start_player_by_buttons(touch, tts):
         status = touch.getStatus()
 
         if status[0][1]:
-            print "No.", status[7], status[8], status[9]
+            print status[7], status[8], status[9]
             if status[7][1]:  # front -> is player1
                 tts.say("Alles klar, ich beginne.")
                 return 1
@@ -279,7 +281,7 @@ def choose_difficulty_by_buttons(touch, tts):
         status = touch.getStatus()
 
         if status[0][1]:
-            print "No.", status[7], status[8], status[9]
+            print status[7], status[8], status[9]
 
             if status[7][1]:  # front -> higher difficulty
                 if difficulty >= 4:
@@ -287,7 +289,6 @@ def choose_difficulty_by_buttons(touch, tts):
                 else:
                     difficulty += 1
             if status[8][1]:  # middle -> end
-                tts.say(get_difficulty_text(difficulty))
                 return difficulty
             if status[9][1]:  # rear -> lower difficulty
                 if difficulty <= 1:
@@ -308,7 +309,7 @@ def play_games_by_buttons():
             "Hallo, ich bin" + get_random_nao_name() + ". Was möchtest du spielen? Navigiere mit den Knöpfen auf meinem Kopf.")
         while True:
             tictactoe_mode = choose_game_by_buttons(touch, tts)
-            if tictactoe_mode:
+            if tictactoe_mode is None:
                 return
 
             player = choose_start_player_by_buttons(touch, tts)
@@ -332,7 +333,7 @@ def play_games_by_buttons():
                         difficulty) + ". Gutes Spiel!")
                     play_connect_four_against_opponent(robotIP, PORT, player, difficulty)
 
-            tts.say("Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, hinten Vier gewinnt")
+            tts.say("Das hat Spaß gemacht! Möchtest du nochmal spielen?")
 
     except RuntimeError:
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
@@ -360,10 +361,10 @@ def play_tictactoe_against_itself(robotIP, PORT):
                 return
         if circle_turn:
             result, winning = tictactoe_tactic.next_move(field, signOwn='O', signOpponent='X', signEmpty='-',
-                                                         difficulty='i')
+                                                         difficulty=4)
         else:
             result, winning = tictactoe_tactic.next_move(field, signOwn='X', signOpponent='O', signEmpty='-',
-                                                         difficulty='h')
+                                                         difficulty=3)
         circle_turn = not circle_turn
         print(field)
         movementControl.click_tic_tac_toe(robotIP, PORT, result)
@@ -395,10 +396,10 @@ def play_connect_four_against_itself(robotIP, PORT):
                 return
         if yellow_turn:
             result, winning = connect_four_tactic.next_move(field, signOwn='Y', signOpponent='R', signEmpty='-',
-                                                            difficulty='i')
+                                                            difficulty=4)
         else:
             result, winning = connect_four_tactic.next_move(field, signOwn='R', signOpponent='Y', signEmpty='-',
-                                                            difficulty='i')
+                                                            difficulty=4)
         yellow_turn = not yellow_turn
 
         movementControl.click_connect_four(robotIP, PORT, result)
@@ -443,7 +444,7 @@ def play_tictactoe_against_opponent(robotIP, PORT, player=1, difficulty=2):
             time.sleep(0.2)
             continue
 
-        # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
+        # difficulty = 1 -> easy ,2 -> medium,3 -> hard,4 -> impossible
         result, winning = tictactoe_tactic.next_move(field, signOwn=signOwn, signOpponent=signOpponent, signEmpty='-',
                                                      difficulty=difficulty)
         print(result)
@@ -496,7 +497,7 @@ def play_connect_four_against_opponent(robotIP, PORT, player=1, difficulty=2):
             continue
         else:
             print("comparison not successful")
-        # # difficulty = 'e' -> easy ,'m' -> medium,'h' -> hard,'i' -> impossible
+        # # difficulty = 1 -> easy ,2 -> medium,3 -> hard,4 -> impossible
         result, winning = connect_four_tactic.next_move(field, signOwn=signOwn, signOpponent=signOpponent,
                                                         signEmpty='-',
                                                         difficulty=difficulty)
@@ -526,6 +527,10 @@ def calibrate(modes=None):
         movementControl.stand(robotIP, PORT)
         raw_input("Press Enter to continue...")
 
+    if "stand" in modes:
+        movementControl.stand(robotIP, PORT)
+        raw_input("Press Enter to continue...")
+
     if "z_angle" in modes:
         print("use app Bubble Level (or similar) to calibrate z-Angle")
         raw_input("Press Enter to continue...")
@@ -550,20 +555,6 @@ def calibrate(modes=None):
         raw_input("Press Enter to continue...")
 
 
-def test_angles(robotIP, PORT):
-    motionProxy = ALProxy("ALMotion", robotIP, PORT)
-
-    angles1 = motionProxy.getAngles("Head", False)
-    print "Eingestellte Winkel:"
-    [str(x * 180 / 3.14) for x in angles1]
-    print(angles1)
-
-    angles2 = motionProxy.getAngles("Head", True)
-    print "Tatsaechliche Winkel:"
-    [str(x * 180 / 3.14) for x in angles2]
-    print(angles2)
-
-
 if __name__ == "__main__":
     # after startup of nao
 
@@ -575,7 +566,8 @@ if __name__ == "__main__":
         robotIP = args.ip
     if args.port:
         PORT = args.port
-    # calibrate(["y_angle", "start_position"])
+    # calibrate(["stand", "x_angle", "y_angle"])
+    calibrate(["y_angle"])
     # vision.record_image_from_nao("test.png", robotIP, PORT)
     # choose_game_by_buttons()
     # vision.record_image_from_nao("connect4_doku3fsf.png", robotIP, PORT)
