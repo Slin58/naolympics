@@ -35,7 +35,7 @@ abstract class UIUtils {
         children: <Widget>[
           Center(
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 1.3, sigmaY: 1.3), // Adjust blur intensity as needed
+              imageFilter: ImageFilter.blur(sigmaX: 1.3, sigmaY: 1.3),
               child: Image.asset(
                 imagePath,
                 fit: BoxFit.cover,
