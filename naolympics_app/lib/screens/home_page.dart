@@ -12,33 +12,31 @@ class HomePage extends StatelessWidget {
 
     return Container(
         decoration: const BoxDecoration(
-        image: DecorationImage(
-        image: AssetImage("assets/images/thwsLogo.png"),
-    fit: BoxFit.cover,
-    ),
-    ),
-    child: Scaffold(
-      appBar: AppBar(
-        title: const Center(
-        child: Text(
-          "Naolympics",
-          style: TextStyle(color: Colors.white, fontSize: 28),
-        )
+          image: DecorationImage(
+            image: AssetImage("assets/images/thwsLogo.png"),
+            fit: BoxFit.cover,
+          ),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            createNavButton("Local", context, const GameSelectionPage()),
-            SizedBox(height: marginSize / 3.0),
-            createNavButton("Multiplayer", context, const FindPlayerPage())
-          ],
-        ),
-      ),
-    )
-    );
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Center(
+                child: Text(
+              "Naolympics",
+              style: TextStyle(color: Colors.white, fontSize: 28),
+            )),
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                createNavButton("Local", context, const GameSelectionPage()),
+                SizedBox(height: marginSize / 3.0),
+                createNavButton("Multiplayer", context, const FindPlayerPage())
+              ],
+            ),
+          ),
+        ));
   }
 }
 
