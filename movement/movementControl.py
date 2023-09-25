@@ -2,7 +2,6 @@
 import almath
 from naoqi import ALProxy
 import time
-
 import armPosition
 
 
@@ -197,7 +196,8 @@ def arm_movement(robotIP, port, arm, position, go_back):
     print("done")
 
 
-def get_interpolated_position(left, up):     # translate comma amounts for Left and Up to the armPosition for the inbetween point of two or four points
+def get_interpolated_position(left,
+                              up):  # translate comma amounts for Left and Up to the armPosition for the inbetween point of two or four points
     if left - int(left) == 0 and up - int(up) == 0:
         return armPosition.positionLUp[left][up]
 
@@ -285,12 +285,16 @@ def celebrate1(robotIP, port):
     tts.say("Juhu, ich habe gewonnen! LOL!")
 
     for i in range(0, 3):
-        motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration1], 0.2)
-        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionRCelebration1], 0.2)
+        motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration1],
+                              0.2)
+        motionProxy.setAngles(armPosition.positionR, [i * almath.TO_RAD for i in armPosition.positionRCelebration1],
+                              0.2)
         time.sleep(1)
 
-        motionProxy.setAngles(armPosition.positionL,  [i * almath.TO_RAD for i in armPosition.positionLCelebration2], 0.2)
-        motionProxy.setAngles(armPosition.positionR,  [i * almath.TO_RAD for i in armPosition.positionRCelebration2], 0.2)
+        motionProxy.setAngles(armPosition.positionL, [i * almath.TO_RAD for i in armPosition.positionLCelebration2],
+                              0.2)
+        motionProxy.setAngles(armPosition.positionR, [i * almath.TO_RAD for i in armPosition.positionRCelebration2],
+                              0.2)
         time.sleep(1)
 
     start_position(robotIP, port)
@@ -371,6 +375,7 @@ def test_angles_r_arm(robotIP, PORT):
     print("")
 
 
+# only for testing
 if __name__ == "__main__":
     IP = "10.30.4.13"
     PORT = 9559
@@ -395,9 +400,7 @@ if __name__ == "__main__":
     # start_position(IP, PORT)
 
     # arm_movement(IP, PORT, position=get_interpolated_position(left=1.7, up=6), arm="L", go_back=True)
-    # click_tic_tac_toe(IP, PORT, 0)
-    for i in range(0, 7):
-        click_connect_four(IP, PORT, i)
+    click_tic_tac_toe(IP, PORT, 0)
 
     # celebrate1(IP, PORT)
     # celebrate2(IP, PORT)

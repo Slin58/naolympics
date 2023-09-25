@@ -1,6 +1,4 @@
 # coding=utf-8
-import time
-
 import tictactoe_tactic
 
 
@@ -25,7 +23,7 @@ def set_point_x(field, place):
     for i in range(0, len(field)):
         for j in range(0, len(field)):
             if counter == place:
-                field[i][j] = 'o'
+                field[i][j] = 'x'
             counter += 1
 
     return field
@@ -58,7 +56,8 @@ def player_starts():
 
         print_game_state(field)
 
-        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
+        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_',
+                                                          difficulty=4)
         print(result)
         field = set_point_o(field, result)
         print_game_state(field)
@@ -69,7 +68,8 @@ def robot_starts():
     print_game_state(field)
 
     while True:
-        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_', difficulty='i')
+        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_',
+                                                          difficulty=4)
         print(result)
         field = set_point_o(field, result)
         print_game_state(field)
@@ -84,14 +84,25 @@ def robot_starts():
         print_game_state(field)
 
 
+def robot_vs_robot():
+    field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
+    print_game_state(field)
+
+    while True:
+        result, winning_move = tictactoe_tactic.next_move(field, signOwn='o', signOpponent='x', signEmpty='_',
+                                                          difficulty=4)
+        print(result)
+        field = set_point_o(field, result)
+        print_game_state(field)
+
+        result, winning_move = tictactoe_tactic.next_move(field, signOwn='x', signOpponent='o', signEmpty='_',
+                                                          difficulty=4)
+        print(result)
+        field = set_point_x(field, result)
+        print_game_state(field)
+
+
 if __name__ == "__main__":
-    #playerStarts()
-    robot_starts()
-
-# benötigter Input:
-# drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners
-# field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']] -> aktuelles Feld mit jeweils gesetzten Zeichen (hier '_' als nicht belegtes Feld)
-# Schwierigkeitsgrad ist auch wählbar: 'i' -> impossible, 'h' -> hard, 'm' -> medium, 'e' -> easy
-
-# Output:
-# Place -> enthält Nummerierung des Felds startet links oben bei 0 und zählt noch links nach rechts Zeilenweise bis nach rechts unten 8
+    # playerStarts()
+    # robot_starts()
+    robot_vs_robot()

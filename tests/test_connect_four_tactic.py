@@ -74,7 +74,7 @@ class TestConnectFour(unittest.TestCase):
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-']]
         for i in range(0, 8):
-            self.assertEqual(type((3, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 'i'))))
+            self.assertEqual(type((3, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 4))))
 
     def test_next_move_difficulty_hard(self):
         field = [['-', '-', '-', '-', '-', '-', '-'],
@@ -83,7 +83,7 @@ class TestConnectFour(unittest.TestCase):
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-']]
-        self.assertEqual(type((2, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 'h'))))
+        self.assertEqual(type((2, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 3))))
 
     def test_next_move_difficulty_medium(self):
         field = [['-', '-', '-', '-', '-', '-', '-'],
@@ -92,7 +92,7 @@ class TestConnectFour(unittest.TestCase):
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-']]
-        self.assertEqual(type((2, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 'm'))))
+        self.assertEqual(type((2, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 2))))
 
     def test_next_move_difficulty_easy(self):
         field = [['-', '-', '-', '-', '-', '-', '-'],
@@ -101,7 +101,7 @@ class TestConnectFour(unittest.TestCase):
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-'],
                  ['-', '-', '-', '-', '-', '-', '-']]
-        self.assertEqual(type((2, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 'e'))))
+        self.assertEqual(type((2, False)), type((connect_four_tactic.next_move(field, 'Y', 'R', '-', 1))))
 
     def test_next_move_winning(self):
         field = [['-', '-', '-', '-', '-', '-', '-'],
@@ -110,7 +110,7 @@ class TestConnectFour(unittest.TestCase):
                  ['-', 'Y', '-', '-', 'R', '-', '-'],
                  ['-', 'Y', '-', '-', 'R', '-', '-'],
                  ['-', 'Y', '-', '-', 'R', '-', '-']]
-        self.assertEqual((1, True), connect_four_tactic.next_move(field, 'Y', 'R', '-', 'i'), )
+        self.assertEqual((1, True), connect_four_tactic.next_move(field, 'Y', 'R', '-', 4), )
 
     def test_next_move_defending(self):
         field = [['-', '-', '-', '-', '-', '-', '-'],
@@ -119,7 +119,7 @@ class TestConnectFour(unittest.TestCase):
                  ['-', '-', '-', '-', '-', 'R', '-'],
                  ['-', '-', '-', '-', '-', 'R', '-'],
                  ['-', '-', 'Y', 'Y', '-', 'R', 'Y']]
-        self.assertEqual((5, False), connect_four_tactic.next_move(field, 'Y', 'R', '-', 'i'))
+        self.assertEqual((5, False), connect_four_tactic.next_move(field, 'Y', 'R', '-', 4))
 
     def test_next_move_full(self):
         field = [['R', 'R', 'Y', 'y', 'R', 'R', 'Y'],
@@ -128,4 +128,4 @@ class TestConnectFour(unittest.TestCase):
                  ['Y', 'Y', 'R', 'R', 'Y', 'Y', 'R'],
                  ['R', 'R', 'Y', 'Y', 'R', 'R', 'Y'],
                  ['Y', 'Y', 'R', 'R', 'Y', 'Y', 'R']]
-        self.assertIsNone(connect_four_tactic.next_move(field, 'R', 'Y', '-', 'i'))
+        self.assertIsNone(connect_four_tactic.next_move(field, 'R', 'Y', '-', 4))

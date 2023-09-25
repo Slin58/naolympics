@@ -11,7 +11,7 @@ class TestMovement(unittest.TestCase):
     def test_get_interpolated_position1(self):
         result = [0, 0, 0, 0, 0]
         for i in range(len(result)):
-            result[i] = (armPosition.positionLUp[0][0][i] + armPosition.positionLUp[1][0][i])/2.0
+            result[i] = (armPosition.positionLUp[0][0][i] + armPosition.positionLUp[1][0][i]) / 2.0
 
         self.assertEqual(result, movementControl.get_interpolated_position(0.5, 0))
 

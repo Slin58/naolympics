@@ -1,9 +1,6 @@
 # coding=utf-8
-import sys
 import time
 import argparse
-import cv2
-import numpy as np
 from naoqi import ALProxy
 import movement.movementControl
 from vision import vision
@@ -50,10 +47,9 @@ def choose_game_by_voice(asr, memory, tts):
 
     asr.setLanguage("German")
 
-    vocabulary = ["tictactoe", 0.4, "gewinnt", 0.4, "vier", 0.9, "ende", 0.6]
     vocabulary = ["tictactoe", "gewinnt", "vier", "ende"]
     asr.setVocabulary(vocabulary, True)
-    # asr.setParameter("Sensitivity", 0.4)
+    asr.setParameter("Sensitivity", 0.4)
 
     asr.subscribe("MySpeechRecognition")
     memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
@@ -61,7 +57,6 @@ def choose_game_by_voice(asr, memory, tts):
     empty_data = ['', 0]
     memory.insertData("WordRecognized", empty_data)
 
-    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
     data = memory.getData("WordRecognized")
 
     print ("Speech recognition engine started")
@@ -100,9 +95,9 @@ def choose_start_player_by_voice(asr, memory, tts):
 
     asr.setLanguage("German")
 
-    vocabulary = ["Ich", 0.5, "Du", 0.5, "selbst", 0.5]
+    vocabulary = ["Ich", "Du", "selbst"]
     asr.setVocabulary(vocabulary, True)
-    # asr.setParameter("Sensitivity", 0.4)
+    asr.setParameter("Sensitivity", 0.4)
 
     asr.subscribe("MySpeechRecognition")
     memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
@@ -110,7 +105,6 @@ def choose_start_player_by_voice(asr, memory, tts):
     empty_data = ['', 0]
     memory.insertData("WordRecognized", empty_data)
 
-    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
     data = memory.getData("WordRecognized")
 
     print ("Speech recognition engine started")
@@ -149,9 +143,9 @@ def choose_difficulty_by_voice(asr, memory, tts):
 
     asr.setLanguage("German")
 
-    vocabulary = ["Leicht", 0.5, "Mittel", 0.5, "Schwer", 0.5, "Unmöglich", 0.5]
+    vocabulary = ["Leicht", "Mittel", "Schwer", "Unmöglich"]
     asr.setVocabulary(vocabulary, True)
-    # asr.setParameter("Sensitivity", 0.4)
+    asr.setParameter("Sensitivity", 0.4)
 
     asr.subscribe("MySpeechRecognition")
     memory.subscribeToEvent("WordRecognized", "MySpeechRecognition", "on_word_recognized")
@@ -159,7 +153,6 @@ def choose_difficulty_by_voice(asr, memory, tts):
     empty_data = ['', 0]
     memory.insertData("WordRecognized", empty_data)
 
-    # asr.callback("WordRecognized", "Hello", std::string subscriberIdentifier)
     data = memory.getData("WordRecognized")
 
     print ("Speech recognition engine started")
@@ -225,7 +218,8 @@ def play_games_by_voice():  # not usable because the robot is moving as soon as 
                         difficulty) + ". Gutes Spiel!")
                     play_connect_four_against_opponent(robotIP, PORT, player, difficulty)
 
-            tts.say("Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, hinten Vier gewinnt")
+            tts.say(
+                "Das hat Spaß gemacht! Zum Beenden, drücke Mitte. Wenn du nochmal spielen möchtest, wähle vorne Tictacto, hinten Vier gewinnt")
 
     except RuntimeError as e:
         print(e)
@@ -274,7 +268,8 @@ def choose_start_player_by_buttons(touch, tts):
 
 
 def choose_difficulty_by_buttons(touch, tts):
-    tts.say("Wähle die Schwierigkeitsstufe. Navigiere mit vorne und hinten und bestätige mit Mitte! Gerade bin ich auf leicht eingestellt!")
+    tts.say(
+        "Wähle die Schwierigkeitsstufe. Navigiere mit vorne und hinten und bestätige mit Mitte! Gerade bin ich auf leicht eingestellt!")
     difficulty = 1
 
     while True:  # Auswahl Schwierigkeitsstufe
@@ -520,7 +515,7 @@ def play_connect_four_against_opponent(robotIP, PORT, player=1, difficulty=2):
 def calibrate(modes=None):
     if modes is None:
         modes = ["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]
-        # disable autonomous mode
+
     if "disable_autonomous" in modes:
         print("Disabling autonomous life...")
         movementControl.disable_autonomous_life(robotIP, PORT)
@@ -556,7 +551,6 @@ def calibrate(modes=None):
 
 
 if __name__ == "__main__":
-    # after startup of nao
 
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-i", "--ip", type=str, help="robot IP address")
@@ -566,16 +560,7 @@ if __name__ == "__main__":
         robotIP = args.ip
     if args.port:
         PORT = args.port
+
     # calibrate(["stand", "x_angle", "y_angle"])
-    calibrate(["y_angle"])
-    # vision.record_image_from_nao("test.png", robotIP, PORT)
-    # choose_game_by_buttons()
-    # vision.record_image_from_nao("connect4_doku3fsf.png", robotIP, PORT)
-    # img = vision.get_image_from_nao(ip=robotIP, port=PORT)
-    # field = vision.detect_tictactoe_state(img, minRadius=75, maxRadius=95, acc_thresh=15,
-    #                                       canny_upper_thresh=25, dilate_iterations=8, erode_iterations=4,
-    #                                       gaussian_kernel_size=9)
-    # test_angles(robotIP, PORT)
-    # test(robotIP, PORT)
+
     play_games_by_buttons()
-    # play_tictactoe_against_opponent(robotIP, PORT, 1, difficulty=3)

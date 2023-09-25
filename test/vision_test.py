@@ -1,7 +1,7 @@
 from vision import vision
 
 
-def connect4_error_count(robotIP, PORT,field_after_move, iterations=1000):
+def connect4_error_count(robotIP, PORT, field_after_move, iterations=1000):
     # field_after_move = \
     #     [['-', '-', '-', '-', 'R', 'Y', '-'],
     #      ['Y', 'R', '-', 'R', 'Y', 'R', 'R'],

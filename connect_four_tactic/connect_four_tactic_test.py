@@ -1,13 +1,5 @@
-# if 3 own in a row or diagonal -> set 4th
-# if 3 opponent in a row or diagonal -> set own on 4th
 import time
-
 import connect_four_tactic
-
-# if 2 own in a row or diagonal -> set 3rd
-# if 2 opponent in a row -> set own to block
-
-# if none of this happens play: https://www.4-gewinnt.de/sehr_schwer.html#getyourown
 
 field = [['-', '-', '-', '-', '-', '-', '-'],
          ['-', '-', '-', '-', '-', '-', '-'],
@@ -34,17 +26,17 @@ def set_point_o(i, j):
 def print_game_state():
     for i in range(0, len(field[0])):
         print(i),
-    print("")
+    print
     for i in range(0, len(field)):
         for j in range(0, len(field[i])):
             print(field[i][j]),
-        print("")
+        print
     for i in range(0, len(field[0])):
         print(i),
-    print("")
+    print
 
 
-if __name__ == "__main__":
+def player_starts():
     print_game_state()
 
     while True:
@@ -53,18 +45,51 @@ if __name__ == "__main__":
         while field[0][y] != '-':
             y = input("Reihe: ")
 
-        # y, winning_move = connect_four_tactic.next_move(field, 'x', 'o', '-', difficulty='e')
-
         set_point_x(-1, y)
         print_game_state()
-
-        # time.sleep(2)
-
-        # y = input("Reihe: ")
-        # while field[0][y] != '-':
-        #     y = input("Reihe: ")
 
         y, winning_move = connect_four_tactic.next_move(field, 'o', 'x', '-', difficulty=4)
 
         set_point_o(-1, y)
         print_game_state()
+
+
+def robot_starts():
+    print_game_state()
+
+    while True:
+
+        y, winning_move = connect_four_tactic.next_move(field, 'x', 'o', '-', difficulty=4)
+
+        set_point_x(-1, y)
+        print_game_state()
+
+        y = input("Reihe: ")
+        while field[0][y] != '-':
+            y = input("Reihe: ")
+
+        set_point_o(-1, y)
+        print_game_state()
+
+
+def robot_vs_robot():
+    print_game_state()
+
+    while True:
+        y, winning_move = connect_four_tactic.next_move(field, 'x', 'o', '-', difficulty=4)
+
+        set_point_x(-1, y)
+        print_game_state()
+
+        time.sleep(2)
+
+        y, winning_move = connect_four_tactic.next_move(field, 'o', 'x', '-', difficulty=4)
+
+        set_point_o(-1, y)
+        print_game_state()
+
+
+if __name__ == "__main__":
+    # player_starts()
+    # robot_starts()
+    robot_vs_robot()

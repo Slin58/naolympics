@@ -2,9 +2,6 @@
 import random
 
 
-# restructure idea: do methods do best move, do good move, do okay move, do bad move
-# -> than for every amountOfEmptyFields it is decided depending on how difficult the game should be which move is done
-
 # difficulties: 4 -> impossible, 3 -> hard, 2 -> medium, 1 -> easy
 def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
     amountEmpty = 0
@@ -36,7 +33,8 @@ def next_move(field, signOwn, signOpponent, signEmpty, difficulty):
             return get_random_empty_edge(field, signEmpty), False
 
         # if placed in a corner: Play middle
-        if field[0][0] == signOpponent or field[0][2] == signOpponent or field[2][0] == signOpponent or field[2][2] == signOpponent:
+        if field[0][0] == signOpponent or field[0][2] == signOpponent or field[2][0] == signOpponent or field[2][
+            2] == signOpponent:
             if difficulty == 3:
                 print("play random corner")
                 return get_random_empty_corner(field, signEmpty), False
@@ -349,11 +347,3 @@ def get_field_after_move(field, result, ownSign):
     else:
         field_after_move[2][2] = ownSign
     return field_after_move
-
-# benötigter Input:
-# drei freiwählbare Zeichen benötigt: 1 für noch nicht belegtes Feld, 1 für eigenes Zeichen und 1 für Zeichen des Gegners
-# field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']] -> aktuelles Feld mit jeweils gesetzten Zeichen (hier '_' als nicht belegtes Feld)
-# Schwierigkeitsgrad ist auch wählbar: 4 -> impossible, 3 -> hard, 2 -> medium, 1 -> easy
-
-# Output:
-# Place -> enthält Nummerierung des Felds startet links oben bei 0 und zählt noch links nach rechts Zeilenweise bis nach rechts unten 8

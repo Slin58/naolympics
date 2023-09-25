@@ -14,34 +14,34 @@ class TestTictactoe(unittest.TestCase):
         field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
 
         for i in range(0, 8):
-            self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 'i'))))
+            self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 4))))
 
     def test_next_move_difficulty_hard(self):
         field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
 
-        self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 'h'))))
+        self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 3))))
 
     def test_next_move_difficulty_medium(self):
         field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
 
-        self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 'm'))))
+        self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 2))))
 
     def test_next_move_difficulty_easy(self):
         field = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
 
-        self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 'e'))))
+        self.assertEqual(type((2, False)), type((tictactoe_tactic.next_move(field, 'x', 'o', '_', 1))))
 
     def test_next_move_winning(self):
         field = [['x', 'x', '_'], ['o', 'o', '_'], ['_', '_', '_']]
 
-        self.assertEqual((2, True), tictactoe_tactic.next_move(field, 'x', 'o', '_', 'i'))
+        self.assertEqual((2, True), tictactoe_tactic.next_move(field, 'x', 'o', '_', 4))
 
     def test_next_move_defending(self):
         field = [['x', '_', '_'], ['o', 'o', '_'], ['_', 'x', '_']]
 
-        self.assertEqual((5, False), tictactoe_tactic.next_move(field, 'x', 'o', '_', 'i'))
+        self.assertEqual((5, False), tictactoe_tactic.next_move(field, 'x', 'o', '_', 4))
 
     def test_next_move_full(self):
         field = [['x', 'o', 'x'], ['o', 'o', 'x'], ['o', 'x', 'x']]
 
-        self.assertIsNone(tictactoe_tactic.next_move(field, 'x', 'o', '_', 'i'))
+        self.assertIsNone(tictactoe_tactic.next_move(field, 'x', 'o', '_', 4))

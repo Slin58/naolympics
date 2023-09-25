@@ -1,31 +1,8 @@
 # coding=utf-8
-import almath
-
-# Joints	        Motor	    Reduction ratio
-# Head
-# HeadYaw        Type 1	    Type A
-# HeadPitch	    Type 1	    Type B
-# Arms
-# ShoulderPitch	Type 1	    Type A
-# ShoulderRoll	Type 1	    Type B
-# ElbowYaw	    Type 1	    Type A
-# ElbowRoll	    Type 1	    Type B
-# Hands
-# WristYaw	    Type 1	    Type A
-# Hand	        Type 1	    Type A
-# Legs
-# HipYawPitch	Type 2	    Type A
-# HipRoll	    Type 2	    Type A
-# HipPitch	    Type 2	    Type B
-# KneePitch	    Type 2	    Type B
-# AnklePitch	    Type 2	    Type B
-# AnkleRoll	    Type 2	    Type A
-
 
 positionR = ["RShoulderPitch", "RShoulderRoll", "RElbowRoll", "RWristYaw", "RElbowYaw"]
 positionL = ["LShoulderPitch", "LShoulderRoll", "LElbowRoll", "LWristYaw", "LElbowYaw"]
 positionLRange = [-119.5 - 119.5, -75, 9 - 15.0, 2 - 85, (0 - 1), -104.3 - 103.9, -119 - 119]
-# Height, Left/Right, Height2+Depth
 
 # position (without the not clickable edge):
 #   Left 0 - 4
@@ -141,5 +118,3 @@ positionLUp[3][0] = [0, 45, -84, 0, 0]
 positionLUp[2][0] = [0, 35, -81, 0, 0]
 positionLUp[1][0] = [0, 23, -76, 0, 0]
 positionLUp[0][0] = [0, 10, -67, 0, 0]
-
-
