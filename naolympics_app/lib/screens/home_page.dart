@@ -10,14 +10,7 @@ class HomePage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final marginSize = screenWidth * 0.1;
 
-    return Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/thwsLogo.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Scaffold(
+    return Scaffold(
           appBar: AppBar(
             title: const Center(
                 child: Text(
@@ -36,7 +29,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        );
   }
 }
 
