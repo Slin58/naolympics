@@ -2,7 +2,6 @@ import "dart:async";
 import "dart:ui";
 
 import "package:logging/logging.dart";
-import "package:naolympics_app/services/gamemodes/gamemode.dart";
 import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
 import "package:naolympics_app/services/network/json/json_data.dart";
@@ -12,7 +11,6 @@ import "package:naolympics_app/services/network/socket_manager.dart";
 
 class TicTacToeMultiplayer extends TicTacToe {
   static final log = Logger((TicTacToeMultiplayer).toString());
-  static List<MoveData> moveStack = [];
 
   TicTacToeFieldValues playerSymbol;
   final void Function(VoidCallback) setState;
