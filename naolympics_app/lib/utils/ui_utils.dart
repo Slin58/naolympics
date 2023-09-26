@@ -45,6 +45,7 @@ abstract class UIUtils {
           Center(
             child: Text(
               text,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: fontSize,
                 fontFamily: "Impact",
@@ -58,6 +59,7 @@ abstract class UIUtils {
           Center(
             child: Text(
               text,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: fontSize,

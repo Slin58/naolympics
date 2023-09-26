@@ -18,8 +18,7 @@ class ClientRoutingService {
   static StreamSubscription<String> _setRouteHandling(
       SocketManager socketManager, BuildContext context) {
     return socketManager.broadcastStream.listen(_onData(context),
-        onError: (error) =>
-            log.severe("Error while receiving routing instructions", error),
+        onError: (error) => log.severe("Error while receiving routing instructions", error),
         onDone: () => log.info("Done routing."));
   }
 
