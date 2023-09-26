@@ -228,6 +228,71 @@ def play_games_by_voice():  # not usable because the robot is moving as soon as 
         play_games_by_buttons()
 
 
+def successful_calibration(touch, tts):
+    tts.say("Wenn du fertig bist klicke Vorne. Für Abbruch: Mitte. Für Neustart: Hinten.")
+    while True:
+        status = touch.getStatus()
+
+        if status[0][1]:
+            print status[7], status[8], status[9]
+            if status[7][1]:  # front -> go on
+                return True
+            elif status[8][1]:  # middle -> end
+                tts.say("Bis zum nächsten mal!")
+                movementControl.crouch(robotIP, PORT)
+                return False
+            elif status[9][1]:  # back -> restart
+                raise RuntimeError("Do a restart.")
+        time.sleep(0.2)
+
+
+def calibrate(touch, tts, modes=None):
+    if modes is None:
+        modes = ["disable_autonomous", "stand", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]
+
+    if not successful_calibration(touch, tts):
+        return False
+
+    if "disable_autonomous" in modes:
+        tts.say("Achtung, ich setze mich nun hin.")
+        print("Disabling autonomous life...")
+        movementControl.disable_autonomous_life(robotIP, PORT)
+
+    if "stand" in modes:
+        tts.say("Achtung, ich stehe jetzt auf.")
+        movementControl.stand(robotIP, PORT)
+
+    if "z_angle" in modes:
+        tts.say(
+            "Stelle nun das Tablet mit dem Tripod auf und öffne die Bubble Level App, um die Z-Achse zu kalibrieren.")
+        print("use app Bubble Level (or similar) to calibrate z-Angle")
+        if not successful_calibration(touch, tts):
+            return False
+
+    if "x_angle" in modes:
+        tts.say("Achtung, ich bewege nun meine Arme. Kalibriere an diesen die x-Achse, also die Kippung des Tablets.")
+        print("Preparing for x-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
+        movementControl.tablet_preparation_x_angle(robotIP, PORT)
+        if not successful_calibration(touch, tts):
+            return False
+
+    if "y_angle" in modes:
+        tts.say(
+            "Achtung, ich strecke nun meinen linken Arm an die Position, an der die linke untere Ecke des Tablets sein soll und meinen rechten Arm an die rechte obere Ecke des Tablets. Passe Höhe, Entfernung und y-Achse an damit ich die Ecken berühre.")
+        print("Preparing for y-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
+        movementControl.tablet_position(robotIP, PORT)
+        if not successful_calibration(touch, tts):
+            return False
+
+    if "vision_check" in modes:
+        print("Recording image of NAOs current vision")
+        vision.show_image_from_nao(robotIP, PORT)
+
+    if "start_position" in modes:
+        print("Getting ready to rumble")
+        movementControl.start_position(robotIP, PORT)
+
+
 def choose_game_by_buttons(touch, tts):
     tts.say("Vorne Tictacto, Hinten Vier gewinnt, Mitte Beenden")
     while True:
@@ -300,9 +365,14 @@ def play_games_by_buttons():
         touch = ALProxy("ALTouch", robotIP, PORT)
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
 
+        tts.say("Hallo, ich bin" + get_random_nao_name())
         tts.say(
-            "Hallo, ich bin" + get_random_nao_name() + ". Was möchtest du spielen? Navigiere mit den Knöpfen auf meinem Kopf.")
+            "Bevor wir loslegen können, müssen wir zunächst ein paar Einstellungen vornehmen. Navigiere mit den Knöpfen auf meinem Kopf.")
+
+        calibrate(touch, tts)
+
         while True:
+            tts.say("Was möchtest du spielen?")
             tictactoe_mode = choose_game_by_buttons(touch, tts)
             if tictactoe_mode is None:
                 return
@@ -328,7 +398,7 @@ def play_games_by_buttons():
                         difficulty) + ". Gutes Spiel!")
                     play_connect_four_against_opponent(robotIP, PORT, player, difficulty)
 
-            tts.say("Das hat Spaß gemacht! Möchtest du nochmal spielen?")
+            tts.say("Das hat Spaß gemacht! Wollen wir nochmal spielen?")
 
     except RuntimeError:
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
@@ -512,44 +582,6 @@ def play_connect_four_against_opponent(robotIP, PORT, player=1, difficulty=2):
             return
 
 
-def calibrate(modes=None):
-    if modes is None:
-        modes = ["disable_autonomous", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]
-
-    if "disable_autonomous" in modes:
-        print("Disabling autonomous life...")
-        movementControl.disable_autonomous_life(robotIP, PORT)
-        movementControl.stand(robotIP, PORT)
-        raw_input("Press Enter to continue...")
-
-    if "stand" in modes:
-        movementControl.stand(robotIP, PORT)
-        raw_input("Press Enter to continue...")
-
-    if "z_angle" in modes:
-        print("use app Bubble Level (or similar) to calibrate z-Angle")
-        raw_input("Press Enter to continue...")
-
-    if "x_angle" in modes:
-        print("Preparing for x-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
-        movementControl.tablet_preparation_x_angle(robotIP, PORT)
-        raw_input("Press Enter to continue...")
-
-    if "y_angle" in modes:
-        print("Preparing for y-Angle calibration. Please watch NAOs movement to avoid damage to tablet and itself")
-        movementControl.tablet_position(robotIP, PORT)
-        raw_input("Press Enter to continue...")
-
-    if "vision_check" in modes:
-        print("Recording image of NAOs current vision")
-        vision.show_image_from_nao(robotIP, PORT)
-
-    if "start_position" in modes:
-        print("Getting ready to rumble")
-        movementControl.start_position(robotIP, PORT)
-        raw_input("Press Enter to continue...")
-
-
 if __name__ == "__main__":
 
     argParser = argparse.ArgumentParser()
@@ -560,7 +592,5 @@ if __name__ == "__main__":
         robotIP = args.ip
     if args.port:
         PORT = args.port
-
-    # calibrate(["stand", "x_angle", "y_angle"])
 
     play_games_by_buttons()
