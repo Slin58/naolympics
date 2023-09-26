@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
+import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/connect_4/widgets/board_column.dart";
-import "package:naolympics_app/screens/game_selection/game_selection_multiplayer.dart";
 import "package:naolympics_app/services/gamemodes/connect_4/game_controller.dart";
-import "package:naolympics_app/services/routing/route_aware_widgets/route_aware_widget.dart";
 
 class BoardMultiplayer extends StatelessWidget {
   BoardMultiplayer({super.key});
@@ -32,28 +31,14 @@ class BoardMultiplayer extends StatelessWidget {
         child: Scaffold(
             backgroundColor: Colors.blueGrey,
             appBar: AppBar(
-              backgroundColor: Colors.blue,
+              backgroundColor: Theme.of(context).primaryColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RouteAwareWidget(
-                              (GameSelectionPageMultiplayer).toString(),
-                              child: const GameSelectionPageMultiplayer())));
+                  Navigator.pop(connectFourPageBuildContext!);
                 },
               ),
-              title: Obx(() => Text(
-                    gameController.turnYellow
-                        ? "Player 1 (yellow)"
-                        : "Player 2 (red)",
-                    style: TextStyle(
-                      color: gameController.turnYellow
-                          ? Colors.yellow
-                          : Colors.red,
-                    ),
-                  )),
+              title: const Obx(ConnectFourPage.getPlayerTurnIndicator),
             ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,

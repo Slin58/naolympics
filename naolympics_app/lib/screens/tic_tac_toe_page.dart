@@ -34,6 +34,7 @@ class TicTacToeState extends State<TicTacToePage> {
         appBar: AppBar(
           title: const Text("Tic Tac Toe"),
           actions: [_displayCurrentTurn()],
+          backgroundColor: Theme.of(context).primaryColor,
         ),
         body: _buildTicTacToeField()));
   }
@@ -70,7 +71,7 @@ class TicTacToeState extends State<TicTacToePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     final double smallerValue = height < width ? height : width;
-    final double cellSize = smallerValue * 0.7 / 3;
+    final double cellSize = smallerValue * 0.7 * 0.9 / 3;
 
     return Column(
       children: [
@@ -123,6 +124,11 @@ class TicTacToeState extends State<TicTacToePage> {
 
   AlertDialog _winnerAlertDialog(
       TicTacToeWinner winner, BuildContext alertContext) {
+    if (MultiplayerState.isClient()) {
+      // only way I could thought of to handle the winning popup of the client
+      (ticTacToe as TicTacToeMultiplayer).alertBuildContext = alertContext;
+    }
+
     const double iconSize = 40;
     Icon winnerIcon;
     String winnerText = "Winner: ";
@@ -137,7 +143,7 @@ class TicTacToeState extends State<TicTacToePage> {
       winnerText = "It's a tie!";
     }
     const double buttonWidth = 120;
-    final color = Theme.of(context).primaryColor;
+    const color = Colors.black;
 
     return AlertDialog(
       title: Center(

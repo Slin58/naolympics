@@ -16,37 +16,34 @@ class GameController extends GetxController {
   static final log = Logger((GameController).toString());
   List<List<int>> board = [];
   final RxBool _turnYellow = true.obs;
+
   bool get turnYellow => _turnYellow.value;
   bool blockTurn = false;
 
   void resetBoard() {
     initBoard();
-
     _turnYellow.value = true;
-    if(MultiplayerState.connection != null) {
+    if (MultiplayerState.connection != null) {
       if (MultiplayerState.isHosting()) {
         blockTurn = false;
-      }
-      else {
+      } else {
         startListening();
         blockTurn = true;
       }
     }
-
   }
 
   void initBoard() {
-      board = [
-        List.filled(6, 0),
-        List.filled(6, 0),
-        List.filled(6, 0),
-        List.filled(6, 0),
-        List.filled(6, 0),
-        List.filled(6, 0),
-        List.filled(6, 0),
-      ];
-      update();
-
+    board = [
+      List.filled(6, 0),
+      List.filled(6, 0),
+      List.filled(6, 0),
+      List.filled(6, 0),
+      List.filled(6, 0),
+      List.filled(6, 0),
+      List.filled(6, 0),
+    ];
+    update();
   }
 
   @override
@@ -56,21 +53,9 @@ class GameController extends GetxController {
   }
 
   Future<void> playColumnMultiplayer(int columnNumber) async {
-    final int playerNumber = turnYellow ? 1 : 2;
-    log.info("Move made by playColumnMultiplayer");
-
+    log.finer("Move made by playColumnMultiplayer");
     if (board[columnNumber].contains(0)) {
-      final int row = board[columnNumber].indexWhere((cell) => cell == 0);
-      board[columnNumber][row] = playerNumber;
-      checkForWinner(columnNumber);
-
-      if (checkForFullBoard() == 1) {
-        int fB = checkForFullBoard();
-        log.info("FullBoard: $fB");
-        showFullBoardDialog();
-      }
-      blockTurn = true;
-      _turnYellow.value = !_turnYellow.value;
+      makeMoveOnField(columnNumber);
       await MultiplayerState.connection!.writeJsonData(Connect4Data(board));
       startListening(); // ignore: unawaited_futures
       update();
@@ -81,23 +66,10 @@ class GameController extends GetxController {
   }
 
   Future<void> playColumnLocal(int columnNumber) async {
-    final int playerNumber = turnYellow ? 1 : 2;
-    log.info("Move made by playColumnLocal");
-
+    log.finer("Move made by playColumnLocal");
     if (board[columnNumber].contains(0)) {
-      final int row = board[columnNumber].indexWhere((cell) => cell == 0);
-      board[columnNumber][row] = playerNumber;
-      update();
-      checkForWinner(columnNumber);
-      _turnYellow.value = !_turnYellow.value;
-      log.info("new turn yellow: ${_turnYellow.value}");
-
-      if (checkForFullBoard() == 1) {
-        int fB = checkForFullBoard();
-        log.info("FullBoard: $fB");
-        showFullBoardDialog();
-      }
-      blockTurn = true;
+      makeMoveOnField(columnNumber);
+      //nao specific => prevents rapid clicking of nao due to the aluminum foil
       blockTurn = await Future.delayed(const Duration(seconds: 1), () => false);
     } else {
       Get.snackbar("Not available", "This column is full already",
@@ -105,14 +77,23 @@ class GameController extends GetxController {
     }
   }
 
-  int checkForWinner(int columnNumber) {
-    int horizontalWinCond = checkForHorizontalWin(columnNumber);
-    int verticalWinCond = checkForVerticalWin(columnNumber);
-    int diagonalWinCond = checkDiagonalWinCond(columnNumber);
-    log..info("Horizontal Winner: $horizontalWinCond")
-    ..info("Vertical Winner: $verticalWinCond");
+  void makeMoveOnField(int columnNumber) {
+    final int playerNumber = getPlayerNumber();
+    final int row = board[columnNumber].indexWhere((cell) => cell == 0);
+    board[columnNumber][row] = playerNumber;
+    update();
+    checkForWinner(columnNumber);
+    checkForFullBoard();
+    _turnYellow.value = !_turnYellow.value;
+    blockTurn = true;
+  }
 
-    int winner = (horizontalWinCond != 0)
+  int checkForWinner(int columnNumber) {
+    final int horizontalWinCond = checkForHorizontalWin(columnNumber);
+    final int verticalWinCond = checkForVerticalWin(columnNumber);
+    final int diagonalWinCond = checkDiagonalWinCond(columnNumber);
+
+    final int winner = (horizontalWinCond != 0)
         ? horizontalWinCond
         : (verticalWinCond != 0)
             ? verticalWinCond
@@ -126,10 +107,14 @@ class GameController extends GetxController {
     return winner;
   }
 
+  int getPlayerNumber() {
+    return turnYellow ? 1 : 2;
+  }
+
   int getIndexOfNewElementOfList(
       List<List<int>> previousBoard, List<List<int>> newBoard) {
     for (int i = 0; i < previousBoard.length; i++) {
-      if (! (const ListEquality().equals(previousBoard[i], newBoard[i]))) {
+      if (!(const ListEquality().equals(previousBoard[i], newBoard[i]))) {
         return newBoard.indexOf(newBoard[i]);
       }
     }
@@ -160,35 +145,34 @@ class GameController extends GetxController {
     );
   }
 
-  int checkForFullBoard() {
+  void checkForFullBoard() {
     for (List<int> elem in board) {
       for (int cell in elem) {
         if (cell == 0) {
-          return 0;
+          return;
         }
       }
     }
-    return 1;
+    log.finer("FullBoard!");
+    showFullBoardDialog();
   }
 
   Future<void> declareWinner(int winner) async {
-
     blockTurn = true;
     BuildContext? diaContext;
-    showDialog(context: Get.context!, //ignore: unawaited_futures
+    //ignore: unawaited_futures
+    showDialog(
+      context: Get.context!,
       barrierDismissible: false,
       builder: (context) {
         diaContext = context;
-            return AlertDialog(
+        return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
             winner == 1 ? "Player 1 (yellow) won" : "Player 2 (red) won",
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           content: SizedBox(
             height: 90,
@@ -203,49 +187,73 @@ class GameController extends GetxController {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                  ),
+                  onPressed: () async {
+                    if (MultiplayerState.connection == null) {
+                      resetBoard();
+                      Navigator.pop(context);
+                      Navigator.pop(connectFourPageBuildContext!);
+                    } else if (MultiplayerState.isClient()) {
+                      UIUtils.showTemporaryAlert(context, "Wait for the host");
+                    } else {
+                      resetBoard();
+                      await MultiplayerState.connection!
+                          .writeJsonData(GameEndData(false, true));
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      Navigator.pop(context);
+                      Navigator.pop(connectFourPageBuildContext!);
+                    }
+                  },
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        "Go back",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 15),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                  ),
                   onPressed: () {
-
-                    if(MultiplayerState.connection == null) {
+                    if (MultiplayerState.connection == null) {
                       Navigator.of(context).pop(true);
                       resetBoard();
-                    }
-                    else if (MultiplayerState.isClient()) {
+                    } else if (MultiplayerState.isClient()) {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
-                    }
-                    else {
+                    } else {
                       MultiplayerState.connection!
                           .writeJsonData(GameEndData(true, false));
                       Navigator.of(context).pop(true);
                       resetBoard();
                     }
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("Replay"),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.refresh,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        "Replay",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if(MultiplayerState.connection == null) {
-                      resetBoard();
-                      Navigator.pop(context);
-                      Navigator.pop(connectFourPageBuildContext!);
-                    }
-                    else if (MultiplayerState.isClient()) {
-                      UIUtils.showTemporaryAlert(context, "Wait for the host");
-                    } else {
-                      resetBoard();
-                      await MultiplayerState.connection!.writeJsonData(GameEndData(false, true));
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      Navigator.pop(context);
-                      Navigator.pop(connectFourPageBuildContext!);
-                    }
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("Go Back"),
-                  ),
-                ),
+                )
               ],
             ),
           ],
@@ -254,21 +262,22 @@ class GameController extends GetxController {
     );
 
     StreamSubscription<String>? subscription;
-    if(MultiplayerState.isClient()) {
-      subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
-
+    if (MultiplayerState.isClient()) {
+      subscription =
+          MultiplayerState.connection!.broadcastStream.listen((data) {
         JsonData jsonData = JsonData.fromJsonString(data);
-        if(jsonData is GameEndData) {
-          if(jsonData.reset) {
+        if (jsonData is GameEndData) {
+          if (jsonData.reset) {
             Navigator.pop(diaContext!);
             resetBoard();
-          }
-          else if(jsonData.goBack) {
+          } else if (jsonData.goBack) {
             resetBoard();
             Navigator.pop(diaContext!);
 
-            log..info("Routing service is: ${MultiplayerState.clientRoutingService != null} ")
-            ..info("Received the following data: $jsonData");
+            log
+              ..finer(
+                  "Routing service is: ${MultiplayerState.clientRoutingService != null} ")
+              ..finer("Received the following data: $jsonData");
           }
           subscription!.cancel();
         }
@@ -277,13 +286,11 @@ class GameController extends GetxController {
   }
 
   int checkForVerticalWin(int columnNumber) {
-    List<int> column = board[columnNumber];
-    return checkForConsecutiveNumber(column);
+    return checkForConsecutiveNumber(board[columnNumber]);
   }
 
   int checkForHorizontalWin(int columnNumber) {
-    List<int> rowEntries = getRowAsList(columnNumber);
-    return checkForConsecutiveNumber(rowEntries);
+    return checkForConsecutiveNumber(getRowAsList(columnNumber));
   }
 
   int checkForConsecutiveNumber(List<int> list) {
@@ -323,8 +330,8 @@ class GameController extends GetxController {
   }
 
   int checkDiagonalWinCond(int columnNumber) {
-    int columnMax = 6; //max indices of the lists representing the field
-    int rowMax = 5; //max indices of the lists representing the field
+    int columnMax = 6;
+    int rowMax = 5;
     int rowIndex = (board[columnNumber].length - 1) -
         board[columnNumber].reversed.toList().indexWhere((cell) => cell != 0);
     List<int> upwardsDiagonal =
@@ -342,125 +349,106 @@ class GameController extends GetxController {
     List<int> downwardsDiagonal = [board[columnNumber][rowIndex]];
     int colCounter = columnNumber;
     int rowCounter = rowIndex;
-
     colCounter = columnNumber;
     rowCounter = rowIndex;
     while (colCounter > 0 && rowCounter < rowMax) {
-      //links oben
+      //left upper
       colCounter--;
       rowCounter++;
       List<int> curColumn = board[colCounter];
       downwardsDiagonal.insert(0, curColumn[rowCounter]);
     }
-
     colCounter = columnNumber;
     rowCounter = rowIndex;
     while (colCounter < columnMax && rowCounter > 0) {
-      //rechts unten
+      //right down
       colCounter++;
       rowCounter--;
       List<int> curColumn = board[colCounter];
       downwardsDiagonal.add(curColumn[rowCounter]);
     }
-
     log.finer("DownardsDiagonal: $downwardsDiagonal");
-
     return downwardsDiagonal;
   }
 
   List<int> getUpwardsDiagonalAsList(
       int columnNumber, int rowIndex, int columnMax, int rowMax) {
     List<int> upwardsDiagonal = [board[columnNumber][rowIndex]];
-
     int colCounter = columnNumber;
     int rowCounter = rowIndex;
     while (colCounter < columnMax && rowCounter < rowMax) {
-      //rechts oben
+      //right upper
       colCounter++;
       rowCounter++;
       List<int> curColumn = board[colCounter];
       upwardsDiagonal.add(curColumn[rowCounter]);
     }
-
     colCounter = columnNumber;
     rowCounter = rowIndex;
     while (colCounter > 0 && rowCounter > 0) {
-      //links unten
+      //left down
       colCounter--;
       rowCounter--;
       List<int> curColumn = board[colCounter];
       upwardsDiagonal.insert(0, curColumn[rowCounter]);
     }
-
     log.finer("UpwardsDiagonal: $upwardsDiagonal");
-
     return upwardsDiagonal;
   }
 
-  int tempTrackingNumber = 0;
-
   Future<void> startListening() async {
-    int trackingNumber = tempTrackingNumber++;
-    log.finer("stillListening has jus been called with: $trackingNumber");
-
+    log.finer("stillListening has jus been called.");
     late StreamSubscription<String>? subscription;
     subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
       blockTurn = false;
       JsonData jsonData = JsonData.fromJsonString(data);
 
-      if(jsonData is GameEndData && MultiplayerState.isClient()) {
-        log.finer("stopping listening with: $trackingNumber");
+      if (jsonData is GameEndData && MultiplayerState.isClient()) {
+        log.finer("stopping listening.");
         subscription!.cancel();
         return;
-      }
-
-      else if(jsonData is Connect4Data) {
+      } else if (jsonData is Connect4Data) {
         List<List<int>> receivedBoard = jsonData.board;
-        log.finer("In startListening(): received '$data' and parsed it to '$receivedBoard'");
+        log.finer(
+            "In startListening(): received '$data' and parsed it to '$receivedBoard'");
         int newMoveInColumn = getIndexOfNewElementOfList(board, receivedBoard);
-        if(newMoveInColumn == -1) {
+        if (newMoveInColumn == -1) {
           subscription!.cancel();
           return;
         }
         _turnYellow.value = !_turnYellow.value;
-        log..finer("new gamecontroller turn yellow: $turnYellow")
-        ..finer("new _turn yellow: ${_turnYellow.value}");
-
         var oldBoard = board;
-        log..finer("Old board: $oldBoard")
-        ..finer("New board: $receivedBoard")
-
-        ..finer("newMoveInColumn: $newMoveInColumn");
+        log
+          ..finer("Old board: $oldBoard")
+          ..finer("New board: $receivedBoard")
+          ..finer("newMoveInColumn: $newMoveInColumn");
         board = receivedBoard;
         if (newMoveInColumn != -1) {
-          if(checkForWinner(newMoveInColumn) != 0) {
+          if (checkForWinner(newMoveInColumn) != 0) {
             subscription!.cancel();
             return;
           }
         }
         update();
-        log.finer("finished listening for new Board from other player");
+        log.finer("finished listening for new Board from other player.");
         subscription!.cancel();
+      } else {
+        log
+          ..finer("Unknown Datatype received in startListning: $jsonData")
+          ..finer(
+              "Navigator status: ${MultiplayerState.clientRoutingService != null}");
       }
-      else {
-        log..finer("Unknown Datatype received in startListning: $jsonData")
-        ..finer("Navigator status: ${MultiplayerState.clientRoutingService != null}");
-      }
+      log.finer("Still listening and received: $data");
+    }, onError: (error) {
+      log.finer("Error while trying to listen for Board Update");
+      MultiplayerState.clientRoutingService?.resumeNavigator();
 
-      log.finer("Still listening and received with $trackingNumber: $data");
+      subscription?.cancel();
+    }, onDone: () {
+      MultiplayerState.clientRoutingService?.resumeNavigator();
+      log.info("Done method of startListening triggered");
 
-    },
-        onError: (error) {
-          log.finer("Error while trying to listen for Board Update");
-          MultiplayerState.clientRoutingService?.resumeNavigator();
-
-          subscription?.cancel();
-        }, onDone: () {
-          MultiplayerState.clientRoutingService?.resumeNavigator();
-          log.info("Done method of startListening triggered");
-
-          subscription!.cancel();
-        });
+      subscription!.cancel();
+    });
   }
-
 }

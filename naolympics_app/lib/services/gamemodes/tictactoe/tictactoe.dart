@@ -100,6 +100,6 @@ abstract class TicTacToe implements GameMode {
   List<List<TicTacToeFieldValues>> get playField => _playField;
 }
 
-enum TicTacToeFieldValues { x, o, empty}
+enum TicTacToeFieldValues { x, o, empty }
 
 enum TicTacToeWinner { x, o, draw, ongoing }
