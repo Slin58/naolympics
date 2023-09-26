@@ -1,5 +1,4 @@
 *.jpg
-vision/vision copy.py
 *.aux
 *.fdb_latexmk
 *.fls
@@ -14,3 +13,4 @@ vision/vision copy.py
 *.blg
 *.bkp
 *.dtmp
+.idea
