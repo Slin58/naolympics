@@ -492,7 +492,7 @@ def play_connect_four_against_opponent(robotIP, PORT, player=1, difficulty=2):
             continue
         else:
             print("comparison not successful")
-        # # difficulty = 1 -> easy ,2 -> medium,3 -> hard,4 -> impossible
+        # difficulty = 1 -> easy ,2 -> medium,3 -> hard,4 -> impossible
         result, winning = connect_four_tactic.next_move(field, signOwn=signOwn, signOpponent=signOpponent,
                                                         signEmpty='-',
                                                         difficulty=difficulty)
