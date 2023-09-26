@@ -373,34 +373,3 @@ def test_angles_r_arm(robotIP, PORT):
     for x in angles2:
         print(str(x * almath.TO_DEG)),
     print("")
-
-
-# only for testing
-if __name__ == "__main__":
-    IP = "10.30.4.13"
-    PORT = 9559
-
-    # test_angles_l_arm(IP, PORT)
-    # test_angles_r_arm(IP, PORT)
-
-    # start_position(IP, PORT)
-    # after startup of nao
-    # disable_autonomous_life(IP, PORT)
-    # tablet_position(IP, PORT)
-    # crouch(IP, PORT)
-    # stand(IP, PORT)
-
-    # tablet positioning
-    # use app Bubble Level (or similar to calibrate z-Angle)
-    # tablet_preparation_x_angle(IP, PORT)
-    # tablet_position(IP, PORT)  # y-Angle
-    # crouch(IP, PORT)
-
-    # start positions
-    # start_position(IP, PORT)
-
-    # arm_movement(IP, PORT, position=get_interpolated_position(left=1.7, up=6), arm="L", go_back=True)
-    click_tic_tac_toe(IP, PORT, 0)
-
-    # celebrate1(IP, PORT)
-    # celebrate2(IP, PORT)
