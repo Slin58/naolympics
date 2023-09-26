@@ -124,6 +124,11 @@ class TicTacToeState extends State<TicTacToePage> {
 
   AlertDialog _winnerAlertDialog(
       TicTacToeWinner winner, BuildContext alertContext) {
+    if (MultiplayerState.isClient()) {
+      // only way I could thought of to handle the winning popup of the client
+      (ticTacToe as TicTacToeMultiplayer).alertBuildContext = alertContext;
+    }
+
     const double iconSize = 40;
     Icon winnerIcon;
     String winnerText = "Winner: ";

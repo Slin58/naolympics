@@ -1,6 +1,6 @@
 import "dart:async";
-import "dart:ui";
 
+import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 import "package:naolympics_app/services/gamemodes/tictactoe/tictactoe.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
@@ -13,6 +13,7 @@ class TicTacToeMultiplayer extends TicTacToe {
   static final log = Logger((TicTacToeMultiplayer).toString());
 
   TicTacToeFieldValues playerSymbol;
+  BuildContext? _alertBuildContext;
   final void Function(VoidCallback) setState;
   late StreamSubscription<String> _gameSubscription;
 
@@ -77,6 +78,17 @@ class TicTacToeMultiplayer extends TicTacToe {
         MultiplayerState.clientRoutingService!.resumeNavigator();
       }
     }
+    _closeAlert();
+  }
+
+  void _closeAlert() {
+    if (MultiplayerState.isClient() && _alertBuildContext != null) {
+      NavigatorState navigator = Navigator.of(_alertBuildContext!);
+      if (navigator.canPop()) {
+        navigator.pop();
+        _alertBuildContext = null;
+      }
+    }
   }
 
   void handleGoBack() {
@@ -104,5 +116,9 @@ class TicTacToeMultiplayer extends TicTacToe {
     final ticTacToeData = TicTacToeData(row, col, super.currentTurn);
     log.fine("Sending move '$ticTacToeData' to ${MultiplayerState.getRemoteAddress()}");
     await socketManager.writeJsonData(ticTacToeData);
+  }
+
+  set alertBuildContext(BuildContext value) {
+    _alertBuildContext = value;
   }
 }
