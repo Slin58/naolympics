@@ -1,29 +1,27 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                  Latex Vorlage f\"{u}r Abschlu{\ss}arbeiten                        %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[12pt,a4paper,DIV13,pdftex,BCOR10mm,fleqn,liststotoc,bibtotoc,cleardoubleempty]{scrbook}
 %,footexclude,headexclude standard,chapterprefix,dvips
-\usepackage{times}            %Font
-\usepackage[latin1]{inputenc} %erkennt \"{a},\"{o},\"{u}
+\usepackage{times} 
+\usepackage{float}%Font
+\usepackage[utf8]{inputenc} %erkennt \"{a},\"{o},\"{u}
 \usepackage{german,amsfonts}  %erkennt \3 als {\ss}
-\usepackage[T1]{fontenc}      %z.B. f\"{u}r (besseres) automatisches Trennen nach Umlauten
-% \usepackage{latexsym}         %sonstige Symbole (\partial)
+\usepackage[ngerman]{varioref}
+\usepackage{newclude}
+\usepackage[T1]{fontenc}
 \usepackage{graphicx}         %[draft]
-%\usepackage[a4,center]{crop}  % cam,frame, habe D:\texmf\dvips\config\config.ps angepa{\ss}t!!!
-%\usepackage{pstricks,pst-node,pst-tree,pst-plot}  %um B\"{a}ume zu zeichnen
-\usepackage{booktabs}         %f\"{u}r sch\"{o}nere Tabellen
-\usepackage{textcomp}         %f\"{u}r \textperthousand = promille
-\usepackage{placeins}         %verhindert Gleiten von Abbildungen (bis \FloatBarrier)
+\usepackage[ngerman]{algorithm2e}
+\usepackage{booktabs}
+\usepackage{textcomp}
+\usepackage{placeins}
 \usepackage{amsmath} %F\"{u}r Formeln
 \usepackage[breaklinks,pdfborder={0 0 0}]{hyperref} %f\"{u}r Links im PDF
 \usepackage{xcolor,soul} %F\"{u}r Matlab/Octave
-\usepackage{url} %f\"{u}r Hyperlinks im Literaturverzeichnis,alternativ  "hyperref" und "breakurl" [hyphens]
+\usepackage{url}
 \usepackage{listings}         %fuer C-Programme
 \usepackage{scrlayer-scrpage}%[automark] f\"{u}r Kopfzeilen
-% \setheadsepline{0.4pt} %
-\pagestyle{scrheadings} %Linie in Kopfzeilen
-\addtolength{\topmargin}{5mm} %gesamten Text auf der Seite nach unten schieben
-%\usepackage{setspace} Zeilenabstand \"{a}ndern. H\"{a}nde weg! Vergr\"{o}{\ss}ert auch den Abstand von Bildunterschriften...
+\usepackage{todonotes}
+\pagestyle{scrheadings}
+\addtolength{\topmargin}{5mm}
 %\onehalfspacing
 
 \lstset{language=C,
@@ -44,12 +42,9 @@ showstringspaces=false,
 extendedchars=true,
 backgroundcolor=\color{black!10},
 captionpos=b }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frontmatter
 %von http://studiy.tu-cottbus.de/projektwiki/wissen:latex:diplomarbeit
 \titlehead{%  {\centering Seitenkopf}
@@ -72,7 +67,7 @@ captionpos=b }
 \maketitle
 
 \thispagestyle{empty}
-\section*{Selbstst\"{a}ndigkeitserkl\"{a}rung}
+\section*{Selbstständigkeitserklärung}
 Hiermit versichere ich, dass ich die vorgelegte Bachelorarbeit/Masterarbeit selbstst\"{a}ndig verfasst und noch nicht anderweitig zu Pr\"{u}fungszwecken vorgelegt habe. Alle benutzten Quellen und Hilfsmittel sind angegeben, w\"{o}rtliche und sinngem\"{a}{\ss}e Zitate wurden als solche gekennzeichnet.\\[15mm]
 %% Abstand und Linie
 \vspace{20mm}
@@ -82,14 +77,6 @@ W\"urzburg, den \date{Datum}
 
 \cleardoublepage     % min. eine Freiseite
 
-\thispagestyle{empty}
-\section*{Kurzfassung}
-In dieser Arbeit geht es um ...
-
-\vspace{5cm}
-\section*{Abstract}
-This thesis is about ....
-
 \nonfrenchspacing
 \renewcommand{\figurename}{Abb.}
 \renewcommand{\tablename}{Tab.}
@@ -97,91 +84,51 @@ This thesis is about ....
 %\setcounter{page}{7}%  {tocdepth}{1} =section
 %\lstset{language=C, basicstyle=\ttfamily\small, commentstyle=\itshape}
 %\automark[chapter]{chapter} ???
-
 \tableofcontents %
 \listoffigures %
 \listoftables
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mainmatter
-%\include{kap1.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Einleitung}
-\include{intro_vision_jg}
-\chapter{State of the Art}
-blabla blabla blabla blabla blabla blabla 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=60mm]{nao.jpg} %[width=60mm], [height=60mm], [scale=0.75], [angle=45,width=52mm], ....
-\caption{Testbild}
-\label{Testbild}
-\end{figure}
-blabla blabla blabla blabla blabla blabla 
-\section{Unterkapitel}
-blabla blabla blabla blabla blabla blabla 
-\subsection{Unter-Unterkapitel}
-blabla blabla blabla blabla blabla blabla 
-\begin{lstlisting}[caption={Beispiel f\"{u}r eine Activity}, label={list:activity}]
-    // Kernel Definition
-   __global__ void VecAdd(float* A, float* B, float* C)
-    {
-      int i = threadIdx.x;
-      C[i] = A[i] + B[i];
-    }
-    int main(void)
-    {
-    ...
-    // Kernel Invocation with N threads
-    return 0;
-    }
-    \end{lstlisting}
-blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
-\subsection{Unter-Unterkapitel2}
-blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
-
-blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
+\include*{projekt_beschreibung}
 \newpage
-blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
-\chapter{Eigene Ideen}
-blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
-\begin{table}[ht]
-\centering
-\begin{tabular}{|l|c|r}
-  \hline
-  A & B & C \\
-\hline
- 1 & 2 & 3  \\
-\hline
- 4 & 5 & 6 \\
-\end{tabular}
-\caption{Testtabelle}
-\label{Testtabelle}
-\end{table}
-blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla
-\chapter{Umsetzung}
-\chapter{Experimente und Ergebnisse}
-\chapter{Zusammenfassung und Ausblick}
-Hier wird eine Buch zitiert\cite{CAVE_0394} und hier ein anderes \cite{CAVE_0394}.
-
-%In der Realit\"{a}t sollten die Kapitel in einzelnen Dateien gespeichert werden und diese mit \include eingebunden werden.
-%\include{einleitung}
-%
-%\include{zusammenfassung}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include*{jg/nao_handling}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Spielstanderkennung (JG)}
+\newpage
+\include*{jg/intro_vision_jg}
+\newpage
+\include*{jg/methodik_vision_jg}
+\newpage
+\include*{jg/ergebnisse_vision_jg}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Spieltaktiken (NG)}
+\include*{Spieltaktik_tictactoe}
+\include*{Spieltaktik_connect_four}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Movement (NG)}
+\include*{movement}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Spielablauf (NG, JG)}
+\include*{spielablauf}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Flutter app (MS, LK)}
+\include*{app}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Zusammenfassung und Probleme}
+\include*{zusammenfassung_ausblick}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \backmatter
-%\addpart{Anhang}
-%\appendix
-%\include{anhang_hard}
-%\addcontentsline{toc}{\bibliography}
 
 \bibliographystyle{plain}%geralpha, dinat, dalpha, ...
 \nocite{*}
 \bibliography{lib}
 
 \end{document}
-

@@ -1,0 +1,35 @@
+\section{Tictactoe}
+Ziel ist es die aktuellen Spielsituation, die durch die Vision erhalten wird, auszuwerten und den daraus resultierenden Zug zu berechnen. Dabei soll es auch möglich sein zwischen mehreren Schwierigkeitsstufen auszuwählen.
+
+\subsection{Spielfeld}
+Feld Bezeichnungen:
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ 0& 1& 2\\ 
+ 3& 4& 5\\ 
+ 6& 7& 8\\ 
+ \hline
+\end{tabular}
+
+Beispiel Feld:
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ x& o& \\ 
+ & x& \\ 
+ & & o\\ 
+ \hline
+\end{tabular}
+
+\subsection{Spielregeln}
+Zwei Spieler treten gegeneinander an. Der eine Spieler erhält das Zeichen x und der Andere o. Abwechselnd dürfen die Spieler eines der 9 Felder mit ihrem Zeichen markieren. Der Spieler der zuerst 3 Felder in einer Reihe, Spalte oder einer der beiden Diagonalen hat, hat gewonnen. Sind alle Felder voll ohne, dass ein Spieler gewonnen hat, endet das Spiel in einem Unentschieden. 
+
+\subsection{Input}
+Als Input werden das aktuelle Spielfeld, das eigene Zeichen (in unserem Fall x oder o), das Zeichen des Gegenspielers (in unserem Fall x oder o), ein Zeichen für die nicht belegten Felder (in unserem Fall -) und der Schwierigkeitsgrad (1 -> leicht; 2 -> mittel; 3 -> schwer; 4 -> unmöglich)
+
+\subsection{Output}
+Die Methode soll am Ende zurückgeben, in welches Feld der Roboter spielen sollte. Die Felder sind dabei so definiert, wie sie oben bei Feld Bezeichnungen benannt sind. 
+
+\subsection{Grundkonzept Gamelogic}
+Bei Tictactoe gibt es nur eine beschränkte Möglichkeiten an Zügen und Spielsituationen und viele sind gleichbedeutend. Beispielsweise ist beim ersten Zug jede Ecke gleich gut. Deshalb wird im ersten Zug in eine zufällige Ecke gespielt Kanten sind schlechter, da sie nur für die Spalte und Reihe, aber nicht für die Diagonale nutzbar sind. Welche der Spielsituationen gerade vorhanden ist, wird an der Anzahl an freien, eigenen und Feldern des Gegenspielers für jede Reihe, Spalte und Diagonale erkannt. Daraus resultiert dann der Spielzug. Für jede Spielsituation gibt es dann einen perfekt Zug. Abhängig von der Schwierigkeit wird eine Spielsituation erkannt und der beste Zug ausgewählt. Eine schlechtere Schwierigkeit führt dazu, dass manche kluge Züge nicht durchgeführt werden und stattdessen simplere Züge zum Teil zufälligere Züge oder bewusst schlechte Züge durchgeführt werden. 
+Wenn bereits zwei Steine nebeneinander liegen wird immer der 3. daneben gelegt. Verteidigt wird diese Situation von allen Schwierigkeiten außer leicht.
+Bei der gewählten Umsetzung ist es möglich jedes Spielfeld zu übergeben und die Logik berechnet daraus das beste Feld. Dadurch ist die Logik nicht von den vorherigen Zügen abhängig und kann für jede aktuelle Situation ein Ergebnis zurückgeben.

@@ -1,0 +1,168 @@
+\section{Methodik}
+
+
+\subsection{Vorverarbeitung}
+\begin{algorithm}[!htbp]
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Bildverarbeitungsroutine nach geg. Parametern}\label{image_processing_routine}
+    \KwData{Image $I$, gaussian kernel size $k_g$, canny lower threshold $T_{low}$, canny upper threshold $T_{high}$,
+                           dilate iterations $d$, erode iterations $e$}
+    \KwResult{processed image $J$}
+    Convert $I$ from RGB to grayscale:\\
+    $I \xrightarrow{\text{RGB to Gray}} I'$;\\
+    Smooth $I'$ with Gaussian Blur and parameters $k_g, \sigma = 0$:\\
+    $I' \xrightarrow{\text{Gaussian Blur}} I''$;\\
+    Apply Canny edge detection with parameters $T_{low}, T_{high}$:\\
+    $I'' \xrightarrow{\text{Canny}} E$;\\
+    Dilate $E$ $d$ times with kernel $[[1,1],[1,1]]$:\\
+    $E \xrightarrow{\text{Dilate}} E'$;\\
+    Erode $E'$ $e$ times with kernel $[[1,1], [1,1]]$:\\
+    $ E' \xrightarrow{\text{Erode}} J$;\\
+    Return $J$;\\
+\end{algorithm}
+
+Diese generalisierte Bildverarbeitungsroutine nach \vref{image_processing_routine} liefert ein geglättetes binäres Kantenbild. In Abhängigkeit der Parameter bleiben mehr oder weniger Details im Bild erhalten und die Kanten sind je nach Anzahl der Iterationen von \textit{Dilate} und \textit{Erode} dicker oder dünner. Dementsprechend müssen die Parameter je nach Beleuchtung/Spiegelung auf dem Bildschirm und dem zu erkennenden Spiel angepasst werden. Eine Auflistung der empfohlenen Parameter findet sich in Tabelle \ref{tab:vision_parameters}
+
+\subsection{TicTacToe}
+Die Methode zur Erkennung und Einordnung der Konturen für die Spielstanderkennung von \textit{TicTacToe} basiert auf der \textit{OpenCV}-Funktion \textit{findContours}, welche mit entsprechenden Parametern die Kontouren hierarchisiert von $-1$ (Äußerste) bis $n$ (Innerste Kontur) nach dem Algorithmus von \textit{Suzuki et al.} zurückgibt. Der Gedanke hierbei ist, den Rahmen des \textit{TicTacToe}-Feldes als äußerste Kontour $C_o$ zu erkennen, und von dieser aus die neun Teilfelder des Spielfeldes als die inneren Konturen zu bestimmen. Der Schwellenwert für die Fläche einer inneren Kontur soll zusätzlich die Wahrscheinlichkeit verringern, dass \dq Ausreißer \dq als Teilfeld erkannt werden.
+
+\begin{algorithm}[!htbp]
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Konturdetektionsroutine nach geg. Parametern}\label{alg:contour}
+    \KwData{edge map $J$, contour area threshold $T_c$}
+    \KwResult{Outer contours $C_o$, Inner contours $C_i$}
+    Process $I$ with algorithm \vref{image_processing_routine};\\
+    $I \rightarrow J$\\
+    Find all contours in $J$ with \vref{alg:suzuki};\\
+    Iterate over all contours:\\
+    \For{c in contours}{
+        \uIf{hierarchy of c is $0$ and contour area of c $ > T_c$}{
+            Add $c$ to $C_i$;\\
+        }\uElseIf{hierarchy of c is $-1$}{
+            Add $c$ to $C_o$;\\
+        }
+    }
+    Return $C_o, C_i$;\\
+\end{algorithm}
+
+\begin{algorithm}[!htbp]
+% \vspace{-7cm}
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Algorithmus zur \textit{TicTacToe}-Spielstanderkennung}\label{alg:tictactoe_detection}
+    \KwData{Image $I$, Tile offset $O$, minimal radius $r_{min}$, maximal radius $r_{max}$, circle accumulator threshold $T_{acc}$, minimal line length $l_{min}$, maximal line gap $l_{max}$, line accumulator threshold $T_{l}$}
+    \KwResult{two-dimensional result array $R$}
+    Detect outer and inner contours with algorithm \vref{alg:contour}:\\
+    $J \rightarrow C_o, C_i$\\
+    \uIf{$|C_i| == 9$}{
+        Sort $C_i$ by $y$-Position;\\
+        \For{every row, row index in $C_i$}{
+            Sort $row$ by $x$-Position;\\
+            \For{contour, column index in row}{
+                Get upper left corner position $(x,y)$, height $h$ and width $w$ of contour bounding rectangle;\\
+                Get subimage $tile$ from $J$:\\
+                $tile = J[x+O:x+w-O, y+O:y+h-O]$\\
+                Check for circle(s) in \textit{tile};\\
+                \uIf{Cirle present in tile with Hough Cirlce Transform and parameters $r_{min}, r_{max}, T_{acc}$}{
+                    Mark $R[row \; index][column \; index]$ as circle;\\ 
+                }\uElseIf{Lines present in tile with Hough Line Transform and parameters $l_{min}, l_{max}, T_l$}{
+                    Mark $R[row \; index][column \; index]$ as cross;\\
+                }
+            }
+        }
+        Return $R$;\\
+    }\uElse{
+        Return \textbf{None};\\
+    }
+\end{algorithm}
+
+Der hier entwickelte Algorithmus zur Erkennung des \textit{TicTacToe}-Spielstands basiert auf der hierarchischen Schachtelung von Konturen mit dem Spielfeldrand als äußerste Kontur und darauffolgend die neun \dq Kästchen\dq der Teilfelder. Sollte diese Relation nicht gegeben sein, so wird ein ungültiges Ergebnis (\textbf{None}) zurückgegeben. Sind neun Teilfelder gegeben, so werden diese nach $x$- und $y$-Koordinaten sortiert, sodass diese nach Standard-Schema (\dq links oben nach rechts unten\dq ) behandelt werden. Der \textit{tile offset} soll hierbei verhindern, dass die Umrandungen des Kästchens selbst als Linie eines Kreuzes erkannt wird. Im Anschluss wird zunächst überprüft, ob ein Kreis im Kästchen vorliegt und wenn ja im resultierenden Array an der entsprechenden Stelle eingetragen, andernfalls analog für Linien als Merkmal der Kreuze.
+
+\subsection{Vier gewinnt}
+
+\begin{algorithm}[!htbp]
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Algorithmus zur \textit{Vier gewinnt}-Spielstanderkennung}\label{alg:connect4_detection}
+    \KwData{Image $I$, minimal radius $r_{min}$, maximal radius $r_{max}$, circle accumulator threshold $T_{acc}$, circle distance $d_c$, white lower threshold $T_w$}
+    \KwResult{two-dimensional result array $R$}
+    Process $I$ with algorithm \vref{image_processing_routine}:\\
+    $I \rightarrow J$;\\
+    Detect circles $c$ in $J$ with Hough Circle Transform and parameters $r_{min}, r_{max}, T_{acc}, d_c, T_w$:\\
+    $J \xrightarrow{Hough} c$;\\
+    \uIf{$|c| == 42$}{
+        Sort $c$ by $y$-Position;\\
+        \For{every row, row index in $c$}{
+            Sort $row$ by $x$-Position;\\
+            \For{circle, column index in row}{
+                Detect color of circle center with parameter $T_w$;\\
+                $T_w' = T_w$;\\
+                \While{Color not detected correctly and $T_w' \ge 0$}{
+                    $T_w' = T_w' - 10$;\\
+                    Detect color of circle center with parameter $T_w'$;\\
+                }
+                \uIf{Color is red}{
+                    Set $R[\text{row index}][\text{column index}]$ to red;\\
+                }\uElseIf{Color is yellow}{
+                    Set $R[\text{row index}][\text{column index}]$ to yellow;\\
+                }\uElseIf{Color is white}{
+                    \textbf{Continue};\\
+                }
+            }
+        }
+        Return $R$;\\
+    }\uElse{
+        Return \textbf{None};\\
+    }
+\end{algorithm}
+
+Der hier entwickelte Algorithmus zur Spielstanderkennung von \textit{Vier gewinnt} basiert auf der Annahme, dass das Spielfeld aus $42$ Kreisen besteht, welche entweder rot, gelb oder weiß gefärbt sind. Für die Erkennung der Farbe eines oder mehrerer Pixel liefert \textit{OpenCV} die \textit{inRange}-Methode, welche für angegebene obere und untere RGB-Werte zurückgibt, ob sich die Farbe des Pixels innerhalb dieser Grenzwerte befindet. So lässt sich auch bei nicht konstanten Bedingungen, wie etwa die Beleuchtung, die übergeordnete Farbe eines Pixels wie etwa \dq Rot \dq in einem Bild zu erkennen.
+
+\subsection{Parameter}
+Die Spielstanderkennungsalgorithmen basieren schlussendlich hauptsächlich darauf, die richtigen Parameter für die vorgestellten Methoden zu ermitteln, damit diese bspw. alle Kreise im Bild und deren Farbe im Bild korrekt erkennen und somit robuste Ergebnisse liefern. Die Methodik profitiert dabei von einem fest definierten Sichtfeld für den \textit{NAO} wie in den Anforderungen festgelegt.
+Durch Testen haben sich folgende Parameter(-bereiche) als robust erwiesen:
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|l|c|c|}
+  \hline
+  Parameter & \textit{TicTacToe} & \textit{Vier gewinnt} \\
+\hline
+ gaussian kernel size $k_g$ & 5-9 & 9-15  \\
+\hline
+ canny lower threshold $T_{low}$ & 0 & 0 \\
+ \hline
+ canny upper threshold $T_{high}$ & 20-40 & 20-40  \\
+\hline
+ dilate iterations $d$ & 8-12 & 0-4 \\
+ \hline
+ erode iterations $e$ & 2-6 & 0-2 \\
+ \hline
+ contour area threshold $T_c$ & 500 & - \\
+ \hline
+ Tile offset $O$ & 20 & - \\
+  \hline
+ minimal radius $r_{min}$ & 75 & 40 \\
+  \hline
+ maximal radius $r_{max}$ & 95 & 55 \\
+  \hline
+ circle accumulator threshold $T_{acc}$ & 15-25 & 15-25 \\
+   \hline
+minimal line length $l_{min}$ & 50 & - \\
+  \hline
+maximal line gap $l_{max}$ & 5-15 & - \\
+  \hline
+line accumulator threshold $T_{l}$ & 7-11 & - \\
+   \hline
+ Boundaries white color (lower is $T_w$) & - & [210, 210, 210] - [255, 255, 255] \\
+  \hline
+ Boundaries red color & - & [10, 0, 0] - [255, 100, 100] \\
+   \hline
+ Boundaries yellow color & - & [50, 100, 0] - [255, 255, 100] \\
+  \hline
+\end{tabular}
+\caption{Parameter für die Spielstanderkennung von \textit{TicTacToe} und \textit{Vier gewinnt}}
+\label{tab:vision_parameters}
+\end{table}    
