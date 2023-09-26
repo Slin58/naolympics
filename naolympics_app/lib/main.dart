@@ -20,9 +20,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const thwsColor = Color.fromRGBO(255, 130, 0, 1);
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: const Color.fromRGBO(255, 130, 0, 1),
+        colorScheme: ColorScheme.fromSeed(seedColor: thwsColor),
+        primaryColor: thwsColor,
         useMaterial3: true,
       ),
       home: const HomePage(),
