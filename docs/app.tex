@@ -1,0 +1,83 @@
+\section{Einrichten von Flutter und Erstellen einer APK}
+\subsection{Flutter Installation}
+
+Um Flutter zu installieren, befolge die folgenden Schritte:
+
+1. Besuche die offizielle Flutter-Website: \texttt{https://flutter.dev/}.
+2. Lade die Flutter-Installationsdatei für Ihr Betriebssystem herunter.
+3. Extrahiere das Archiv und lege den Flutter-Binärpfad in Ihrem System-Pfad fest.
+
+\subsection{Flutter Prüfung und Konfiguration}
+1. Öffne das Terminal und gebe den Befehl \texttt{flutter doctor} ein. Dieser Befehl überprüft Ihre Flutter-Installation und gibt Hinweise auf fehlende Komponenten oder Konfigurationsschritte.
+
+2. Befolge die Anweisungen von \texttt{flutter doctor}, um fehlende Komponenten wie Android Studio, Xcode oder Android SDK zu installieren und zu konfigurieren.
+
+\subsection{APK erstellen}
+Navigiere zu dem Projektpfad der Naolympics App im Terminal. Dazu von der Projekt-Root-Ebene in den \textit{naolympics\_app} Ordner gehen.
+\newline
+Gebe den folgenden Befehl ein, um eine APK zu erstellen:
+   \begin{verbatim}
+   flutter build apk
+   \end{verbatim}
+Nach Abschluss des Build-Vorgangs findet man die generierte APK-Datei im Verzeichnis \texttt{build/app/outputs/flutter-apk/} innerhalb des Projektpfads.
+
+\section{Singleplayer}
+
+\subsection{Tic Tac Toe}
+Die Tic Tac Toe App ist eine vergleichsweise einfache Umsetzung eines 3x3 Spielfelds, auf dem abwechselnd rote Kreise und schwarze Kreuze platziert werden. Rot startet immer zuerst, und die Farben wechseln sich in den folgenden Zügen ab, bis ein Gewinner feststeht oder das Spiel unentschieden endet.
+\newline
+Die Seite wird mithilfe eines \textit{StatefulWidgets} verwaltet. Je nachdem, ob sich der Nutzer im Multiplayer- oder Singleplayer-Modus befindet, wird der entsprechende Tic Tac Toe Service geladen.
+
+\subsection{Vier gewinnt}
+Das Vier gewinnt Spielfeld besteht aus mehreren Säulen, in denen die Spieler abwechselnd ihre Münzen durch Berühren des Bildschirms platzieren können. Der erste Zug wird immer von Spieler 1 in gelber Farbe ausgeführt. Eine Besonderheit des Vier gewinnt Singleplayers ist, dass nach jedem Zug eine einsekündige Verzögerung eintritt, die jegliche weiteren Züge in dieser Zeitspanne blockiert. Dies liegt an der Art und Weise, wie der Nao-Roboter den Bildschirm mit der Alufolie berührt. Anstelle einer einzelnen Berührung, die zu einem Zug führen würde, zittert der Finger des Nao's vor dem Bildschirm, und ohne die Verzögerung würde er fünf bis zehn Züge auf einmal ausführen. Die eingebaute Verzögerung umgeht dieses Problem, da der Nao seinen Finger vor Ablauf der Blockierung wieder vom Bildschirm entfernt.
+\newline
+\newline
+Die Vier gewinnt App setzt sich aus mehreren Komponenten zusammen, die insgesamt das Spielfeld abbilden. Angefangen bei den individuellen Münzen in den Spalten bis hin zur Steuerung der Spiellogik. Jede Komponente ist ein \textit{StatelessWidget}. State Management, Dependency Injection und Routing werden durch das Get-Framework geregelt. Dieses Framework erlaubt es , die verschiedenen Komponenten des Spielfelds bei Änderungen automatisch und performant zu aktualisieren, ohne manuell einen Refresh der verschiedenen Widgets auslösen zu müssen. Die Spiellogik wird von einem \textit{GetXController} namens \textit{GameController} geregelt, der bei Spielstart ein einziges mal initialisiert wird. Durch die \textit{GetXController} Klasse können alle Widgets leicht auf den GameController und dessen Daten zugreifen und so das Spielfeld auf Änderungen überwachen.
+
+
+\section{Mulitplayer}
+\subsection{Verbindungsaufbau und Datenübertragung}
+Für den Verbindungsaufbau und die Kommunikation innerhalb eines Netzwerks bietet Dart die \textit{Socket} Klasse an. Diese ermöglicht den Aufbau einer TCP Verbindung  zwischen zwei Geräten. Für den Verbindungsaufbau wird ein freier Port des lokalen Gerätes und die IP-Adresse des Verbindungspartners benötigt.
+\newline
+Sockets können Daten in Form von Bytes senden und empfangen. Allerdings kann der Byte-Stream jedes Socket Objekts nur von einem einzigen Consumer genutzt werden, was die Nutzung der empfangenen Daten auf eine einzige Stelle im Code oder ein einziges UI-Element beschränkt. Um dieses Problem zu lösen, wird jeder \textit{Socket} in der App genutzt, um ein \textit{SocketManager} Objekt zu erstellen. In einem \textit{SocketManager} wird der Byte-Stream zu einem Broadcast-Stream umgewandelt. Dieser Stream kann von mehreren Consumern gleichzeitig auf neue Events abgehört werden. 
+\newline
+\newline
+Die Daten für den Verbindungsaufbau, die Navigation und den Spielfluss werden im JSON-Format übertragen. Dart bietet die Möglichkeit zur manuellen Serialisierung und Deserialisierung von Daten mithilfe der integrierten Funktion \textit{dart:convert}. Doch diese Methode stößt in mittleren bis größeren Projekten schnell an ihre Grenzen, da für jeden zu kodierenden oder dekodierenden Datentyp die Dekodierungslogik manuell implementiert werden muss.  Wir haben uns daher entschieden die \textit{json\_serializable} Library zu nutzen. Diese Library generiert die notwendige JSON Logik automatisch für alle Datentypen, die mit der Annotation \"@JsonSerializable()\"\ versehen werden. Zum Start der Generierung muss nur der Befehl \"dart run build\_runner build\"\ im Projektverzeichnis ausgeführt werden. So können beliebig viele und komplexe Datentypen mit relativ geringem Aufwand JSON-fähig gemacht werden. 
+\newline
+\newline
+Im Verzeichnis \"network\"\ befinden sich mehrere Dart-Klassen, die neben der JSON-Konvertierung das Finden verbindungsbereiter Geräte im lokalen Netzwerk regeln. Bevor der Verbindungsaufbau begonnen werden kann, müssen die lokalen IP-Adressen dieser Geräte gefunden und auf der Seite für die Spielersuche des Clients angezeigt werden. Hierfür werden alle möglichen lokalen IP-Adressen im Netzwerk einmal gepingt, und die Adresse jedes antwortenden Geräts angezeigt. Beim anschließenden Verbindungsaufbau wird zwischen beiden Geräten eine festgelegte Sequenz von vordefinierten Nachrichten ausgetauscht, um sicherzustellen, dass eine fehlerfreie Verbindung vorliegt. 
+
+\subsection{Aufbau der Host-Client Verbindung}
+Um die Muliplayerfunktion nutzen zu können, müssen sich beide Geräte im selben Netzwerk befinden. Auf der Startseite kann der \textit{Multiplayer} Button ausgewählt werden, der den Nutzer auf die Spielersuche weitergeleitet. Hier muss einer der beiden Spieler den \textit{Host}-Button im unteren rechten Teil des Bildschirms drücken, um für andere Spieler im selben Netzwerk sichtbar zu werden und den Verbindungsaufbau zwischen Host und Client zu ermöglichen. Im Hintergrund wird dabei die IP des Gerätes bestimmt und im Falle, dass es einen Mobilen-Hotspot aktiviert hat, wird die IP dessen priorisiert. Mit der bestimmten IP-Adresse wird ein Dart \textit{ServerSocket} erstellt welches sichtbar für andere Spieler ist.
+\newline
+Nach kurzer Zeit sollte die IP-Adresse des Hosts im selben Fester des Clients angezeigt werden und dieser kann sich per Knopfdruck daraufhin verbinden. Läuft der Verbindungsaufbau erfolgreich ab, werden beide Spieler automatisch zur \textit{Spielauswahl} navigiert.
+\newline
+\newline
+Die Verbindung kann jederzeit von beiden Spieler durch den \textit{Close connection}-Button in der App-Leiste im oberen Teil des Bildschirms beendet werden. Daraufhin werden Client und Host zurück zur Startseite navigiert.
+
+\subsection{Navigator}
+
+\subsubsection{RouteAwareWidgets}
+Um den Client über den Wechsel zwischen Seiten in der App zu informieren, müssen diese Änderungen zuerst auf Seiten des Hosts wahrgenommen werden. Dies wird durch \textit{RouteAwareWidgets} erreicht.
+\newline
+\newline
+RouteAwareWidgets sind \textit{StatefulWidgets}, deren State das Mixin \textit{RouteAware} verwendet und dessen Methoden überschreibt, um Änderungen des Flutter Navigators, wie \textit{push()}, \textit{pop()} oder \textit{dispose()}, erfassen und in unserem Fall JSON-Objekte vom Typ \textit{NavigationData} an den Client senden zu können.
+\newline
+\newline
+Um die Funktionalität der \textit{RouteAwareWidgets} zu nutzen, muss an den Stellen im Code, an denen normalerweise auf die gewünschte Seite des Navigators verwiesen wird, ein \textit{RouteAwareWidget} initialisiert werden, wobei die gewünschte Seite als \textit{Child-Element} angegeben wird.
+\newline
+Dadurch werden die überschriebenen Methoden bei Seitenwechsel oder Rückkehr ausgeführt, und der Client wird jedes Mal über diese Änderungen informiert.
+
+\subsubsection{ClientRoutingService}
+Nach erfolgreicher Verbindung zum Server wird auf der Client-Seite der \textit{ClientRoutingService} initialisiert und dem \textit{MultiplayerState} hinzugefügt. Nach seiner Initialisierung wartet der entsprechende Broadcast-Stream auf eingehende JSON-Objekte vom Typ NavigationData. Basierend auf diesen Daten entscheidet der \textit{ClientRoutingService}, zu welcher Seite des Flutter Navigators gewechselt oder ob zur vorherigen Seite zurückgegangen werden soll.
+\newline
+\newline
+Sobald jedoch ein Spiel beginnt,sollte der \textit{ClientRoutingService} mit seiner \textit{pause()}-Methode pausiert werden, um eingehende Spieldaten nicht als \textit{NavigationData} zu interpretieren. Nach Beendigung des Spiels und wenn die Client-Navigation durch den Host wieder aktiviert werden soll, muss die \textit{resume()}-Methode des Services aufgerufen werden, und der Client folgt erneut den Routing-Anweisungen des Hosts.
+
+\subsection{Tic Tac Toe}
+Sobald sich der Nutzer auf der Tic Tac Toe Seite befindet, startet der Host das Spiel und beginnt mit dem Setzen von Kreisen. Während des Zuges des einen Spielers muss der andere Spieler warten, bis das Symbol des ersten Spielers platziert wurde. Nach Abschluss des Spielzugs kann der andere Spieler sein Symbol platzieren.
+\newline
+Am Ende des Spiels wird bei beiden Spielern der \textit{Winscreen} angezeigt, jedoch hat nur der Host die Befugnis zu entscheiden, ob eine weitere Runde gespielt wird oder ob zur Spielauswahl zurückgekehrt wird. Der Host kann auch während eines laufenden Spiels zur Spielauswahl zurückkehren, wodurch die aktuelle Runde Tic Tac Toe beendet wird und der Client ebenfalls zur Spielauswahl navigiert wird.
+
+\subsection{Vier gewinnt}
+Ein Vier gewinnt Multiplayer-Spiel verläuft, abgesehen von der anderen Spiellogik, genau wie ein Tic Tac Toe Multiplayer-Spiel. Der Host startet immer als Spieler 1 (gelb), während der Client als Spieler 2 (rot) beginnt. Wenn einer der beiden Spieler gewinnt, wird der \textit{Winscreen} angezeigt, und nur der Host hat die Möglichkeit zu entscheiden, ob das Spiel verlassen oder eine neue Runde gestartet werden soll. Der Client wird dabei automatisch entsprechend den Aktionen des Hosts durch die App weitergeleitet.  

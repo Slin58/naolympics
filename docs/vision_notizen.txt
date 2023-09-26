@@ -1,0 +1,89 @@
+
+            Fuer real life images:
+
+        
+            TICTACTOE:
+            - Canny: ca. 20-40 upper, bestes Ergebnis bisher 30
+            - Gauss: ca. 5-9, bestes Ergebnis bisher 7
+            - Dilate: ca. 8-12, bestes Ergebnis bisher 8
+            - Erode: ca. 2-8, bestes Ergebnis bisher 4
+            - Hough Radius Range: bestes Ergebnis bisher 75-80
+            - Circle Acc Thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 20
+            
+            - Wenn acc_thresh hoeher -> erode muss niedriger werden
+            
+            CONNECT4:
+            - Canny: ca. 20-40 upper, bestes Ergebnis bisher 30
+            - Gauss: ca. 9-15, bestes Ergebnis bisher 13
+            - Dilate: ca. 0-4, bestes Ergebnis bisher 4
+            - Erode: ca. 0-2, bestes Ergebnis bisher 1
+            - Hough Radius Range: bestes Ergebnis bisher 40-55
+            - Circle Acc Thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 20
+            - white_thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 210
+            - red_thresh: So hoch wie moeglich, so niedrig wie noetig. Bestes Ergebnis bisher 100
+
+                # HoughCircles(image, Method, ratio of accumulator array, minDist between circles, param1 for houghGrad higher canny thres, param2 for houghGrad accumulator array thres)
+
+
+Tictactoe Erkennung Test 05.09.23, Iterationen 1000
+Zu ermittelnder Spielstand:
+x--
+xoo
+o-x
+Anzahl nicht erkannte Spielstände: 2
+
+Connect4 Erkennung Test 05.09.23, Iterationen 1000
+Zu ermittelnder Spielstand:
+----RY-
+YR-RYRR
+YRYRYYY
+RYYRRYY
+YRRYRYR
+YRRYYRR
+Anzahl nicht erkannte Spielstände: 1
+
+
+Tictactoe Erkennung Test 11.09.23, Iterationen 1000
+Zu ermittelnder Spielstand:
+00-
+x-x
+oox
+Anzahl nicht erkannte Spielstände: 2
+
+
+Tictactoe Erkennung Test 11.09.23, Iterationen 1000
+Zu ermittelnder Spielstand:
+-x-
+oxo
+xoo
+Anzahl nicht erkannte Spielstände: 5
+
+Connect4 Erkennung Test 11.09.23, Iterationen 1000
+Zu ermittelnder Spielstand:
+-R-----
+-Y-Y---
+-RYR---
+-YRY-RR
+RRRY-YY
+YYYR-RY
+Anzahl nicht erkannte Spielstände: 0
+
+
+Connect4 Erkennung Test 11.09.23, Iterationen 1000
+Zu ermittelnder Spielstand:
+-------
+-------
+-------
+---R---
+YRRYRY-
+YYRRYRY
+Anzahl nicht erkannte Spielstände: 1
+
+
+ python main.py -h
+usage: main.py [-h] [-i IP] [-p PORT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i IP, --ip IP        robot IP address
+  -p PORT, --port PORT  robot Port

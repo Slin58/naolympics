@@ -1,0 +1,124 @@
+\section{Spielablauf}
+
+\subsection{Menüführung und Spielauswahl}
+
+Die einfachste und verlässlichste Möglichkeit, mit dem Roboter zu interagieren, um ein Spiel zu starten, sprich das Spiel und den Schwierigkeitsgrad auszuwählen, besteht darin, die drei Knöpfe auf dessen Kopf zu verwenden. Mit diesen lässt sich unkompliziert und sprachgeführt durch die einzelnen Modi navigieren. Genutzt wurden hierfür die \textit{naoqi} Module \textit{TextToSpeech} und \textit{Touch}\cite{aldebaran_robotics}.
+
+\begin{figure*}[h]
+    \begin{verbatim}
+         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
+         tts.say("Hallo, ich bin NAO")
+    \end{verbatim}
+    \caption{Allgemeines Beispiel für die \textit{TextToSpeech}-Funktion}
+    \label{alg:textToSpeech_example}
+\end{figure*}
+
+\begin{figure*}[h]
+    \begin{verbatim}
+            touch = ALProxy("ALTouch", robotIP, PORT)
+            status = touch.getStatus()
+            counter = 0
+            for e in status:
+                if e[1]:
+                    print("Button "+counter+ "touched")
+            counter += 1
+    \end{verbatim}
+    \caption{Allgemeines Beispiel für die \textit{Touch}-Funktion}
+    \label{alg:touch_example}
+\end{figure*}
+
+Die \textit{getStatus}-Funktion gibt ein Array zurück, welches an zweiter Stelle ein \textit{boolean} enthält, welcher \textit{True} für Knopf gedrückt und \textit{False} für Knopf nicht gedrückt anzeigt. Reihenfolge und Aufbau ist wie folgt:
+
+\begin{verbatim}
+0   ['Head', False, []], 
+1   ['LArm', False, []], 
+2   ['LLeg', False, []], 
+3   ['RLeg', False, []], 
+4   ['RArm', False, []], 
+5   ['LHand', False, []], 
+6   ['RHand', False, []], 
+7   ['Head/Touch/Front', False, []], 
+8   ['Head/Touch/Middle', False, []], 
+9   ['Head/Touch/Rear', False, []], 
+10  ['LFoot/Bumper/Left', False, []], 
+11  ['LFoot/Bumper/Right', False, []], 
+12	['RFoot/Bumper/Left', False, []], 
+13  ['RFoot/Bumper/Right', False, []], 
+14  ['LHand/Touch/Left', False, []], 
+15  ['LHand/Touch/Back', False, []], 
+16  ['LHand/Touch/Right', False, []], 
+17	['RHand/Touch/Left', False, []], 
+18  ['RHand/Touch/Back', False, []], 
+19  ['RHand/Touch/Right', False, []]
+\end{verbatim}
+
+\dq Horcht\dq man also wie in \ref{alg:touch_example} darauf, dass dieser \textit{boolean} auf wahr gesetzt wird, lässt sich einfach ein Menü konstruieren, durch welches man mit den Kopf-Tasten navigieren kann, indem man auf die Indizes $7$ (Vorne), $8$ (Mitte) und $9$ (Hinten) reagiert.\\
+
+\begin{algorithm}[H]
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Ablauf Spielauswahl per Knöpfe}\label{alg:main_menu}
+    \begin{enumerate}
+        \item Start Program;
+        \item Choose between \textit{TicTacToe}, \textit{Connect Four} and \textit{End};
+        \item Choose between \textit{NAO} playing against opponent or against itself;\\
+        \uIf{NAO vs. Opponent}{
+            \begin{itemize}
+                \item Choose, whether \textit{NAO} or opponend makes the first move
+                \item Choose difficulty
+            \end{itemize}
+        }
+        \item Play game;
+        \item \textbf{Go to} 2;
+    \end{enumerate}
+    \end{algorithm}
+\vspace{\baselineskip}
+Der Ablauf ist sequentiell, gleich für die beiden implementierten Spiele und letztendlich eine Endlosschleife, sodass man, sollte man das Spielen nicht beenden, so oft spielen kann wie man möchte. Zunächst wird man gefragt, welches Spiel man spielen möchte, dann, ob der \textit{NAO} oder der Gegner beginnen oder der Roboter gegen sich selbst spielen soll. Im Anschluss an ersteres wird noch nach der Schwierigkeitsstufe gefragt, im Falle von \textit{NAO} gegen sich selbst spielt immer Schwierigkeitsgrad \dq ummöglich\dq gegen \dq schwer\dq . Schematisch ist der Spielablauf gegen einen Menschen/anderen \textit{NAO} aus Sicht des \textit{NAO} wie folgt:\\
+
+\begin{algorithm}[H]
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Ablauf \textit{NAO vs. Gegner} Spiel aus Sicht des \textit{NAO}}\label{alg:game_sequence}
+    Initialize field\_after\_move;\\
+    \While{playing}{
+    Get game state from algorithm \vref{alg:connect4_detection} or \vref{alg:tictactoe_detection};\\
+    \While{game state not detected correctly}{
+        Wait;\\
+        Get game state again;\\
+        \uIf{Not detected correctly five times}{
+            End;\\
+        }
+    }
+    \uIf{field not equal to field\_after\_move}{
+    Calculate next move and expected field\_after\_move;\\
+    \uIf{Winning move}{
+        Celebrate;\\
+        End;\\
+    }    
+    }
+}
+\end{algorithm}
+\vspace{\baselineskip}
+Spielt ein \textit{NAO} gegen einen anderen \textit{NAO} oder einen Menschen, so wird zunächst \textit{field\_after\_move} initialisiert, welches nachfolgend den erwarteten Spielstand nach einem Spielzug des \textit{NAOs} repräsentiert. Danach wird das aktuelle Spielfeld ermittelt, sollte dieses nicht korrekt erkannt werden, versucht es der \textit{NAO} bis zu fünfmal erneut, bevor er das Spiel abbricht. In diesem Fall liegt entweder ein Problem bei der Spielstanderkennung vor, beispielsweise aufgrund von starker Spiegelung auf dem Bildschirm, oder da das Spiel ist zu Ende. Dass der Spielstand vereinzelt nicht auf Anhieb erkannt wird ist jedoch möglich, auch wenn sich beispielsweise noch eine Hand im Sichtfeld des Roboters bewegt hat. Im Anschluss an die erfolgreiche Erkennung des Spielstands wird der aktuelle Spielstand via Algorithmus \vref{alg:connect4_detection} oder \vref{alg:tictactoe_detection} ermittelt und verglichen. Wenn der Gegenspieler keinen Zug gemacht hat, so unterscheiden sich der ermittelte und errechnete Spielstand nicht, so wartet der \textit{NAO} eine kurze Zeit und prüft erneut, ob ein Zug gemacht wurde. Falls der Gegenspieler einen Spielzug getätigt hat, unterscheiden sich die Spielstände und der Roboter ist an der Reihe, errechnet also seinen nächsten Zug und führt ihn aus. Sollte der Roboter erkennen, dass er mit dem Zug gewonnen hat, so führt er einen Jubel aus, beendet das aktuelle Spiel und geht zurück in die Spielauswahl.\\
+
+\begin{algorithm}[H]
+    \LinesNumbered
+    \SetAlgoLined
+    \caption{Ablauf \textit{NAO vs. itself} Spiel aus Sicht des \textit{NAO}}\label{alg:game_sequence}
+    \While{playing}{
+    Get game state from algorithm \vref{alg:connect4_detection} or \vref{alg:tictactoe_detection};\\
+    \While{game state not detected correctly}{
+        Get game state again;\\
+        \uIf{Not detected correctly five times}{
+            End;\\
+        }
+    }
+    Calculate next move;\\
+    \uIf{Winning move}{
+    Celebrate;\\
+    End;\\
+    }    
+}
+\end{algorithm}
+\vspace{\baselineskip}
+Spielt ein \textit{NAO} gegen sich selbst, wird das aktuelle Spielfeld nach gleichem Ablauf wie bei \textit{NAO vs. opponent} ermittelt. Im Anschluss an die erfolgreiche Erkennung des Spielstands wird  nächste Zug im Wechsel von gelb/rot bzw. Kreis/Kreuz errechnet und der Roboter führt ihn aus. Sollte der Roboter erkennen, dass er mit dem Zug gewonnen hat, so führt er einen Jubel aus, beendet das aktuelle Spiel und geht zurück in die Spielauswahl.\\

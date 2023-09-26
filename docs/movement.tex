@@ -1,0 +1,272 @@
+Der Roboter soll die Fähigkeit besitzen ein beliebiges Feld auf dem Bildschirm anzuklicken.
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{bilder/bilder_movement/startposition.jpg}
+        \caption{NAO vor Tablet}
+    \label{fig:nao_movement}
+\end{figure}
+
+\section{Herausforderungen}
+Dabei gibt es mehrere Herausforderungen. 
+
+Die erste große Herausforderung ist, es dafür zu sorgen, dass die Finger des Roboters überhaupt auf dem Touchscreen erkannt werden. Da die Finger aus Plastik sind leiten sie keinen Strom und lösen somit in ihrem ursprünglichen Zustand keinen Klick auf dem Tablet aus. 
+
+Eine weitere Problemstellung ist die Positionierung des Roboters. Der Arm des Roboters hat nur eine beschränkte Reichweite und die Positionierung muss reproduzierbar sein. 
+
+Abschließend muss der eigentliche Klick, also das Berühren des Tablets an jeder möglichen Stelle umgesetzt werden. Dabei gilt es so präzise wie möglich zu sein, da ein Klick zu weit nach links, rechts, oben oder unten bereits ein anderes Feld sein könnte. Dazu kommt, dass in die richtige Tiefe geklickt werden muss, da bei einer zu kurzen Bewegung das Tablet gar nicht getroffen wird und bei einer zu weiten Bewegung das Tablet verschoben oder beschädigt werden könnte. Eine Verschiebung würde dabei einen weiteren falschen Klick zur Folge haben.
+
+\section{Ideen und Lösungsansätze}
+\subsection{Touchscreenfähiger Finger}
+\subsubsection{Tablet Stift}
+Eine einfache Lösung für dieses Problem wäre es den beim Tablet mitgelieferten Tablet Stift \vref{(fig:tablet_pen}) zu nutzen. Dabei müsste man den Stift fest in die Hand des NAOs befestigen. Damit klickt der NAO aber nur indirekt aufs Tablet. Eine ähnliche Lösung wie diese, gibt es bereits, weshalb noch weitere Ideen in Betracht gezogen werden. 
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/TabletStift.jpg}
+        \caption{Tabletstift}
+    \label{fig:tablet_pen}
+\end{figure}
+
+\subsubsection{Mobile Gaming Finger Sleeve}
+Die nächste Idee war es Mobile Gaming Finger Sleeve (\vref{fig:mobile_finger_sleeve}) zu nutzen, die eigentlich dafür gedacht sind, bei einem Menschen die Touchscreenfähigkeit der menschlichen Finger noch weiter zu steigern. Sie sind in ersten Linie aus Stoff und enthalten verschiedene Metalle, die für eine bessere Leitfähigkeit sorgen sollen. Durch den Stoff passen sie sich perfekt an den Finger des NAO Roboters an. Leider reichen jedoch diese Fingerhütte alleine nicht aus, um den Plastikfingern die benötigte Leitfähigkeit zu geben.
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/FingerSleeve.jpg}
+        \caption{Mobile Gaming Finger Sleeve}
+        \label{fig:mobile_finger_sleeve}
+\end{figure}
+
+\subsubsection{Leitfähiger Stoff}
+Der Ansatz der Mobile Gaming Finger Sleeve war dennoch grundsätzlich nicht falsch. Um einen Klick mit dem Finger des NAO Roboters am Tablet auszulösen, muss am Berührungspunkt mit dem Tablet Strom fließen, denn das ist was am Tablet erkannt wird. Der menschliche Finger hat durch den hohen Wasseranteil im Körper diese Fähigkeit. Beim Plastikfinger des NAO Roboters muss nachgeholfen werden. 
+Daraus resultiert, dass ein besonders leitfähiger Stoff benötigt wird. Außerdem muss sich der Stoff eignen, um in irgendeiner Weise am NAO Finger befestigt zu werden. Aluminium Folie erfüllt beide Eigenschaften, da es zum einen sehr gut leitet und zum anderen biegsam ist. 
+
+Der Zweck der Aluminium Folie ist es an einem Kontaktpunkt viel Leitfähigkeit zu bieten und das auf eine größere Fläche des schlecht leitenden Plastiks zu verteilen.
+
+Damit das Aluminium besser in Position bleibt, während der NAO beim Shutdown seine Hand schließt, wird zusätzlich die Mobile Gaming Finger Sleeve (siehe oben) genutzt. Dabei wird von der Sleeve die Fingerspitze abgeschnitten und über den hinteren Teil der Aluminium Folie gestülpt.
+
+\subsection{Arm Movement}
+Für die Bewegung des Arms bzw. Fingers auf das Tablet gibt es zwei Optionen:
+Zum einen kann der Finger des NAOs auf dem Weg zum Bildschirm getrackt werden und während der Bewegung live überprüft werden, in welche Richtung der Arm weiter bewegt werden muss, um das Ziel zu erreichen.
+Zum anderen kann die Armbewegung für fixe Punkte auf dem Bildschirm, welcher im gleichen Abstand bleibt, bestimmt werden und anhand von diesen auf alle dazwischen interpoliert werden. 
+
+\subsubsection{Nachteile Tracken:}
+Es ist schwierig zu erkennen, wann der Bildschirm berührt wurde, da der Finger bzw. Arm genau im Sichtfeld des NAOs ist.
+Außerdem muss die Fingerbewegung und das Tracken perfekt koordiniert sein, damit das richtige Feld angeklickt wird. Wobei auch das Tracken des Finger sich als sehr kompliziert herausstellen kann.
+Dazu kommt, dass die Bewegung sehr langsam ablaufen muss, da die Berechnung langsam ist und der Finger nicht zu sehr in eine falsche Richtung daneben gehen sollte, da hierbei das Tablet umgeworfen, beschädigt oder der Finger des NAOs beschädigt werden könnte.
+
+\subsubsection{Nachteile fixe Punkte:}
+Bei fixen Punkten muss die Positionierung des Tablets zum Roboter immer gleich sein, damit das beabsichtigte Feld angeklickt wird. Außerdem besteht der Nachteil, dass bei verschiedenen Größen des Tablets die fixen Punkte falsch sind. 
+
+\subsection{Positionierung NAO und Tablet}
+Bei der Positionierung des Tablets gibt es mehrere Möglichkeiten. 
+\paragraph{Möglichkeit 1: Tablet an Wand befestigen.}
+Der große Nachteil hierbei ist jedoch, dass man sehr unflexibel ist und ggf. Probleme hat eine passende Wand zu finden. Dabei kann auch die Sonneneinstrahlung eine wichtige Rolle spielen, da sie für Spiegelungen auf dem Tablet sorgt, welche bei zu starken Spiegelungen zu Fehlern in der Vision führen können.
+\paragraph{Möglichkeit 2: Tablet auf Tisch bzw. Karton legen.}
+Dabei hat man aber einen schlechten Winkel für eine natürliche Bewegung der Hand auf das Tablet und für die Kamera. Jedoch wäre diese Position für die Verwendung eines Tablet Stifts praktikabel.
+\paragraph{Möglichkeit 3: Tablet auf Tripod stellen.}
+Bei Möglichkeit 3 hat man maximale Flexibilität bei der Positionierung des Tablets. Diese Flexibilität führt dazu, dass es mehr Variablen beim Tablet gibt, die eingestellt werden müssen. (Bspw. Höhe, Tiefe, Kippung)
+
+\paragraph{2 Tablets vs 1 Tablet:}
+Da bei den gewählten Spielen meist ein Roboter gegen einen anderen Roboter oder einen menschlichen Spieler spielt, kann entweder lokal auf einem Tablet oder online auf 2 Tablets gespielt werden. 
+
+Ein Tablet hat den Nachteil, dass beim Spiel Roboter gegen Roboter der eine dem anderen immer wieder Platz machen muss und sich danach wieder genau gleich vor dem Tablet positionieren muss. Dafür reicht die Präzision der Bewegungs- und Kameragenauigkeit der Roboter nicht aus. Die Problematik hängt mit der unten beschriebenen Idee "Roboter positioniert sich selbst" zusammen, denn bei der Neupositionierung muss der Roboter sehr präzise wieder zur gleichen Stelle laufen.
+Ein Spiel gegen einen menschlichen Spieler ist bei einem Tablet möglich, birgt aber das Risiko, dass Mensch und Maschine kollidieren. 
+
+Der einzige Nachteil der Lösung mit zwei Tablets ist, dass die Spieleapp einen lokalen online Multiplayer benötigt. 
+
+\paragraph{Roboter positioniert sich selbst vs manuelle Positionierung des Tablets}
+Wichtig ist es, dass der Roboter in eine immer ähnliche bzw. gleiche (bei fixen) Position vor dem Tablet hat. Dabei gibt es zwei Herangehensweise: 
+Variante 1: Der Roboter erkennt selbst, wie er sich positionieren muss und richtet sich automatisch so vor dem Tablet auf, wie es benötigt wird. 
+Variante 2: Der Roboter wird stehen gelassen und das Tablet wird so vor dem Roboter platziert, wie es benötigt wird. 
+
+Bei Variante 1 könnte man mit der Vision verschiedene Orientierungspunkte festlegen, wie z. B. die Kanten des Tablets, Markierungen auf dem Boden vor dem Tablet oder man verwendet die NAO zugehörigen Marks mit ALLandMarkDetection. Problematisch dabei ist aber, dass sowohl die Vision als auch das Movement sehr präzise sein müssten, um sich genau in der richtigen Position vor dem Tablet zu platzieren. Gerade der Abstand, also die Tiefe stellt ein großes Problem dar, da der einzige Anhaltspunkt die Größe des Tablets ist. 
+
+Bei Variante 2 kann man zur Abstandsmessung die Arme benutzen. Hierbei muss sowohl die z-Rotation, die x-Rotation, y-Rotation und der Abstand mit der erwarteten Endposition übereinstimmen. 
+
+
+\section{Lösung:}
+Benötigte Ausstattung \vref{fig:equipment}:
+\begin{itemize}
+    \item Nao Roboter
+    \item Tripod
+    \item Tablet
+    \item Aluminium Folie
+    \item Schere
+    \item Klebemittel
+    \item Optional: Maßband, Mobile Gaming Finger Sleeve (\vref{fig:mobile_finger_sleeve})
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/ausrüstung2.jpg}
+        \caption{Benötigte Ausstattung}
+        \label{fig:equipment}
+\end{figure}
+
+\subsection{Touchscreenfähiger Finger}
+Die Touchscreenfähigkeit des Fingers wird durch Aluminium Folie erreicht. 
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/utensilien.jpg}
+        \caption{Aluminium Folie, Schere und Klebemittel}
+        \label{fig:tools}
+\end{figure}
+Diese wird in zwei Schritten um den Finger gewickelt. 
+Bei beiden Schritten gilt es so viele Berührungspunkte zum Finger, wie möglich herzustellen.
+\begin{enumerate}
+    \item Fingerkuppe: Aus Aluminium Kreis oder Quadrat schneiden und hier mehrfach von außen Richtung Mitte schneiden. Dabei die Folie als ein Stück lassen. Dann die Mitte auf die Fingerspitze und  den restlichen Finger wickeln und festkleben mit z.B. Tesa
+    \item Um den restlichen grob zylinderförmigen Teil des Fingers wird ein rechteckiges größeres Stück Aluminium gewickelt und ggf. geklebt.
+\end{enumerate}
+
+Bei einem Neustart des Roboters kann es passieren, dass sich die Aluminium Folie wieder ein bisschen löst und nicht mehr genug Kontaktpunkte mit dem Roboter vorhanden sind. Meistens reicht es die Aluminium Folie wieder fester an den Finger zu drücken. 
+
+\subsection{Positionierung des Tablets zum NAO}
+Die Positionierung des NAOs geschieht mithilfe eines Tripods (\vref{fig:tripod}). Bei diesem kann sowohl x-, y-, z-Achse als auch der Abstand vom Roboter manuell eingestellt werden.
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=0.25\linewidth]{bilder/bilder_movement/tripod.jpg}
+        \caption{Tripod}
+        \label{fig:tripod}
+\end{figure}
+
+Die Höhe des Tripods kann dabei entweder in den folgenden Schritten parallel eingestellt werden oder bei Bedarf mithilfe eines Maßbands die Höhe bereits voreingestellt werden. Die Höhe des obersten Punkts des Tripods beträgt dabei ungefähr 48,5 cm (\vref{fig:height}). 
+\begin{figure}[H]
+\centering
+    \includegraphics[angle=270,width=0.25\linewidth]{bilder/bilder_movement/höhetablet2.jpg}
+        \caption{Höhe Tablet}
+            \label{fig:height}
+\end{figure}
+
+Als nächstes muss die z-Achse des Tablets mithilfe einer Wasserwaage App (\vref{fig:z_axis_wrong}) eingestellt und parallel überprüft.
+ \begin{figure}[!htbp]
+ \centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/z-angle1.jpg}
+        \caption{Z-Achse falsch eingestellt}
+            \label{fig:z_axis_wrong}
+\end{figure}
+ \begin{figure}[!htbp]
+ \centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/z-angle2.jpg}
+        \caption{Z-Achse richtig eingestellt}
+            \label{fig:z_axis_right}
+\end{figure}
+Danach gibt es mehrere Positionen des NAOs zur Einstellung der korrekten Achsen und Positionen. Für die x-Achse streckt der NAO beide Arme nach vorne. Es sind jeweils Ellbogen und Hand der beiden Arme die Markierungen, um zu sehen, ob die x-Achse korrekt ist (\vref{fig:x_axis_side_view}; \vref{fig:x_axis_front_view}). Dabei sollte das Tablet genügend Abstand zum Roboter haben und die z-Achse korrekt bleiben.
+\begin{verbatim}
+def tabletPreparationXAngle(robotIP, port):
+    armMovement(robotIP, port, arm="L", 
+    position=armPosition.positionLTabletPreparation, go_back=False)
+
+    armMovement(robotIP, port, arm="R", 
+    position=armPosition.positionLTabletPreparation, go_back=False)
+\end{verbatim}
+ \begin{figure}[!htbp]
+ \centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/x-angle1.jpg}
+        \caption{X-Achse Startposition}
+            \label{fig:x_axis_start}
+\end{figure}
+ \begin{figure}[!htbp]
+ \centering
+    \includegraphics[width=0.25\linewidth]{bilder/bilder_movement/x-angle2.jpg}
+        \caption{X-Achse korrekt (seitliche Ansicht)}
+            \label{fig:x_axis_side_view}
+\end{figure}
+ \begin{figure}[!htbp]
+ \centering
+    \includegraphics[width=0.25\linewidth]{bilder/bilder_movement/x-angle3.jpg}
+    \caption{X-Achse korrekt (frontale Ansicht)}
+            \label{fig:x_axis_front_view}
+\end{figure}
+Abschließend kann die letzte Position eingenommen werden, dabei begibt der NAO seinen linken Arm an die Position an der er ganz unten links klicken würde und seinen rechten Arm an die Position ganz oben rechts (\vref{fig:y_axis_correct}). Damit kann sowohl die richtige Höhe, y-Achse, als auch der richtige Abstand gewählt werden. 
+\begin{verbatim}
+def tabletPosition(robotIP, port):
+    armMovement(robotIP, port, arm="L", 
+    position=getInterpolatedPosition(left=4.4, up=0), go_back=False)
+    armMovement(robotIP, port, arm="R", 
+    position=getInterpolatedPosition(left=4.4, up=8), go_back=False)
+
+    openHand(robotIP, port, arm="L")
+    openHand(robotIP, port, arm="R")
+\end{verbatim}
+
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/y-angle1.jpg}
+\caption{Y-Achse Startposition}
+            \label{fig:y_axis_start}
+\end{figure}
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/y-angle2.jpg}
+    \caption{Y-Achse falsch eingestellt}
+            \label{fig:y_axis_wrong}
+\end{figure}
+\begin{figure}[!htbp]
+\centering
+    \includegraphics[width=0.25\linewidth]{bilder/bilder_movement/y-angle3.jpg}
+    \caption{Y-Achse korrekt eingestellt}
+            \label{fig:y_axis_correct}
+\end{figure}
+Nachdem der Roboter in der letzten Einstellungsposition ist, darf sowohl der Roboter als auch das Tablet nicht mehr bewegt werden. Falls dieser jedoch trotzdem bewegt wurde, nichts an den Einstellungen im Tripod verstellt wurde und der Untergrund eben ist, reicht die letzte Position (tabletPosition) zur erneuten Positionierung aus. 
+Danach wird der Roboter in seine Grundposition (\vref{fig:default_position}) versetzt.
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{bilder/bilder_movement/startposition.jpg}
+    \caption{Grundposition}
+            \label{fig:default_position}
+\end{figure}
+\subsection{Arm Movement über fixe Punkte}
+Die Armbewegung des Roboters funktioniert über ALMotion des ALProxy.
+Dafür muss zunächst der ALProxy, der von der NAOqi API bereitgestellt wird importiert werden: 
+\begin{verbatim}
+from naoqi import ALProxy
+\end{verbatim}
+Diese Klasse ALProxy erlaubt es Instanzen von verschiedenen Modulen, wie Motion Control, Speech Recognition, Text-To-Speech, Vision Processing, zu erstellen, die dann genutzt werden können, um Zugriff auf die unterschiedlichen Bereiche zu erhalten. Für den Zugriff benötigt man die Bezeichnung des Moduls, dass man benutzen will, die Roboter IP und den Port (meist 9559).
+In diesem Fall wird das Modul Motion Control benötigt:
+\begin{verbatim}
+motionProxy = ALProxy("ALMotion", robotIP, port)
+\end{verbatim}
+Mithilfe des motionProxy können nun verschiedene Einstellungen der Motoren getroffen werden. Vor jeder Bewegung des Arms kann es sinnvoll sein, die Steifheit der Motoren der verschiedenen Bereiche aufs Maximum, also eins, zu stellen. Dadurch steht der Roboter stabiler und behält seine Grundposition. Bei einer niedrigeren Stufe lässt der Roboter seine Motoren lockerer, wodurch beispielsweise die Armposition durch dagegen drücken verändert werden kann. Das kann aber auch dazu führen, dass robotereigene Bewegungen des Arms ausreichen (bzw. je nach Steifheit die Schwerkraft ausreicht), um die Grundposition des Roboters zu verändern oder diesen zum Umkippen zu bringen.
+Deshalb wird hier die Steifheit überall aufs Maximum eingestellt: 
+\begin{verbatim}
+motionProxy.setStiffnesses("LLeg", 1.0)
+motionProxy.setStiffnesses("RLeg", 1.0)
+motionProxy.setStiffnesses("Body", 1.0)
+motionProxy.setStiffnesses("RArm", 1.0)
+motionProxy.setStiffnesses("LArm", 1.0)
+\end{verbatim}
+Nach diesen Schritten kann nun der Arm selbst bewegt werden. Dafür wird über die zuvor erstellte Instanz eine Methode aufgerufen. Diese erhält den Motor, der bewegt werden soll mit vorangestelltem R oder L für rechts oder links:
+\begin{itemize}
+    \item Kopf: HeadYaw, HeadPitch
+    \item Arm: ShoulderPitch, ShoulderRoll, ElbowYaw, ElbowRoll, WristYaw, Hand
+    \item Bein: HipYawPitch, HipRoll, HipPitch, KneePitch, AnklePitch, AnkleRoll
+\end{itemize}
+Zusätzlich enthält sie die Einstellung für diesen in Bogenmaß und die Geschwindigkeit in der diese Bewegung ausgeführt werden soll. 
+\begin{verbatim}
+motionProxy.angleInterpolationWithSpeed("RShoulderPitch", 
+                                        18.4 * almath.TO_RAD, 0.2)
+motionProxy.waitUntilMoveIsFinished()
+\end{verbatim}
+Da die Positionierung des Roboters zum Tablet fix ist und somit die gleiche Bewegung des Roboters immer zu einem Klick auf dem gleichen Feld auf dem Bildschirm führt, kann hier mit fixen Bildschirmkoordinaten gearbeitet werden. 
+Dabei wurden 45 Positionen für den linken Arm auf dem Bildschirm definiert und die dazugehörigen Arm Movements bestimmt. Die Bildschirmkoordinaten sind von der Mitte mit 0 nach links mit 5 definiert (4 ist der linkeste Punkt auf unserem Tablet) und von 0 unten bis 9 oben:
+\begin{verbatim}
+positionL = ["LShoulderPitch", "LShoulderRoll", "LElbowRoll", 
+            "LWristYaw", "LElbowYaw"]
+positionLUp[4][8] = [-40, 17, -32, 0, 0]
+\end{verbatim}
+Das heißt die oben genannten Einstellungen der Gradzahlen entsprechen der Position nach Links vier und nach oben acht. Somit hat der NAO für 45 Positionen auf dem Bildschirm feste Bewegungen. Diese können für den rechten Arm gespiegelt werden. Dies gelingt in dem die Arm Movements für den linken Arm hergenommen werden und für den Rechten übersetzt. Dabei müssen alle Bewegungen bis auf "RShouldPitch" und "RHand" mit (-1) multipliziert werden. Somit wird nun der gesamte Bildschirm  mit 81 Positionen (9x9: 9 für Höhe und 9 für Breite) abgedeckt. Das Spiegeln der Mitte erzeugt dabei keine neuen Punkte.
+Für genauere Klicks reichen jedoch auch die 81 Positionen nicht aus, deshalb werden zwischen diesen Positionen weitere Positionen durch Interpolieren erzeugt, sobald diese gebraucht werden. (Siehe Methode getInterpolatedPosition(left, up))
+Dabei wird, wenn der NAO zwischen vier dieser 81 Punkte klicken will, aus diesen vier Punkten einer berechnet. Dafür berechnen wir zunächst aus den Gradzahlen der Motoren für die zwei linken Punkten die Gradzahlen für die dazwischen liegenden Punkt. Der Einfluss der Punkte hängt davon ab, wie nah die jeweiligen Punkte sind. Äquivalent wird das für die zwei rechten Punkte gemacht. Dann haben wir nur noch einen Punkt links und einen Punkt rechts von dem gewünschten Punkt. Diese rechnen wir auch wieder zusammen in Abhängigkeit von dem Abstand zum Zielpunkt.  
+Wenn wir beispielsweise den Punkt (1,5/1,7) anklicken wollen, bedeutet das, dass wir die dazugehörigen Gradzahlen für die Punkte (1/1), (1/2), (2/1) und (2/2) betrachten müssen, also die Punkte, die das kleinstmögliche Rechteck, um die Armposition des gewählten Punkts spannen. Zunächst machen wir aus dem Punkt (1/1) (Gewichtet mit 1-0,7 = 0,3) und (1/2) (Gewichtet mit 0,7) den Punkt (1/1,7) mit zugehöriger Armposition und aus (2/1) und (2/2) den Punkt (2/1,7) mit zugehöriger Armposition. Danach wird äquivalent dazu aus (1/1,7) und (2/1,7) der Punkt (1,5/1,7) mit zugehöriger Armposition gemacht.
+Ein Nachteil dieser Herangehensweise ist es, dass die interpolierte Armbewegung eine Tiefenverschiebung auslösen kann. Da die Positionen jedoch relativ nah aneinander sind weicht die Tiefe nur wenig ab und die Klicks bleiben präzise genug. 
+
+Bei der Bewegung des Arms des NAOs gilt außerdem zu beachten, dass es sehr entscheidend ist, in welcher Reihenfolge und aus welcher Position die einzelnen Motoren bewegt werden, da ansonsten der Roboterarm das Tablet an der falschen Stelle zu erst berührt bzw. umschmeißen kann. Deswegen startet der Roboter immer in einer vordefinierten Position (armPosition.positionLStart). Dabei werden zunächst die größeren Bewegungen durchgeführt, da diese mit den restlichen Positionen des Arms der Startpositionen nicht das Tablet erwischen können. Abschließend werden die kleineren Bewegungen durchgeführt wodurch der Klick ausgelöst wird. Mit kurzer Verzögerung werden dann die Bewegungen in umgekehrter Reihenfolge, also zuerst die kleinen Bewegungen dann die Großen, zurück in die Startposition durchgeführt. 
+
+Abschließend soll eine konkrete Verbindung zwischen der Armbewegung und dem korrekten Feld auf dem Tablet hergestellt werden. Dies geschieht in der Methode clickTicTacToe:
+\begin{verbatim}
+def clickTicTacToe(robotIP, port, positionName):
+    if positionName == 0:
+        armMovement(robotIP, port, arm="L", 
+        position=getInterpolatedPosition(left=1.2, up=6), go_back=True)
+\end{verbatim}
+PositionName ist dabei eine vordefinierte Position für jedes Feld bei Tic Tac Toe und für jede Reihe bei Vier Gewinnt. Bei Tic Tac Toe ist dabei die Position 0 gleichbedeutend mit dem Feld links oben. Die restlichen Felder werden von links nach rechts oben, dann links nach rechts mitte und links nach rechts unten durchnummeriert. Bei Vier Gewinnt werden die Spalten von links nach rechts 0 bis 6 durchnummeriert. 
