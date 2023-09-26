@@ -16,6 +16,7 @@ class GameController extends GetxController {
   static final log = Logger((GameController).toString());
   List<List<int>> board = [];
   final RxBool _turnYellow = true.obs;
+
   bool get turnYellow => _turnYellow.value;
   bool blockTurn = false;
 
@@ -68,7 +69,8 @@ class GameController extends GetxController {
     log.finer("Move made by playColumnLocal");
     if (board[columnNumber].contains(0)) {
       makeMoveOnField(columnNumber);
-      blockTurn = await Future.delayed(const Duration(seconds: 1), () => false);  //nao specific => prevents rapid clicking of nao due to the aluminum foil
+      //nao specific => prevents rapid clicking of nao due to the aluminum foil
+      blockTurn = await Future.delayed(const Duration(seconds: 1), () => false);
     } else {
       Get.snackbar("Not available", "This column is full already",
           snackPosition: SnackPosition.BOTTOM);
@@ -153,12 +155,13 @@ class GameController extends GetxController {
     }
     log.finer("FullBoard!");
     showFullBoardDialog();
-    }
+  }
 
   Future<void> declareWinner(int winner) async {
     blockTurn = true;
     BuildContext? diaContext;
-    showDialog( //ignore: unawaited_futures
+    //ignore: unawaited_futures
+    showDialog(
       context: Get.context!,
       barrierDismissible: false,
       builder: (context) {

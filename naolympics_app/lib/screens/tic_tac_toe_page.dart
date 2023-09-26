@@ -71,7 +71,7 @@ class TicTacToeState extends State<TicTacToePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     final double smallerValue = height < width ? height : width;
-    final double cellSize = smallerValue * 0.7*0.9 / 3;
+    final double cellSize = smallerValue * 0.7 * 0.9 / 3;
 
     return Column(
       children: [

@@ -11,25 +11,25 @@ class HomePage extends StatelessWidget {
     final marginSize = screenWidth * 0.1;
 
     return Scaffold(
-          appBar: AppBar(
-            title: const Center(
-                child: Text(
-              "Naolympics",
-              style: TextStyle(color: Colors.white, fontSize: 28),
-            )),
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                createNavButton("Local", context, const GameSelectionPage()),
-                SizedBox(height: marginSize / 3.0),
-                createNavButton("Multiplayer", context, const FindPlayerPage())
-              ],
-            ),
-          ),
-        );
+      appBar: AppBar(
+        title: const Center(
+            child: Text(
+          "Naolympics",
+          style: TextStyle(color: Colors.white, fontSize: 28),
+        )),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            createNavButton("Local", context, const GameSelectionPage()),
+            SizedBox(height: marginSize / 3.0),
+            createNavButton("Multiplayer", context, const FindPlayerPage())
+          ],
+        ),
+      ),
+    );
   }
 }
 

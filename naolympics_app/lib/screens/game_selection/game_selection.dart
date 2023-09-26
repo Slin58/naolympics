@@ -31,13 +31,15 @@ class GameSelectionState extends State<GameSelectionPage> {
 
     return WillPopScope(
         onWillPop: () async {
-          if(MultiplayerState.connection == null) {
+          if (MultiplayerState.connection == null) {
             Navigator.pop(context);
           }
           return false;
-    },
-    child: Scaffold(appBar: appBar, body: Center(child: _getGameSelection()),
-    ));
+        },
+        child: Scaffold(
+          appBar: appBar,
+          body: Center(child: _getGameSelection()),
+        ));
   }
 
   Widget _getGameSelection() {
@@ -75,8 +77,18 @@ class GameSelectionState extends State<GameSelectionPage> {
     const double indent = 10;
 
     return orientation == Orientation.landscape
-        ? const VerticalDivider(indent: indent, endIndent: indent, thickness: 0, color: Colors.white,)
-        : const Divider(indent: indent, endIndent: indent, thickness: 0, color: Colors.white,);
+        ? const VerticalDivider(
+            indent: indent,
+            endIndent: indent,
+            thickness: 0,
+            color: Colors.white,
+          )
+        : const Divider(
+            indent: indent,
+            endIndent: indent,
+            thickness: 0,
+            color: Colors.white,
+          );
   }
 
   Widget getConnectFourButtonWithRoute(BuildContext context) {
