@@ -1,5 +1,5 @@
 import unittest
-from tictactoe_tactic import tictactoe_tactic
+from nao.tictactoe_tactic import tictactoe_tactic
 
 
 class TestTictactoe(unittest.TestCase):

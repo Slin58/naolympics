@@ -1,6 +1,6 @@
 import unittest
-from movement import movementControl
-from movement import armPosition
+from nao.movement import movementControl
+from nao.movement import armPosition
 
 
 class TestMovement(unittest.TestCase):

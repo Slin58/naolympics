@@ -1,5 +1,6 @@
 import unittest
-from connect_four_tactic import connect_four_tactic
+
+from nao.connect_four_tactic import connect_four_tactic
 
 
 class TestConnectFour(unittest.TestCase):
