@@ -196,8 +196,8 @@ def arm_movement(robotIP, port, arm, position, go_back):
     print("done")
 
 
-def get_interpolated_position(left,
-                              up):  # translate comma amounts for Left and Up to the armPosition for the inbetween point of two or four points
+# translate comma amounts for Left and Up to the armPosition for the inbetween point of two or four points
+def get_interpolated_position(left, up):
     if left - int(left) == 0 and up - int(up) == 0:
         return armPosition.positionLUp[left][up]
 
