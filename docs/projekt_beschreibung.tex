@@ -1,0 +1,36 @@
+\section{Der NAO Roboter}
+
+Die NAO Roboter von Aldebaran Robotics sind humanoide Roboter, die gerade in der Forschung von Robotik und Informatik Einzug gefunden haben. Die etwa 58 Zentimeter großen Roboter besitzen neben den üblichen Gelenken, wie man sie auch beim Menschen findet (Schulter, Ellbogen, Knie etc.), drei Finger, zwei Kameras in Stirn und Mund sowie mehrere Annäherungssensoren. Im Laufe der Jahre haben sich verschiedene internationale Projekte um die Roboter entwickelt, darunter der RoboCup, bei dem Forschungsteams von Hochschulen rund um die Welt im Fußball gegeneinander antreten. Durch die humanoide Gestalt und die große Auswahl an \dq Sinnesorganen\dq können viele verschiedene Anwendungsfälle und Projekte mit den Robotern realisiert werden, so auch das Spielen von einfachen Spielen. In diesem Projekt soll gezeigt werden, dass die \textit{NAOs} eigenständig auf Tablets Spiele erkennen, Spielzüge berechnen und die Touchscreens bedienen können. 
+
+\section{Beschreibung des Projekts}
+
+Die Grundidee des Projekts umfasst folgende Punkte:
+
+\begin{itemize}
+    \item Logikspiele für zwei Personen auf Tablet
+    \item \textit{NAO vs. Mensch}
+    \item \textit{NAO vs. NAO}
+    \item Mögliche Spielideen: TicTacToe, Vier Gewinnt, Mastermind, Schiffe versenken etc.
+    \item Spielfeld über Bilderkennung (OpenCV)
+    \item CV und Spiellogik soll direkt auf NAO laufen
+\end{itemize}
+
+Anhand dieser allgemeinen Projektidee wurden folgende Anforderungen gestellt, die das Projekt erfüllen soll:
+
+\begin{itemize}
+    \item \textit{NAO} soll eigenständig Klicks auf Touchscreens tätigen können, bspw. durch einen Touch-”Fingerhut” aus entsprechendem Material
+\item Eine entsprechende Spieleapp für die verwendeten \textit{Android}-Tablets soll entwickelt werden
+\item Die App soll sowohl lokalen Multiplayer unterstützen, als auch zwischen zwei Geräten in nächster Nähe (bspw. im selben Netzwerk oder via Bluetooth)
+\item NAO soll so vor dem Tablet positioniert werden, dass er das Spielen beginnen kann
+\item NAO soll das jeweilige Spiel und das Spielfeld auf Tablet erkennen können
+\item \textit{NAO} kann einige Spiele, wie bspw. \textit{Vier gewinnt} erkennen und spielen
+\item \textit{NAO} besitzt eigene Spieltaktiken und führt diese aus
+\item \textit{NAO} kann gegen einen anderen \textit{NAO} spielen
+\item \textit{NAO} kann sich mit seinem Gegenspieler (Mensch oder andere NAO) einigen wer anfängt 
+\item \textit{NAO} erkennt, dass er gewonnen hat und jubelt
+\item NAO soll Spielsituation auswerten und mit nächstem Zug reagieren können
+\item NAO soll die richtige Stelle auf dem Tablet finden und drücken können
+\item NAO soll auf Fehler reagieren können  (z.B.: Wenn der Roboter in volle Zeile bei 4 gewinnt wirft; z.B. mit Spielabbruch oder Rücknahme des Zugs)
+\end{itemize}
+
+Verwendet wurden Tablets des Modells Galaxy Tab S7.

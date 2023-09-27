@@ -12,10 +12,11 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Center(
+            child: Text(
           "Naolympics",
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        ),
+          style: TextStyle(color: Colors.white, fontSize: 28),
+        )),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Center(
@@ -44,7 +45,7 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
           ),
         ),
         padding: const EdgeInsets.all(40),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.blue,
         fixedSize: const Size.fromWidth(700)),
     onPressed: () {
       Navigator.push(context, MaterialPageRoute(builder: (context) => route));
@@ -54,7 +55,7 @@ TextButton createNavButton(String title, BuildContext context, Widget route) {
       child: Text(
         title,
         softWrap: false,
-        style: const TextStyle(fontSize: 30),
+        style: const TextStyle(fontSize: 30, color: Colors.white),
       ),
     ),
   );

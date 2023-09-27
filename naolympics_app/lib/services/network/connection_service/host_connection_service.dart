@@ -54,6 +54,7 @@ class HostConnectionService {
       if (status == ConnectionStatus.connecting) {
         hostLog("Sending success message to ${ipString(socketManager)}");
         await sendConnectionMessage(socketManager, ConnectionStatus.success);
+        await Future.delayed(const Duration(milliseconds: 100));
         completer.complete(socketManager);
       }
     };

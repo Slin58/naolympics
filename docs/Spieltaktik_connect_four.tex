@@ -1,0 +1,43 @@
+\section{Vier Gewinnt}
+Ziel ist es die aktuellen Spielsituation, die durch die Vision erhalten wird, auszuwerten und den daraus resultierenden Zug zu berechnen. Dabei soll es auch möglich sein zwischen mehreren Schwierigkeitsstufen auszuwählen.
+
+\subsection{Spielfeld}
+Das Spielfeld ist 6 Felder hoch und 7 Felder breit.
+Beispiel Feld:
+
+\begin{tabular}{| c|c|c|c|c|c|c|} \hline  
+ & & & & & & \\ \hline  
+ & & Spalte2& & & & \\ \hline  
+ & Spalte1& Y& Spalte3& & & \\ \hline  
+ & R& Y& R& Spalte4& Spalte5& \\ \hline  
+ Spalte0& Y& R& Y& Y& R& \\ \hline  
+ R& Y& Y& R& R& Y& Spalte6\\ \hline 
+\end{tabular}
+
+\subsection{Spielregeln}
+Zwei Spieler treten gegeneinander an. Beide Spieler erhalten unterschiedliche Farben oder Zeichen zugeteilt. In unserem Fall R (red) und Y (yellow). Abwechselnd wählt ein Spieler eine Spalte in die er spielen möchte. Dabei fällt der Spielstein bis auf das unterst mögliche Feld der Spalte. Ziel des Spiels ist es vier der eigenen Steine in eine Reihe, eine Spalte oder eine Diagonale zu setzen. Der Spieler, der das zuerst schafft hat gewonnen, falls zuvor alle Felder belegt sind, endet das Spiel im Unentschieden. 
+
+\subsection{Input}
+Als Input werden das aktuelle Spielfeld, das eigene Zeichen (in unserem Fall R oder Y), das Zeichen des Gegenspielers (in unserem Fall R oder Y), ein Zeichen für die nicht belegten Felder (in unserem Fall -) und der Schwierigkeitsgrad  (1 -> leicht; 2 -> mittel; 3 -> schwer; 4 -> unmöglich) benötigt.
+
+\subsection{Output}
+Die Methode soll am Ende zurückgeben, in welche Spalte der Roboter spielen sollte. Die Spalten sind dabei so definiert, wie sie oben im Beispiel Feld benannt sind. 
+
+\subsection{Grundkonzept: Prioritäten}
+Die Spiellogik funktioniert grundsätzlich über Prioritäten. Dabei wird für jede Spalte berechnet, wie wichtig es in der jeweiligen Runde ist, den eigenen Spielstein in diese zu setzen. Dabei wird zuerst berechnet, wo in der Spalte der Spielstein landen wird. Danach wird einzeln für die Zeile, Spalte und beide Diagonalen berechnet, wie bedeutend der Spielstein dort für die Offensive und Defensive ist. Beispielsweise Spalte1, Offensive, Diagonale1. Es werden also pro Spalte 8 Werte berechnet.
+Eigene Steine führen zu einer höheren Priorität in der Offensive, aber zu einer geringeren in der Defensive, da dieses Feld dann bereits in dieser Richtung verteidigt wird. Neutrale Felder erhöhen die Priorität leicht für die Offensive. Das ist besonders relevant beim ersten Spielzug, da dort keine fremden oder eigenen Steine gelegt wurden, somit wird im besten Zug bei einem leeren Feld in die mittlere Spalte gespielt, da diese noch die meisten Möglichkeiten für vier Steine nebeneinander bietet. Steine vom Gegenspieler führen zu einer verringerten Punktzahl für die Offensive für diese Richtung und zu einer erhöhten Priorität für die Defensive. Sowohl für die Offensive als auch Defensive wird berücksichtigt, ob eigene oder gegnerische Steine für die Richtung überhaupt noch von Relevanz sind oder nicht bereits abgeblockt sind.
+
+\subsubsection{Ausnahmefall bei winning move und defend}
+In manchen Ausnahmefällen kann eine Möglichkeit das Spiel zu beenden von der Priorität nicht den höchsten Wert erhalten. Beispielsweise, wenn der Gegner auch den Sieg androht oder Zwickmühlen angedroht werden. Deshalb wird zusätzlich zu den Prioritäten überprüft, ob das Spiel bereits beendet werden kann. Ist dies der Fall erhält diese Spalte in dieser Richtung eine Priorität von 3000 damit dieser Zug auf jeden Fall gespielt wird.
+
+Äquivalent dazu kann dasselbe passieren, wenn der Gegner drei Steine in einer Richtung hat, aber beispielsweise selbst eine Zwickmühle gebildet werden kann, dann erhält diese Spalte für diese Richtung eine Priorität von 2000.
+
+\subsubsection{Vorlegen für den Gegner}
+Außerdem gilt zu berücksichtigen, dass das Legen eines Steins für diese Spalte bedeutet, dass der Gegner auf das Feld darüber ein Stein legen kann. Dieser Stein könnte für den Gegner wichtiger sein als das Feld, dass wir belegt haben.
+
+\subsubsection{Schwierigkeitsgrad}
+Der Schwierigkeitsgrad wird über einen Fehlerfaktor gesteuert. Bei der Berechnung der Priorität für jede Spalte erhält jede eine zufällige Zahl zwischen 0 und dem Fehlerfaktor. Je höher der Fehlerfaktor ist desto größer ist der Einfluss des Zufalls im Verhältnis zu der vom Algorithmus bestimmten Priorität der verschiedenen Felder.
+
+\subsubsection{Gesamtpriorität für eine Spalte}
+Die Gesamtpriorität einer Spalte ergibt sich dann aus der höchsten Priorität einer der berechneten Richtungen. Darauf addiert wird wenn die höchste Priorität eine offensive bzw. defensive Aktion war die Summe aller offensiven bzw. defensiven Aktionen multipliziert mit 0,1. Davon wird die höchste Priorität für den Gegenspieler für das darüber liegende Feld multipliziert mit 0,4 abgezogen.
+Am Ende muss nur noch abgeglichen werden, welche Spalte die höchste Priorität hat und dorthin wird der Stein gespielt.

@@ -21,21 +21,25 @@ class FindPlayerPage extends StatefulWidget {
 
 class FindPlayerPageState extends State<FindPlayerPage> {
   static final log = Logger((FindPlayerPageState).toString());
-  List<String> foundHost = [];
   bool isHosting = false;
   bool wifi = true;
+  String currentIp = "";
 
   @override
   void initState() {
     super.initState();
     isHosting = false;
     wifi = true;
+    _getHostingString().then((ip) => setState(() => currentIp = ip));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Find Players")),
+        appBar: AppBar(
+          title: const Text("Find Players"),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
         floatingActionButton: _toggleHostButton(),
         body: Center(
           child: Column(children: [
@@ -50,10 +54,21 @@ class FindPlayerPageState extends State<FindPlayerPage> {
             ),
             Visibility(
               visible: isHosting,
-              child: const Text("Currently Hosting"),
+              child: Text(currentIp, textAlign: TextAlign.center),
             ),
           ]),
         ));
+  }
+
+  static Future<String> _getHostingString() async {
+    String hostingString = "Currently Hosting.";
+    String? currentIp = await getCurrentIp();
+
+    if (currentIp != null) {
+      hostingString += "\nYour IP is: $currentIp";
+    }
+
+    return hostingString;
   }
 
   FloatingActionButton _toggleHostButton() {
@@ -145,7 +160,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
             } else {
               return UIUtils.getBorderedTextButton(() {
                 setState(() {});
-              }, Icons.refresh, "Search again", Colors.grey, 250);
+              }, Icons.refresh, "Search again", Colors.black, 250);
             }
           } else {
             return const Text("No data available.");

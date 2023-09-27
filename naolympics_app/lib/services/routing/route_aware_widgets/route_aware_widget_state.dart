@@ -23,8 +23,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("Unsubscribed '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info(
-          "Sending 'dispose' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
+      log.info("Sending 'dispose' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
       _sendNavigationDataToClient(route, NavigationType.dispose);
     }
   }
@@ -36,8 +35,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("didPush '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info(
-          "Sending 'didPush' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
+      log.info("Sending 'didPush' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
       _sendNavigationDataToClient(route, NavigationType.push);
     }
   }
@@ -49,8 +47,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     log.info("didPopNext '$route'");
 
     if (MultiplayerState.isHosting()) {
-      log.info(
-          "Sending 'didPopNext' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
+      log.info("Sending 'didPopNext' with route '$route' to ${MultiplayerState.getRemoteAddress()}");
       _sendNavigationDataToClient(route, NavigationType.pop);
     }
   }

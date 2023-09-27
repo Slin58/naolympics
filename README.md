@@ -1,16 +1,15 @@
-# naolympics_app
+# Naolympics
 
-An app with multiple minigames for the naolympics.
+Play multiple minigames against a Nao or let them play against them self.
 
-## Getting Started
+## docs
 
-This project is a starting point for a Flutter application.
+Where you will find the latex code of the documentation.
 
-A few resources to get you started if this is your first Flutter project:
+## nao
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Where you will find all the python code for controlling the Naos.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## naolympics_app
+
+Where you wil find the flutter project for the Naolympics app.
