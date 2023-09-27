@@ -369,9 +369,9 @@ def play_games_by_buttons():
         tts.say(
             "Guten Tag. Bevor wir loslegen können, müssen wir zunächst ein paar Einstellungen vornehmen. Navigiere mit den Knöpfen auf meinem Kopf.")
 
-        #successful = calibrate(touch, tts)
-        #if not successful:
-        #    return
+        successful = calibrate(touch, tts)
+        if not successful:
+            return
 
         while True:
             tts.say("Hallo, ich bin" + get_random_nao_name() + "Was möchtest du spielen?")
