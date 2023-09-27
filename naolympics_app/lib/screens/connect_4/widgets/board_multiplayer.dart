@@ -29,7 +29,7 @@ class BoardMultiplayer extends StatelessWidget {
           return false;
         },
         child: Scaffold(
-            backgroundColor: Colors.blueGrey,
+            backgroundColor: Colors.white,
             appBar: AppBar(
               backgroundColor: Theme.of(context).primaryColor,
               leading: IconButton(
