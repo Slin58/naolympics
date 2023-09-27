@@ -248,7 +248,7 @@ def successful_calibration(touch, tts):
 
 def calibrate(touch, tts, modes=None):
     if modes is None:
-        modes = ["disable_autonomous", "stand", "z_angle", "x_angle", "y_angle", "vision_check", "start_position"]
+        modes = ["stand", "z_angle", "x_angle", "y_angle", "start_position"]
 
     if not successful_calibration(touch, tts):
         return False
@@ -291,6 +291,8 @@ def calibrate(touch, tts, modes=None):
     if "start_position" in modes:
         print("Getting ready to rumble")
         movementControl.start_position(robotIP, PORT)
+
+    return True
 
 
 def choose_game_by_buttons(touch, tts):
@@ -361,18 +363,18 @@ def choose_difficulty_by_buttons(touch, tts):
 
 def play_games_by_buttons():
     try:
-        movementControl.start_position(robotIP, PORT)
         touch = ALProxy("ALTouch", robotIP, PORT)
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)
 
-        tts.say("Hallo, ich bin" + get_random_nao_name())
         tts.say(
-            "Bevor wir loslegen können, müssen wir zunächst ein paar Einstellungen vornehmen. Navigiere mit den Knöpfen auf meinem Kopf.")
+            "Guten Tag. Bevor wir loslegen können, müssen wir zunächst ein paar Einstellungen vornehmen. Navigiere mit den Knöpfen auf meinem Kopf.")
 
-        calibrate(touch, tts)
+        successful = calibrate(touch, tts)
+        if not successful:
+            return
 
         while True:
-            tts.say("Was möchtest du spielen?")
+            tts.say("Hallo, ich bin" + get_random_nao_name() + "Was möchtest du spielen?")
             tictactoe_mode = choose_game_by_buttons(touch, tts)
             if tictactoe_mode is None:
                 return
@@ -398,7 +400,8 @@ def play_games_by_buttons():
                         difficulty) + ". Gutes Spiel!")
                     play_connect_four_against_opponent(robotIP, PORT, player, difficulty)
 
-            tts.say("Das hat Spaß gemacht! Wollen wir nochmal spielen?")
+            tts.say("Das hat Spaß gemacht!")
+            time.sleep(1)
 
     except RuntimeError:
         tts = ALProxy("ALTextToSpeech", robotIP, PORT)

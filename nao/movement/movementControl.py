@@ -9,7 +9,7 @@ def newRobotVersion(robotIP, port):
     autonomous_life = ALProxy("ALAutonomousLife", robotIP, port)
     try:
         autonomous_life.getAutonomousAbilitiesStatus()
-    except RuntimeError as e:
+    except RuntimeError:
         return False
     return True
 
@@ -79,11 +79,12 @@ def start_position(robotIP, port):
 
     # position of head
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0 * almath.TO_RAD, 0.2)
+    motionProxy.angleInterpolationWithSpeed("HeadPitch", -10 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
     if newRobotVersion(robotIP, port):
         motionProxy.angleInterpolationWithSpeed("HeadPitch", 16 * almath.TO_RAD, 0.2)
     else:
-        motionProxy.angleInterpolationWithSpeed("HeadPitch", 9.0 * almath.TO_RAD, 0.2)
+        motionProxy.angleInterpolationWithSpeed("HeadPitch", 7.5 * almath.TO_RAD, 0.2)
     time.sleep(0.2)
 
     start_position_l(robotIP, port)
@@ -236,40 +237,56 @@ def get_interpolated_position(left, up):
 
 def click_tic_tac_toe(robotIP, port, positionName):
     if positionName == 0:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.2, up=6), go_back=True)
+        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.1, up=5.6), go_back=True)
     elif positionName == 1:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=6), go_back=True)
+        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=5.6), go_back=True)
     elif positionName == 2:
-        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.2, up=6), go_back=True)
+        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.1, up=5.6), go_back=True)
     elif positionName == 3:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.2, up=4.3), go_back=True)
+        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.1, up=4.1), go_back=True)
     elif positionName == 4:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=4.3), go_back=True)
+        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=4.1), go_back=True)
     elif positionName == 5:
-        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.2, up=4.3), go_back=True)
+        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.1, up=4.1), go_back=True)
     elif positionName == 6:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.2, up=2.5), go_back=True)
+        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.1, up=2.5), go_back=True)
     elif positionName == 7:
         arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=2.5), go_back=True)
     elif positionName == 8:
-        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.2, up=2.5), go_back=True)
+        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.1, up=2.5), go_back=True)
 
 
 def click_connect_four(robotIP, port, positionName):
-    if positionName == 0:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=2.1, up=6), go_back=True)
-    elif positionName == 1:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.35, up=6), go_back=True)
-    elif positionName == 2:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0.7, up=6), go_back=True)
-    elif positionName == 3:
-        arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=6), go_back=True)
-    elif positionName == 4:
-        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=0.65, up=6), go_back=True)
-    elif positionName == 5:
-        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.3, up=6), go_back=True)
-    elif positionName == 6:
-        arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=2, up=6), go_back=True)
+    if newRobotVersion(robotIP, port):
+        if positionName == 0:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=2.5, up=6), go_back=True)
+        elif positionName == 1:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1.75, up=6), go_back=True)
+        elif positionName == 2:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1, up=6), go_back=True)
+        elif positionName == 3:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=6), go_back=True)
+        elif positionName == 4:
+            arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1, up=6), go_back=True)
+        elif positionName == 5:
+            arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.75, up=6), go_back=True)
+        elif positionName == 6:
+            arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=2.5, up=6), go_back=True)
+    else:
+        if positionName == 0:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=2.7, up=6), go_back=True)
+        elif positionName == 1:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=2.1, up=6), go_back=True)
+        elif positionName == 2:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=1, up=6), go_back=True)
+        elif positionName == 3:
+            arm_movement(robotIP, port, arm="L", position=get_interpolated_position(left=0, up=6), go_back=True)
+        elif positionName == 4:
+            arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=0.5, up=6), go_back=True)
+        elif positionName == 5:
+            arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=1.3, up=6), go_back=True)
+        elif positionName == 6:
+            arm_movement(robotIP, port, arm="R", position=get_interpolated_position(left=2, up=6), go_back=True)
 
 
 def celebrate1(robotIP, port):
