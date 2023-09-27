@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
 import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
@@ -34,7 +35,13 @@ class BoardMultiplayer extends StatelessWidget {
               backgroundColor: Theme.of(context).primaryColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () {
+                onPressed: () async {
+                  await SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight,
+                    DeviceOrientation.portraitUp,
+                    DeviceOrientation.portraitDown,
+                  ]);
                   Navigator.pop(connectFourPageBuildContext!);
                 },
               ),
