@@ -34,7 +34,7 @@ class Cell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height / 7.5;
+    double height = MediaQuery.of(context).size.height / 8.0;
     double width = MediaQuery.of(context).size.width / 10.5;
 
     return Stack(

@@ -39,7 +39,8 @@ class ConnectFourPage extends StatelessWidget {
           theme: ThemeData(
             primaryColor: const Color.fromRGBO(255, 130, 0, 1),
             useMaterial3: true,
-          ),          getPages: [
+          ),
+          getPages: [
             if (MultiplayerState.connection != null)
               GetPage(name: "/", page: Connect4ScreenMultiplayer.new)
             else
@@ -50,28 +51,25 @@ class ConnectFourPage extends StatelessWidget {
 
   static Widget getPlayerTurnIndicator() {
     GameController gameController = Get.find<GameController>();
-    return Stack (
+    return Stack(
       children: <Widget>[
         Text(
-          gameController.turnYellow
-              ? "Player 1 (yellow)"
-              : "Player 2 (red)",
+          gameController.turnYellow ? "Player 1 (yellow)" : "Player 2 (red)",
           style: TextStyle(
             foreground: Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = 1.7
               ..color = Colors.black,
-              fontSize: 30,
+            fontSize: 30,
           ),
         ),
         Text(
-          gameController.turnYellow
-              ? "Player 1 (yellow)"
-              : "Player 2 (red)",
+          gameController.turnYellow ? "Player 1 (yellow)" : "Player 2 (red)",
           style: TextStyle(
-              color: gameController.turnYellow ? Colors.yellow : Colors.red, fontSize: 30),
-        )],
+              color: gameController.turnYellow ? Colors.yellow : Colors.red,
+              fontSize: 30),
+        )
+      ],
     );
   }
-
 }

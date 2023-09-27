@@ -14,39 +14,40 @@ class Connect4Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
 
-        return WillPopScope(
-          onWillPop: () async {
-            await SystemChrome.setPreferredOrientations([
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown,
-            ]);
-            Navigator.pop(connectFourPageBuildContext!);
-            return false;
-          },
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).primaryColor,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () async {
-                  await SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.landscapeLeft,
-                    DeviceOrientation.landscapeRight,
-                    DeviceOrientation.portraitUp,
-                    DeviceOrientation.portraitDown,
-                  ]);
-                  Navigator.pop(connectFourPageBuildContext!);
-                },
-              ),
-              title: const Obx(ConnectFourPage.getPlayerTurnIndicator),
-            ),
-            body: Board(),
+    return WillPopScope(
+      onWillPop: () async {
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+        Navigator.pop(connectFourPageBuildContext!);
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () async {
+              await SystemChrome.setPreferredOrientations([
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.portraitDown,
+              ]);
+              Navigator.pop(connectFourPageBuildContext!);
+            },
           ),
-        );
+          title: const Obx(ConnectFourPage.getPlayerTurnIndicator),
+        ),
+        body: Board(),
+      ),
+    );
   }
 }
