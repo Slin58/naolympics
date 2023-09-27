@@ -21,15 +21,16 @@ class FindPlayerPage extends StatefulWidget {
 
 class FindPlayerPageState extends State<FindPlayerPage> {
   static final log = Logger((FindPlayerPageState).toString());
-  List<String> foundHost = [];
   bool isHosting = false;
   bool wifi = true;
+  String currentIp = "";
 
   @override
   void initState() {
     super.initState();
     isHosting = false;
     wifi = true;
+    _getHostingString().then((ip) => setState(() => currentIp = ip));
   }
 
   @override
@@ -53,10 +54,21 @@ class FindPlayerPageState extends State<FindPlayerPage> {
             ),
             Visibility(
               visible: isHosting,
-              child: const Text("Currently Hosting"),
+              child: Text(currentIp, textAlign: TextAlign.center),
             ),
           ]),
         ));
+  }
+
+  static Future<String> _getHostingString() async {
+    String hostingString = "Currently Hosting.";
+    String? currentIp = await getCurrentIp();
+
+    if (currentIp != null) {
+      hostingString += "\nYour IP is: $currentIp";
+    }
+
+    return hostingString;
   }
 
   FloatingActionButton _toggleHostButton() {

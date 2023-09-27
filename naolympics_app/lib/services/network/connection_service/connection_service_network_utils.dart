@@ -12,7 +12,7 @@ const String hostPrefix = "[HOST]:";
 const String clientPrefix = "[CLIENT]:";
 
 Future<List<String>> getDevices() async {
-  final String? ip = await _getCurrentIp();
+  final String? ip = await getCurrentIp();
   log.fine("Current ip of the system:$ip");
   if (ip == null) {
     return Future(List.empty);
@@ -28,7 +28,7 @@ Future<List<String>> getDevices() async {
   }
 }
 
-Future<String?> _getCurrentIp() async {
+Future<String?> getCurrentIp() async {
   final wlanInterfaces = await _getWlanInterfaces();
   if (wlanInterfaces.isEmpty) {
     return null;
