@@ -26,7 +26,7 @@ class Board extends StatelessWidget {
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 100),
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-    decoration: BoxDecoration(
+          decoration: BoxDecoration(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(50),
               topRight: Radius.circular(50),
@@ -43,21 +43,21 @@ class Board extends StatelessWidget {
               )
             ],
           ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GetBuilder<GameController>(
-                      builder: (gameController) => Row(
-                        children: _buildBoard(),
-                      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GetBuilder<GameController>(
+                    builder: (gameController) => Row(
+                      children: _buildBoard(),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );

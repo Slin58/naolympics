@@ -32,36 +32,36 @@ class BoardColumn extends StatelessWidget {
       makeMove = gameController.playColumnMultiplayer;
     }
     bool madeMove = false;
-      return GestureDetector(
-          //nao specific
-          onTap: () {
-            if (!madeMove && !gameController.blockTurn) {
-              makeMove(columnNumber);
-              madeMove = true;
-            }
-          },
-          onLongPress: () {
-            if (!madeMove && !gameController.blockTurn) {
-              makeMove(columnNumber);
-              madeMove = true;
-            }
-          },
-          onVerticalDragStart: (_) {
-            if (!madeMove && !gameController.blockTurn) {
-              makeMove(columnNumber);
-              madeMove = true;
-            }
-          },
-          onHorizontalDragStart: (_) {
-            if (!madeMove && !gameController.blockTurn) {
-              makeMove(columnNumber);
-              madeMove = true;
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: _buildBoardColumn(),
-          ));
+    return GestureDetector(
+        //nao specific
+        onTap: () {
+          if (!madeMove && !gameController.blockTurn) {
+            makeMove(columnNumber);
+            madeMove = true;
+          }
+        },
+        onLongPress: () {
+          if (!madeMove && !gameController.blockTurn) {
+            makeMove(columnNumber);
+            madeMove = true;
+          }
+        },
+        onVerticalDragStart: (_) {
+          if (!madeMove && !gameController.blockTurn) {
+            makeMove(columnNumber);
+            madeMove = true;
+          }
+        },
+        onHorizontalDragStart: (_) {
+          if (!madeMove && !gameController.blockTurn) {
+            makeMove(columnNumber);
+            madeMove = true;
+          }
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: _buildBoardColumn(),
+        ));
   }
 }
