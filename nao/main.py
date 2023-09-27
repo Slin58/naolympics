@@ -596,7 +596,4 @@ if __name__ == "__main__":
     if args.port:
         PORT = args.port
 
-    for i in range(0, 7):
-        movementControl.click_connect_four(robotIP, PORT, i)
-
-    # play_games_by_buttons()
+    play_games_by_buttons()
