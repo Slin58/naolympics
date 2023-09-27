@@ -34,9 +34,12 @@ class Cell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height / 7.5;
+    double width = MediaQuery.of(context).size.width / 10.5;
+
     return Stack(
       children: [
-        Container(height: 95, width: 100, color: Colors.lightBlueAccent),
+        Container(height: height, width: width, color: Colors.lightBlueAccent),
         Positioned.fill(
             child: Align(
           child: _buildChip(),

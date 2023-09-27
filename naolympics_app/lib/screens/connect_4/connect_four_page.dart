@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:get/get.dart";
 import "package:logging/logging.dart";
 import "package:naolympics_app/services/gamemodes/connect_4/bindings/controller_binding.dart";
@@ -23,6 +24,12 @@ class ConnectFourPage extends StatelessWidget {
     connectFourPageBuildContext = context;
     return WillPopScope(
         onWillPop: () async {
+          await SystemChrome.setPreferredOrientations([
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight,
+            DeviceOrientation.portraitUp,
+            DeviceOrientation.portraitDown,
+          ]);
           Navigator.pop(connectFourPageBuildContext!);
           return false;
         },
