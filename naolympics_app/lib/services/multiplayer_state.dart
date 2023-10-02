@@ -1,5 +1,3 @@
-import "dart:io";
-
 import "package:naolympics_app/services/network/socket_manager.dart";
 import "package:naolympics_app/services/routing/client_routing_service.dart";
 
