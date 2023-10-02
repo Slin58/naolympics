@@ -175,7 +175,7 @@ class FindPlayerPageState extends State<FindPlayerPage> {
     if (socketManager == null) {
       UIUtils.showTemporaryAlert(context, "Failed connecting to $ip");
     } else {
-      MultiplayerState.connection = socketManager;
+      MultiplayerState.setClient(socketManager);
       MultiplayerState.clientRoutingService =
           ClientRoutingService(socketManager, context);
     }

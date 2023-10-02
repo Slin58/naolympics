@@ -54,7 +54,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   static Future<void> _sendNavigationDataToClient(
       String route, NavigationType navigationType) async {
-    await MultiplayerState.connection!
+    await MultiplayerState.getConnection()
         .writeJsonData(NavigationData(route, navigationType));
   }
 

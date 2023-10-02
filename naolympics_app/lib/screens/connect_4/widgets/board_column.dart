@@ -28,7 +28,7 @@ class BoardColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var makeMove = gameController.playColumnLocal;
-    if (MultiplayerState.connection != null) {
+    if (MultiplayerState.hasConnection()) {
       makeMove = gameController.playColumnMultiplayer;
     }
     bool madeMove = false;

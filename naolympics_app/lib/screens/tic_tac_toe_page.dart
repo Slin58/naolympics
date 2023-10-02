@@ -19,10 +19,10 @@ class TicTacToeState extends State<TicTacToePage> {
   @override
   void initState() {
     super.initState();
-    if (MultiplayerState.connection == null) {
+    if (!MultiplayerState.hasConnection()) {
       ticTacToe = TicTacToeLocal();
     } else {
-      ticTacToe = TicTacToeMultiplayer(MultiplayerState.connection!, setState);
+      ticTacToe = TicTacToeMultiplayer(MultiplayerState.getConnection(), setState);
     }
   }
 

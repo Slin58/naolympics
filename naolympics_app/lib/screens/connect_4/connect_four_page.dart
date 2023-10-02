@@ -41,7 +41,7 @@ class ConnectFourPage extends StatelessWidget {
             useMaterial3: true,
           ),
           getPages: [
-            if (MultiplayerState.connection != null)
+            if (MultiplayerState.hasConnection())
               GetPage(name: "/", page: Connect4ScreenMultiplayer.new)
             else
               GetPage(name: "/", page: Connect4Screen.new),

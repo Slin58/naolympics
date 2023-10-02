@@ -23,7 +23,7 @@ class GameController extends GetxController {
   void resetBoard() {
     initBoard();
     _turnYellow.value = true;
-    if (MultiplayerState.connection != null) {
+    if (MultiplayerState.hasConnection()) {
       if (MultiplayerState.isHosting()) {
         blockTurn = false;
       } else {
@@ -56,7 +56,7 @@ class GameController extends GetxController {
     log.finer("Move made by playColumnMultiplayer");
     if (board[columnNumber].contains(0)) {
       makeMoveOnField(columnNumber);
-      await MultiplayerState.connection!.writeJsonData(Connect4Data(board));
+      await MultiplayerState.getConnection().writeJsonData(Connect4Data(board));
       startListening(); // ignore: unawaited_futures
       update();
     } else {
@@ -192,7 +192,7 @@ class GameController extends GetxController {
                         MaterialStateProperty.all<Color>(Colors.blue),
                   ),
                   onPressed: () async {
-                    if (MultiplayerState.connection == null) {
+                    if (!MultiplayerState.hasConnection()) {
                       resetBoard();
                       Navigator.pop(context);
                       Navigator.pop(connectFourPageBuildContext!);
@@ -200,7 +200,7 @@ class GameController extends GetxController {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
                     } else {
                       resetBoard();
-                      await MultiplayerState.connection!
+                      await MultiplayerState.getConnection()
                           .writeJsonData(GameEndData(false, true));
                       await Future.delayed(const Duration(milliseconds: 500));
                       Navigator.pop(context);
@@ -228,13 +228,13 @@ class GameController extends GetxController {
                         MaterialStateProperty.all<Color>(Colors.blue),
                   ),
                   onPressed: () {
-                    if (MultiplayerState.connection == null) {
+                    if (!MultiplayerState.hasConnection()) {
                       Navigator.of(context).pop(true);
                       resetBoard();
                     } else if (MultiplayerState.isClient()) {
                       UIUtils.showTemporaryAlert(context, "Wait for the host");
                     } else {
-                      MultiplayerState.connection!
+                      MultiplayerState.getConnection()
                           .writeJsonData(GameEndData(true, false));
                       Navigator.of(context).pop(true);
                       resetBoard();
@@ -264,7 +264,7 @@ class GameController extends GetxController {
     StreamSubscription<String>? subscription;
     if (MultiplayerState.isClient()) {
       subscription =
-          MultiplayerState.connection!.broadcastStream.listen((data) {
+          MultiplayerState.getConnection().broadcastStream.listen((data) {
         JsonData jsonData = JsonData.fromJsonString(data);
         if (jsonData is GameEndData) {
           if (jsonData.reset) {
@@ -399,7 +399,7 @@ class GameController extends GetxController {
   Future<void> startListening() async {
     log.finer("stillListening has jus been called.");
     late StreamSubscription<String>? subscription;
-    subscription = MultiplayerState.connection!.broadcastStream.listen((data) {
+    subscription = MultiplayerState.getConnection().broadcastStream.listen((data) {
       blockTurn = false;
       JsonData jsonData = JsonData.fromJsonString(data);
 

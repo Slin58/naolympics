@@ -32,7 +32,7 @@ class GameSelectionStateMultiplayer extends GameSelectionState {
           onPressed: () async {
             final closeConn =
                 NavigationData("stop", NavigationType.closeConnection);
-            await MultiplayerState.connection!.writeJsonData(closeConn);
+            await MultiplayerState.getConnection().writeJsonData(closeConn);
 
             MultiplayerState.closeConnection();
             Navigator.popUntil(context, (route) => !Navigator.canPop(context));

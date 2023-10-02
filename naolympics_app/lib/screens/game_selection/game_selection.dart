@@ -31,7 +31,7 @@ class GameSelectionState extends State<GameSelectionPage> {
 
     return WillPopScope(
         onWillPop: () async {
-          if (MultiplayerState.connection == null) {
+          if (!MultiplayerState.hasConnection()) {
             Navigator.pop(context);
           }
           return false;
