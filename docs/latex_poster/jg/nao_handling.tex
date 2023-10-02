@@ -1,0 +1,113 @@
+\section{Allgemeine Bedienung (JG)}
+
+\subsection{Einrichtung}
+
+Zur Einrichtung der Python SDK sowie der Software Choregraphe verweisen wir auf den Installation Guide des Herstellers Aldebaran.
+
+Für naoqi Python SDK Version $2.1$: \cite{python_sdk_21}
+
+Choregraphe für Version $2.1$: \cite{choregraphe_21}
+
+Für naoqi Version $2.8$: \cite{python_sdk_28}
+
+Choregraphe für Version $2.8$: \cite{choregraphe_28}
+
+
+Problematisch stellte sich hierbei die Installation von Choregraphe und der Python SDK auf macOS (M2 Max, macOS 13) heraus, daher wurde dort eine virtuelle Maschine mit Parallels und Windows 11 ARM eingerichtet. 
+
+\subsection{SSH-Verbindung}
+
+SSH-Verbindungen zum jeweiligen Roboter lassen sich mittels Terminal-SSH oder einem Client wie Bitvise oder PuTTY realisieren, um Zugang auf die Linux Kommandozeile des NAO zu bekommen. Die Zugangsdaten für den Nutzer \textit{nao} sind standardmäßig:
+
+\begin{verbatim}
+    Username: nao
+    Password: nao
+    Port: 22
+\end{verbatim}
+
+Hiermit lassen sich Dateien verschieben, Skripte ausführen usw. Falls keine entsprechende Berechtigungen vorliegen kann mittels bash-Befehl
+
+\begin{verbatim}
+    su
+\end{verbatim}
+
+und Passwort \dq root\dq zum Nutzer \textit{root} und hiermit \textit{super user}-Berechtigungen erlangt werden. Abweichungen können je nach \textit{NAOqi}-Version sowie Roboter vorkommen.
+
+\subsection{Benötigte Python-Bibliotheken}
+Für den \textit{Standalone}-Betrieb des Spiels auf dem Roboter werden folgende \textit{Packages} benötigt:
+
+\begin{enumerate}
+    \item NumPy
+    \item NaoQi
+    \item OpenCV
+\end{enumerate}
+
+Die ersten beiden aufgelisteten Bibliotheken sind auf den \textit{NAOs} mit \textit{NaoQi}Version $ < \, 2.2.0$ vorinstalliert. Diese Roboter \textit{V.5}) arbeiten lediglich mit Python $2.7$. \textit{OpenCV} konnte \dq installiert\dq werden, indem der entpackte Ordner der passenden Version ($4.3.0.32$) in den
+
+\begin{verbatim}
+    /usr/lib/python2.7/site-packages
+\end{verbatim}
+
+Ordner gelegt wurde. Hierfür wurde zunächst mit einem \textit{SFTP}-Client wie Bitvise oder FileZilla das entpackte Package in das \textit{home} Verzeichnis transferiert und dann verschoben.
+
+\begin{verbatim}
+    mv *opencv-folder* /usr/lib/python2.7/site-packages
+\end{verbatim}
+
+Bei Robotern V.6 mit Version $2.8$ mussten keine Packages zuvor installiert werden, deren Linux Distribution ist auch durch \textit{read-only-filesystem} stärker vor Eingriffen geschützt. Diese unterstützen neben Python $2.7.15$ zusätzlich die Version $3.5.6$. Es muss beachtet werden, dass es zu Problemen zwischen unterschiedlichen OpenCV-Versionen auf verschiedenen Roboter-Versionen kommen kann, welche adressiert werden müssen. Ein Beispiel aus \textit{vision.py}:
+
+\begin{verbatim}
+    if cv2.__version__[0] == "3":
+        _, all_contours, hierarchy = 
+        cv2.findContours(copy, cv2.RETR_TREE, 
+        cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        all_contours, hierarchy = 
+        cv2.findContours(copy, cv2.RETR_TREE, 
+        cv2.CHAIN_APPROX_SIMPLE)
+\end{verbatim}
+
+Hier wird geprüft, ob eine \textit{OpenCV}-Version $3.x.x$ vorliegt, in welcher drei statt zwei Parameter von der Funktion \textit{findContours} zurückgegeben werden. In den Versionen $2.x.x$ und $4.x.x$ werden lediglich zwei zurückgegeben.
+
+\subsection{Ausführen von Skripten}
+
+Python-Skripte (Dateiendung \textit{.py}) lassen sich über die Kommandozeile der SSH-Verbindung wie folgt ausführen:
+
+\begin{verbatim}
+    python example.py
+\end{verbatim}
+
+Um den Roboter bei Neustart automatisch Skripte bzw. \textit{Executables} ausführen zu lassen, muss ein entsprechender Eintrag in der \textit{autoload.ini} Datei unter folgendem Pfad hinterlegt werden\cite{autoload_skripts}:
+
+\begin{verbatim}
+    /home/nao/naoqi/preferences/autoload.ini
+\end{verbatim}
+
+Entweder können hierbei über SFTP Dateien auf dem Host-System generiert und auf dem Roboter ersetzt, oder direkt auf dem \textit{NAO} über den \textit{nano}-Editor bearbeitet werden. \textit{VI} bzw. \textit{VIM} konnte hierfür im Rahmen des Projekts nicht ausgeführt werden. Beispiel für ein Python-Skript:
+
+\begin{verbatim}
+    [python]
+    /home/nao/reacting_to_events.py
+\end{verbatim}
+
+Es ist außerdem möglich, Dateien direkt in einem geeigneten SFTP-Client im Roboter-Dateisystem mit einem Texteditor zu bearbeiten. Der Programm-Eintrittspunkt dieses Projekts ist die Datei \textit{main.py}, wobei der gesamte \textit{naolympics/nao} Ordner in seiner Ordnerstruktur mit \textit{vision} und \textit{movement} Ordnern mit auf dem Roboter liegen muss, damit die Importe richtig funktionieren. Es wurde über die \textit{argparse}-Bibliothek die Option hinzugefügt, über Kommandozeilenargumente die IP-Adresse und den Port des Roboters einzufügen. Über das \textit{-h} Flag lässt sich eine Auflistung der Argumente ausgeben:
+
+\begin{verbatim}
+Eingabe: 
+    python main.py -h
+
+Ausgabe:
+    usage: main.py [-h] [-i IP] [-p PORT]
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -i IP, --ip IP        robot IP address
+      -p PORT, --port PORT  robot Port
+
+Beispiel, um main.py auf Roboter 10.30.4.13/9559 zu starten:
+    python main.py --ip 10.30.4.13 --port 9559
+oder:
+    python main.py -i 10.30.4.13 -p 9559
+\end{verbatim}
+
+Wenn keine Argumente mitgegeben wurden, wird standardmäßig die IP $10.30.4.13$ und der Port $9559$ angesprochen.

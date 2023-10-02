@@ -1,0 +1,132 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper,DIV13,pdftex,BCOR10mm,fleqn,liststotoc,bibtotoc,cleardoubleempty]{scrbook}
+%,footexclude,headexclude standard,chapterprefix,dvips
+\usepackage{times} 
+\usepackage{float}%Font
+\usepackage[utf8]{inputenc} %erkennt \"{a},\"{o},\"{u}
+\usepackage{german,amsfonts}  %erkennt \3 als {\ss}
+\usepackage[ngerman]{varioref}
+\usepackage{newclude}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}         %[draft]
+\usepackage[ngerman]{algorithm2e}
+\usepackage{booktabs}
+\usepackage{textcomp}
+\usepackage{placeins}
+\usepackage{amsmath} %F\"{u}r Formeln
+\usepackage[breaklinks,pdfborder={0 0 0}]{hyperref} %f\"{u}r Links im PDF
+\usepackage{xcolor,soul} %F\"{u}r Matlab/Octave
+\usepackage{url}
+\usepackage{listings}         %fuer C-Programme
+\usepackage{scrlayer-scrpage}%[automark] f\"{u}r Kopfzeilen
+\usepackage{todonotes}
+\pagestyle{scrheadings}
+\addtolength{\topmargin}{5mm}
+%\onehalfspacing
+
+\lstset{language=C,
+basicstyle=\ttfamily\footnotesize,
+keywordstyle=\color{blue},
+commentstyle=\color{green},
+stringstyle=\color{red},
+numbers=left,
+stepnumber=1,
+numbersep=5pt,
+%numberstyle=\tiny,
+breaklines=true,
+breakautoindent=true,
+postbreak=\space,
+tabsize=2,
+showspaces=false,
+showstringspaces=false,
+extendedchars=true,
+backgroundcolor=\color{black!10},
+captionpos=b }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter
+%von http://studiy.tu-cottbus.de/projektwiki/wissen:latex:diplomarbeit
+\titlehead{%  {\centering Seitenkopf}
+  {Hochschule f\"{u}r angewandte Wissenschaften\\
+   Fachhochschule W\"{u}rzburg-Schweinfurt\\
+   Fakult\"{a}t Informatik und Wirtschaftsinformatik}}
+\subject{Projektarbeit}
+\title{Naolympics\\[10mm]}
+\subtitle{\normalsize{vorgelegt an der Hochschule f\"{u}r angewandte Wissenschaften Fachhochschule W\"{u}rzburg-Schweinfurt in der Fakult\"{a}t Informatik und Wirtschaftsinformatik zum Abschluss eines Studiums im Studiengang Informatik}}
+\author{Nils G\"obel\\Johannes Gehring\\Luca Klingert\\Michael Schmitt}
+\date{\normalsize{Eingereicht am: \today}}
+\publishers{
+  \normalsize{Erstpr\"{u}fer: Prof. Dr. Arndt Balzer} \\
+  \normalsize{Zweitpr\"{u}fer: Prof. Dr. Daniel Kulesz}\\
+}
+
+%\uppertitleback{ }
+%\lowertitleback{ }
+
+\maketitle
+
+\thispagestyle{empty}
+\section*{Selbstständigkeitserklärung}
+Hiermit versichere ich, dass ich die vorgelegte Projektarbeit selbstständig verfasst und noch nicht anderweitig zu Pr\"{u}fungszwecken vorgelegt habe. Alle benutzten Quellen und Hilfsmittel sind angegeben, w\"{o}rtliche und sinngem\"{a}{\ss}e Zitate wurden als solche gekennzeichnet.\\[15mm]
+%% Abstand und Linie
+\vspace{20mm}
+\hrule
+\vspace{5mm}
+W\"urzburg, den \date{\today}
+
+\cleardoublepage     % min. eine Freiseite
+
+\nonfrenchspacing
+\renewcommand{\figurename}{Abb.}
+\renewcommand{\tablename}{Tab.}
+
+%\setcounter{page}{7}%  {tocdepth}{1} =section
+%\lstset{language=C, basicstyle=\ttfamily\small, commentstyle=\itshape}
+%\automark[chapter]{chapter} ???
+\tableofcontents %
+\listoffigures %
+\listoftables
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Einleitung}
+\include*{projekt_beschreibung}
+\newpage
+\include*{jg/nao_handling}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Spielstanderkennung (JG)}
+\include*{jg/intro_vision_jg}
+\newpage
+\include*{jg/methodik_vision_jg}
+\newpage
+\include*{jg/ergebnisse_vision_jg}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Spieltaktiken (NG)}
+\include*{Spieltaktik_tictactoe}
+\include*{Spieltaktik_connect_four}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Movement (NG)}
+\include*{movement}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Spielablauf (NG, JG)}
+\include*{spielablauf}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Flutter app (MS, LK)}
+\include*{app}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Zusammenfassung und Probleme}
+\include*{zusammenfassung_ausblick}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter
+
+\bibliographystyle{plain}%geralpha, dinat, dalpha, ...
+\nocite{*}
+\bibliography{lib}
+
+\end{document}
