@@ -5,6 +5,8 @@ import "package:logging/logging.dart";
 import "package:naolympics_app/screens/connect_4/connect_four_page.dart";
 import "package:naolympics_app/screens/connect_4/widgets/board_column.dart";
 import "package:naolympics_app/services/gamemodes/connect_4/game_controller.dart";
+import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 class BoardMultiplayer extends StatelessWidget {
   BoardMultiplayer({super.key});
@@ -36,13 +38,18 @@ class BoardMultiplayer extends StatelessWidget {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () async {
-                  await SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.landscapeLeft,
-                    DeviceOrientation.landscapeRight,
-                    DeviceOrientation.portraitUp,
-                    DeviceOrientation.portraitDown,
-                  ]);
-                  Navigator.pop(connectFourPageBuildContext!);
+                  if(MultiplayerState.isClient()) {
+                    UIUtils.showTemporaryAlert(context, "Wait for the host board multi");
+                  }
+                  else if(MultiplayerState.isHosting()){
+                    await SystemChrome.setPreferredOrientations([
+                      DeviceOrientation.landscapeLeft,
+                      DeviceOrientation.landscapeRight,
+                      DeviceOrientation.portraitUp,
+                      DeviceOrientation.portraitDown,
+                    ]);
+                    Navigator.pop(connectFourPageBuildContext!);
+                  }
                 },
               ),
               title: const Obx(ConnectFourPage.getPlayerTurnIndicator),

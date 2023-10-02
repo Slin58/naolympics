@@ -7,6 +7,7 @@ import "package:naolympics_app/services/gamemodes/connect_4/connect_4_screen.dar
 import "package:naolympics_app/services/gamemodes/connect_4/connect_4_screen_multiplayer.dart";
 import "package:naolympics_app/services/gamemodes/connect_4/game_controller.dart";
 import "package:naolympics_app/services/multiplayer_state.dart";
+import "package:naolympics_app/utils/ui_utils.dart";
 
 void main() {
   runApp(const ConnectFourPage());
@@ -24,14 +25,20 @@ class ConnectFourPage extends StatelessWidget {
     connectFourPageBuildContext = context;
     return WillPopScope(
         onWillPop: () async {
-          await SystemChrome.setPreferredOrientations([
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight,
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.portraitDown,
-          ]);
-          Navigator.pop(connectFourPageBuildContext!);
-          return false;
+          if(MultiplayerState.isClient() != null) {
+            UIUtils.showTemporaryAlert(context, "Wait for the host Not host lmao");
+            return false;
+          }
+          else {
+            await SystemChrome.setPreferredOrientations([
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+            ]);
+            Navigator.pop(connectFourPageBuildContext!);
+            return false;
+          }
         },
         child: GetMaterialApp(
           initialBinding: ControllerBinding(),
