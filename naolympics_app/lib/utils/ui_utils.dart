@@ -76,8 +76,12 @@ abstract class UIUtils {
     showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(const Duration(seconds: 1),
-              () => Navigator.of(context).pop(true));
+          Future.delayed(const Duration(seconds: 1), () {
+            NavigatorState navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop(true);
+            }
+          });
           return AlertDialog(title: Center(child: Text(text)));
         });
   }
